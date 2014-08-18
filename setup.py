@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-
 from distutils.core import setup
 
 setup(
     name='enocean',
-    version='0.12',
+    version='0.13',
     description='EnOcean serial protocol implementation',
     author='Kimmo Huoman',
     author_email='kipenroskaposti@gmail.com',
