@@ -20,7 +20,7 @@ while c.is_alive():
         continue
     except KeyboardInterrupt:
         break
-    except Exception, e:
+    except Exception:
         traceback.print_exc(file=sys.stdout)
         break
 

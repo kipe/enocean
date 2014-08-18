@@ -3,7 +3,10 @@ from __future__ import print_function, unicode_literals, division
 import logging
 
 import threading
-import Queue
+try:
+    import queue
+except ImportError:
+    import Queue as queue
 from enocean.protocol.packet import Packet
 from enocean.protocol.constants import PARSE_RESULT
 
@@ -22,8 +25,8 @@ class Communicator(threading.Thread):
         # Input buffer
         self._buffer = []
         # Setup packet queues
-        self.transmit = Queue.Queue()
-        self.receive = Queue.Queue()
+        self.transmit = queue.Queue()
+        self.receive = queue.Queue()
 
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
@@ -32,7 +35,7 @@ class Communicator(threading.Thread):
             logger.info('Sending packet')
             logger.debug(p)
             return p
-        except Queue.Empty:
+        except queue.Empty:
             pass
         return None
 

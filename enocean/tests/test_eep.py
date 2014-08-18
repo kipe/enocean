@@ -56,7 +56,7 @@ def test_switch():
         0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x37, 0x00,
         0x9D
     ])
-    assert p.parse_eep(0x02, 0x04) == ['SA', 'EBO', 'R1', 'R2']
+    assert sorted(p.parse_eep(0x02, 0x04)) == ['EBO', 'R1', 'R2', 'SA']
     assert p.SA['value'] == 'No 2nd action'
     assert p.EBO['value'] == 'pressed'
     assert p.R1['value'] == 'Button BI'
@@ -70,7 +70,7 @@ def test_switch():
         0x02, 0xFF, 0xFF, 0xFF, 0xFF, 0x4A, 0x00,
         0x03
     ])
-    assert p.parse_eep(0x02, 0x04) == ['SA', 'EBO', 'R1', 'R2']
+    assert sorted(p.parse_eep(0x02, 0x04)) == ['EBO', 'R1', 'R2', 'SA']
     assert p.SA['value'] == 'No 2nd action'
     assert p.EBO['value'] == 'released'
     assert p.learn is True

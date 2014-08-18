@@ -2,10 +2,10 @@
 from __future__ import print_function, unicode_literals, division
 import logging
 
-import crc8
+from . import crc8
 
-from eep import EEP
-from constants import PACKET, RORG, PARSE_RESULT
+from .eep import EEP
+from .constants import PACKET, RORG, PARSE_RESULT
 
 logger = logging.getLogger('enocean.protocol.packet')
 eep = EEP()
@@ -126,7 +126,7 @@ class Packet(object):
         ''' Parse EEP based on FUNC and TYPE '''
         provides, values = eep.get_values(self.rorg, func, type, self.bit_data)
         self.parsed.update(values)
-        return provides
+        return list(provides)
 
     def build(self):
         ''' Build Packet for sending to EnOcean controller '''

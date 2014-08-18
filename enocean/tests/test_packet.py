@@ -103,7 +103,7 @@ def test_packet_examples():
         }
     }
 
-    for packet, values in telegram_examples.iteritems():
+    for packet, values in telegram_examples.items():
         status, remainder, p = Packet.parse_msg(values['msg'])
         assert status == PARSE_RESULT.OK
         assert p.type != 0x00
