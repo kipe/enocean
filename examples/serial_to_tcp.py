@@ -6,7 +6,10 @@ from enocean.communicators.utils import send_to_tcp_socket
 import sys
 import traceback
 
-import Queue
+try:
+    import queue
+except ImportError:
+    import Queue as queue
 
 init_logging()
 c = SerialCommunicator()
@@ -16,7 +19,7 @@ while c.is_alive():
         # Loop to empty the queue...
         p = c.receive.get(block=True, timeout=1)
         send_to_tcp_socket('localhost', 9637, p)
-    except Queue.Empty:
+    except queue.Empty:
         continue
     except KeyboardInterrupt:
         break

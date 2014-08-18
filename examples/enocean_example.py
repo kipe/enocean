@@ -7,7 +7,10 @@ from enocean.protocol.constants import PACKET, RORG
 import sys
 import traceback
 
-import Queue
+try:
+    import queue
+except ImportError:
+    import Queue as queue
 
 p = Packet(PACKET.COMMON_COMMAND, [0x08])
 
@@ -28,7 +31,7 @@ while c.is_alive():
         if p.type == PACKET.RADIO and p.rorg == RORG.RPS:
             for k in p.parse_eep(0x02, 0x04):
                 print('%s: %s' % (k, p.parsed[k]))
-    except Queue.Empty:
+    except queue.Empty:
         continue
     except KeyboardInterrupt:
         break
