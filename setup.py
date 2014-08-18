@@ -15,7 +15,7 @@ setup(
         'enocean.communicators',
     ],
     scripts=[
-        'enocean/scripts/enocean_example',
+        'examples/enocean_example.py',
     ],
     package_data={
         '': ['EEP_2.6.1.xml']
