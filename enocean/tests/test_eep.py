@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division
-from ..protocol.packet import Packet
+
+from enocean.protocol.packet import Packet
 
 
 def test_temperature():

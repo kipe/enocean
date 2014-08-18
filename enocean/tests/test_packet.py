@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division
 
-from ..protocol.packet import Packet
-from ..protocol.constants import PACKET, PARSE_RESULT
+from enocean.protocol.packet import Packet
+from enocean.protocol.constants import PACKET, PARSE_RESULT
 
 
 def test_packet_examples():

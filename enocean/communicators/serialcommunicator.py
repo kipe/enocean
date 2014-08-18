@@ -3,7 +3,7 @@ from __future__ import print_function, unicode_literals, division
 import logging
 import serial
 
-from communicator import Communicator
+from enocean.communicators.communicator import Communicator
 
 logger = logging.getLogger('enocean.communicators.SerialCommunicator')
 

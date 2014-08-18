@@ -2,9 +2,8 @@
 from __future__ import print_function, unicode_literals, division
 import logging
 import socket
-# import time
 
-from communicator import Communicator
+from enocean.communicators.communicator import Communicator
 
 logger = logging.getLogger('enocean.communicators.TCPCommunicator')
 

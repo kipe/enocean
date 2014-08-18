@@ -2,10 +2,9 @@
 from __future__ import print_function, unicode_literals, division
 import logging
 
-from . import crc8
-
-from .eep import EEP
-from .constants import PACKET, RORG, PARSE_RESULT
+from enocean.protocol import crc8
+from enocean.protocol.eep import EEP
+from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT
 
 logger = logging.getLogger('enocean.protocol.packet')
 eep = EEP()

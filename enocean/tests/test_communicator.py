@@ -1,8 +1,9 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division
-from ..communicators.communicator import Communicator
-from ..protocol.packet import Packet
-from ..protocol.constants import PACKET
+
+from enocean.communicators.communicator import Communicator
+from enocean.protocol.packet import Packet
+from enocean.protocol.constants import PACKET
 
 
 def test_buffer():

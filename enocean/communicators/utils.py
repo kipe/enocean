@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division
 import socket
-# import array
 
 
 def send_to_tcp_socket(host, port, packet):
