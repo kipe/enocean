@@ -36,7 +36,7 @@ class TCPCommunicator(Communicator):
                     break
                 if not d:
                     break
-                self._buffer.extend([ord(c) for c in d])
+                self._buffer.extend(bytearray(d))
             self.parse()
             client.close()
             logger.debug('Client disconnected')

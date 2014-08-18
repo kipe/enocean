@@ -24,11 +24,11 @@ class SerialCommunicator(Communicator):
                 p = self._get_from_send_queue()
                 if not p:
                     break
-                self.__ser.write(int(bytearray(p.build())))
+                self.__ser.write(bytearray(p.build()))
 
             # Read chars from serial port as hex numbers
             try:
-                self._buffer.extend([ord(c) for c in self.__ser.read(16)])
+                self._buffer.extend(bytearray(self.__ser.read(16)))
             except serial.SerialException:
                 logger.error('Serial port exception! (device disconnected or multiple access on port?)')
                 break
