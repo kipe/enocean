@@ -16,6 +16,7 @@ def test_temperature():
     assert p.parse_eep(0x02, 0x05) == ['TMP']
     assert round(p.TMP['value'], 1) == 26.7
     assert p.TMP['raw_value'] == 85
+    assert p.learn is False
 
 
 def test_magnetic_switch():
@@ -43,6 +44,7 @@ def test_magnetic_switch():
     assert p.parse_eep(0x00, 0x01) == ['CO']
     assert p.CO['value'] == 'closed'
     assert p.CO['raw_value'] == 1
+    assert p.learn is False
 
 
 def test_switch():
@@ -58,6 +60,7 @@ def test_switch():
     assert p.SA['value'] == 'No 2nd action'
     assert p.EBO['value'] == 'pressed'
     assert p.R1['value'] == 'Button BI'
+    assert p.learn is True
 
     status, buf, p = Packet.parse_msg([
         0x55,
@@ -70,3 +73,4 @@ def test_switch():
     assert p.parse_eep(0x02, 0x04) == ['SA', 'EBO', 'R1', 'R2']
     assert p.SA['value'] == 'No 2nd action'
     assert p.EBO['value'] == 'released'
+    assert p.learn is True
