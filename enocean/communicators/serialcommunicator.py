@@ -17,14 +17,14 @@ class SerialCommunicator(Communicator):
 
     def run(self):
         logger.info('SerialCommunicator started')
-        while not self._stop.is_set():
+        while not self._stop_flag.is_set():
             # If there's messages in transmit queue
             # send them
             while True:
                 p = self._get_from_send_queue()
                 if not p:
                     break
-                self.__ser.write(str(bytearray(p.build())))
+                self.__ser.write(int(bytearray(p.build())))
 
             # Read chars from serial port as hex numbers
             try:

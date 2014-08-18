@@ -21,7 +21,7 @@ class Communicator(threading.Thread):
     def __init__(self):
         super(Communicator, self).__init__()
         # Create an event to stop the thread
-        self._stop = threading.Event()
+        self._stop_flag = threading.Event()
         # Input buffer
         self._buffer = []
         # Setup packet queues
@@ -47,7 +47,7 @@ class Communicator(threading.Thread):
         return True
 
     def stop(self):
-        self._stop.set()
+        self._stop_flag.set()
 
     def parse(self):
         ''' Parses messages and puts them to receive queue '''

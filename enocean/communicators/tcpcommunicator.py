@@ -22,14 +22,14 @@ class TCPCommunicator(Communicator):
         sock.listen(5)
         sock.settimeout(0.5)
 
-        while not self._stop.is_set():
+        while not self._stop_flag.is_set():
             try:
                 (client, addr) = sock.accept()
             except socket.timeout:
                 continue
             logger.debug('Client connected')
             client.settimeout(0.5)
-            while True and not self._stop.is_set():
+            while True and not self._stop_flag.is_set():
                 try:
                     d = client.recv(2048)
                 except socket.timeout:
