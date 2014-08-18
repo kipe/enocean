@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<telegrams>
+  <telegram rorg="0xF6" type="RPS">
+    <profiles description="Rocker switch, 2 rocker" func="0x02">
+      <profile type="0x04">
+        <data>
+          <enum shortcut="R1" description="Rocker 1st action" offset="0" size="3">
+            <item description="Button AI" value="0" />
+            <item description="Button AO" value="1" />
+            <item description="Button BI" value="2" />
+            <item description="Button BO" value="3" />
+          </enum>
+          <enum shortcut="EBO" description="Energy bow" offset="3" size="1">
+            <item description="released" value="0" />
+            <item description="pressed" value="1" />
+          </enum>
+          <enum shortcut="R2" description="Rocker 2nd action" offset="4" size="3">
+            <item description="Button AI" value="0" />
+            <item description="Button AO" value="1" />
+            <item description="Button BI" value="2" />
+            <item description="Button BO" value="3" />
+          </enum>
+          <enum shortcut="SA" description="2nd action valid" offset="7" size="1">
+            <item description="No 2nd action" value="0" />
+            <item description="2nd action valid" value="1" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
+  </telegram>
+  <telegram rorg="0xD5" type="1BS">
+    <profiles description="Contacts and switches" func="0x00">
+      <profile type="0x01">
+        <data>
+          <enum shortcut="CO" description="Contact" offset="7" size="1">
+            <item description="open" value="0" />
+            <item description="closed" value="1" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
+  </telegram>
+  <telegram rorg="0xA5" type="4BS">
+    <profiles description="Temperature sensors" func="0x02">
+      <profile type="0x05">
+        <data>
+          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>0.000000</min>
+              <max>40.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+    </profiles>
+  </telegram>
+</telegrams>
