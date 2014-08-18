@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name='enocean',
-    version='0.1',
+    version='0.11',
     description='EnOcean serial protocol implementation',
     author='Kimmo Huoman',
     author_email='kipenroskaposti@gmail.com',
