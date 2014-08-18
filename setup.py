@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name='enocean',
-    version='0.14',
+    version='0.15',
     description='EnOcean serial protocol implementation',
     author='Kimmo Huoman',
     author_email='kipenroskaposti@gmail.com',
