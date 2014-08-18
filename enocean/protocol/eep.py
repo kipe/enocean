@@ -2,7 +2,6 @@
 from __future__ import print_function, unicode_literals, division
 import os
 from bs4 import BeautifulSoup
-from bitarray import bitarray
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -21,11 +20,11 @@ class EEP(object):
         ''' Get hex-representation of number '''
         return '0x%02X' % (nmb)
 
-    def _get_raw(self, value, data):
+    def _get_raw(self, value, bitarray):
         ''' Get raw data as integer, based on offset and size '''
         offset = int(value['offset'])
         size = int(value['size'])
-        return int(data[offset:offset + size].to01(), 2)
+        return int(''.join(['1' if digit else '0' for digit in bitarray[offset:offset + size]]), 2)
 
     def _get_value(self, value, data):
         ''' Get value, based on the data in XML '''
@@ -99,7 +98,3 @@ class EEP(object):
             if d.name == 'enum':
                 output.update(self._get_enum(d, data))
         return output.keys(), output
-
-    def get_provided(self, rorg, func, type):
-        ''' Get values provided in the EEP profile '''
-        return self.get_values(rorg, func, type, bitarray(bin(0)[2:].zfill(64), endian='big'))

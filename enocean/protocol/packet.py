@@ -3,7 +3,6 @@ from __future__ import print_function, unicode_literals, division
 import logging
 
 import crc8
-from bitarray import bitarray
 
 from eep import EEP
 from constants import PACKET, RORG, PARSE_RESULT
@@ -24,8 +23,8 @@ class Packet(object):
         self.rorg = RORG.UNDEFINED
         self.data = data
         self.optional = optional
-        self.bit_data = bitarray(endian='big')
-        self.bit_optional = bitarray(endian='big')
+        self.bit_data = []
+        self.bit_optional = []
         self.parsed = {}
 
         self.parse()
@@ -59,7 +58,7 @@ class Packet(object):
         ''' Convert data (list of integers or integer) to bitarray '''
         if isinstance(data, list):
             data = self._combine_hex(data)
-        return bitarray(bin(data)[2:].zfill(width), endian='big')
+        return [True if digit == '1' else False for digit in bin(data)[2:].zfill(width)]
 
     @staticmethod
     def parse_msg(buf):

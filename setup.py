@@ -21,7 +21,6 @@ setup(
         '': ['EEP_2.6.1.xml']
     },
     install_requires=[
-        'bitarray>=0.8.1',
         'enum34>=1.0',
         'pyserial>=2.7',
         'beautifulsoup4>=4.3.2',
