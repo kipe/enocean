@@ -74,6 +74,9 @@ class EEP(object):
             return None, None
 
         profile = rorg.find('profile', {'type': self._get_hex(type)})
+        if not profile:
+            return None, None
+
         data_description = profile.find('data')
         if not data_description:
             data_description = []
