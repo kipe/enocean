@@ -6,14 +6,14 @@ from enocean.protocol.packet import Packet
 
 def test_temperature():
     ''' Tests RADIO message for EEP -profile 0xA5 0x02 0x05 '''
-    status, buf, p = Packet.parse_msg([
+    status, buf, p = Packet.parse_msg(bytearray([
         0x55,
         0x00, 0x0A, 0x07, 0x01,
         0xEB,
         0xA5, 0x00, 0x00, 0x55, 0x08, 0x01, 0x81, 0xB7, 0x44, 0x00,
         0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x2D, 0x00,
         0x75
-    ])
+    ]))
     assert p.parse_eep(0x02, 0x05) == ['TMP']
     assert round(p.TMP['value'], 1) == 26.7
     assert p.TMP['raw_value'] == 85
@@ -22,26 +22,26 @@ def test_temperature():
 
 def test_magnetic_switch():
     ''' Tests RADIO message for EEP -profile 0xD5 0x00 0x01 '''
-    status, buf, p = Packet.parse_msg([
+    status, buf, p = Packet.parse_msg(bytearray([
         0x55,
         0x00, 0x07, 0x07, 0x01,
         0x7A,
         0xD5, 0x08, 0x01, 0x82, 0x5D, 0xAB, 0x00,
         0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x36, 0x00,
         0x53
-    ])
+    ]))
     assert p.parse_eep(0x00, 0x01) == ['CO']
     assert p.CO['value'] == 'open'
     assert p.CO['raw_value'] == 0
 
-    status, buf, p = Packet.parse_msg([
+    status, buf, p = Packet.parse_msg(bytearray([
         0x55,
         0x00, 0x07, 0x07, 0x01,
         0x7A,
         0xD5, 0x09, 0x01, 0x82, 0x5D, 0xAB, 0x00,
         0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x36, 0x00,
         0xC7
-    ])
+    ]))
     assert p.parse_eep(0x00, 0x01) == ['CO']
     assert p.CO['value'] == 'closed'
     assert p.CO['raw_value'] == 1
@@ -49,28 +49,28 @@ def test_magnetic_switch():
 
 
 def test_switch():
-    status, buf, p = Packet.parse_msg([
+    status, buf, p = Packet.parse_msg(bytearray([
         0x55,
         0x00, 0x07, 0x07, 0x01,
         0x7A,
         0xF6, 0x50, 0x00, 0x29, 0x89, 0x79, 0x30,
         0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x37, 0x00,
         0x9D
-    ])
+    ]))
     assert sorted(p.parse_eep(0x02, 0x04)) == ['EBO', 'R1', 'R2', 'SA']
     assert p.SA['value'] == 'No 2nd action'
     assert p.EBO['value'] == 'pressed'
     assert p.R1['value'] == 'Button BI'
     assert p.learn is True
 
-    status, buf, p = Packet.parse_msg([
+    status, buf, p = Packet.parse_msg(bytearray([
         0x55,
         0x00, 0x07, 0x07, 0x01,
         0x7A,
         0xF6, 0x00, 0x00, 0x29, 0x89, 0x79, 0x20,
         0x02, 0xFF, 0xFF, 0xFF, 0xFF, 0x4A, 0x00,
         0x03
-    ])
+    ]))
     assert sorted(p.parse_eep(0x02, 0x04)) == ['EBO', 'R1', 'R2', 'SA']
     assert p.SA['value'] == 'No 2nd action'
     assert p.EBO['value'] == 'released'

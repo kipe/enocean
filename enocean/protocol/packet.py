@@ -54,8 +54,8 @@ class Packet(object):
         return output
 
     def _to_bitarray(self, data, width=8):
-        ''' Convert data (list of integers or integer) to bitarray '''
-        if isinstance(data, list):
+        ''' Convert data (list of integers, bytearray or integer) to bitarray '''
+        if isinstance(data, list) or isinstance(data, bytearray):
             data = self._combine_hex(data)
         return [True if digit == '1' else False for digit in bin(data)[2:].zfill(width)]
 
@@ -74,7 +74,8 @@ class Packet(object):
             return PARSE_RESULT.INCOMPLETE, [], None
 
         # Valid buffer starts from 0x55
-        buf = buf[buf.index(0x55):]
+        # Convert to list, as index -method isn't defined for bytearray
+        buf = buf[list(buf).index(0x55):]
         try:
             data_len = (buf[1] << 8) | buf[2]
             opt_len = buf[3]
