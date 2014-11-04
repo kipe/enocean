@@ -15,8 +15,8 @@ def test_temperature():
         0x75
     ]))
     assert p.parse_eep(0x02, 0x05) == ['TMP']
-    assert round(p.TMP['value'], 1) == 26.7
-    assert p.TMP['raw_value'] == 85
+    assert round(p.parsed['TMP']['value'], 1) == 26.7
+    assert p.parsed['TMP']['raw_value'] == 85
     assert p.learn is False
 
 
@@ -31,8 +31,8 @@ def test_magnetic_switch():
         0x53
     ]))
     assert p.parse_eep(0x00, 0x01) == ['CO']
-    assert p.CO['value'] == 'open'
-    assert p.CO['raw_value'] == 0
+    assert p.parsed['CO']['value'] == 'open'
+    assert p.parsed['CO']['raw_value'] == 0
 
     status, buf, p = Packet.parse_msg(bytearray([
         0x55,
@@ -43,8 +43,8 @@ def test_magnetic_switch():
         0xC7
     ]))
     assert p.parse_eep(0x00, 0x01) == ['CO']
-    assert p.CO['value'] == 'closed'
-    assert p.CO['raw_value'] == 1
+    assert p.parsed['CO']['value'] == 'closed'
+    assert p.parsed['CO']['raw_value'] == 1
     assert p.learn is False
 
 
@@ -58,9 +58,9 @@ def test_switch():
         0x9D
     ]))
     assert sorted(p.parse_eep(0x02, 0x04)) == ['EBO', 'R1', 'R2', 'SA']
-    assert p.SA['value'] == 'No 2nd action'
-    assert p.EBO['value'] == 'pressed'
-    assert p.R1['value'] == 'Button BI'
+    assert p.parsed['SA']['value'] == 'No 2nd action'
+    assert p.parsed['EBO']['value'] == 'pressed'
+    assert p.parsed['R1']['value'] == 'Button BI'
     assert p.learn is True
 
     status, buf, p = Packet.parse_msg(bytearray([
@@ -72,6 +72,6 @@ def test_switch():
         0x03
     ]))
     assert sorted(p.parse_eep(0x02, 0x04)) == ['EBO', 'R1', 'R2', 'SA']
-    assert p.SA['value'] == 'No 2nd action'
-    assert p.EBO['value'] == 'released'
+    assert p.parsed['SA']['value'] == 'No 2nd action'
+    assert p.parsed['EBO']['value'] == 'released'
     assert p.learn is True
