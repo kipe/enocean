@@ -34,11 +34,6 @@ class Packet(object):
     def __unicode__(self):
         return self.__str__()
 
-    def __getattr__(self, attr):
-        if attr in self.parsed:
-            return self.parsed[attr]
-        raise AttributeError
-
     def __eq__(self, other):
         return self.type == other.type and self.rorg == other.rorg and self.data == other.data and self.optional == other.optional
 
@@ -140,38 +135,52 @@ class Packet(object):
 
 
 class RadioPacket(Packet):
+    destination = ''
+    dbm = 0
+    status = 0
+    sender = 0
+    sender_hex = ''
+    learn = True
+    contains_eep = False
+
     def parse(self):
-        self.parsed['destination'] = self._combine_hex(self.optional[1:5])
-        self.parsed['dBm'] = -self.optional[5]
-        self.parsed['status'] = self.data[-1]
-        self.parsed['sender'] = self._combine_hex(self.data[-5:-1])
-        self.parsed['sender_hex'] = ':'.join([('%02X' % o) for o in self.data[-5:-1]])
+        self.destination = self._combine_hex(self.optional[1:5])
+        self.dBm = -self.optional[5]
+        self.status = self.data[-1]
+        self.sender = self._combine_hex(self.data[-5:-1])
+        self.sender_hex = ':'.join([('%02X' % o) for o in self.data[-5:-1]])
         # Default to learn == True, as some devices don't have a learn button
-        self.parsed['learn'] = True
+        self.learn = True
 
         self.rorg = self.data[0]
         if self.rorg == RORG.RPS:
             self.bit_data = self._to_bitarray(self.data[1], 8)
         if self.rorg == RORG.BS1:
             self.bit_data = self._to_bitarray(self.data[1], 8)
-            self.parsed['learn'] = not self.bit_data[-4]
+            self.learn = not self.bit_data[-4]
         if self.rorg == RORG.BS4:
             self.bit_data = self._to_bitarray(self.data[1:5], 32)
-            self.parsed['learn'] = not self.bit_data[-4]
-            if self.parsed['learn']:
-                self.parsed['contains_eep'] = self.bit_data[-7]
+            self.learn = not self.bit_data[-4]
+            if self.learn:
+                self.contains_eep = self.bit_data[-7]
         return super(RadioPacket, self).parse()
 
 
 class ResponsePacket(Packet):
+    response = 0
+    response_data = []
+
     def parse(self):
-        self.parsed['response'] = self.data[0]
-        self.parsed['response_data'] = self.data[1:]
+        self.response = self.data[0]
+        self.response_data = self.data[1:]
         return super(ResponsePacket, self).parse()
 
 
 class EventPacket(Packet):
+    event = 0
+    event_data = []
+
     def parse(self):
-        self.parsed['event'] = self.data[0]
-        self.parsed['event_data'] = self.data[1:]
+        self.event = self.data[0]
+        self.event_data = self.data[1:]
         return super(EventPacket, self).parse()
