@@ -22,7 +22,7 @@ class RETURN_CODE(IntEnum):
     OK = 0x00
     ERROR = 0x01
     NOT_SUPPORTED = 0x02
-    WRONG_PARAM = 0x04
+    WRONG_PARAM = 0x03
     OPERATION_DENIED = 0x04
 
 
