@@ -5,6 +5,7 @@ local
 share
 *.pyc
 
+*.egg-info
 build
 man
 MANIFEST
