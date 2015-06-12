@@ -137,7 +137,7 @@ class Packet(object):
 class RadioPacket(Packet):
     destination = 0
     destination_hex = ''
-    dbm = 0
+    dBm = 0
     status = 0
     sender = 0
     sender_hex = ''
@@ -146,7 +146,7 @@ class RadioPacket(Packet):
 
     def __str__(self):
         packet_str = super(RadioPacket, self).__str__()
-        return '%s->%s (%d dBm): %s' % (self.sender_hex, self.destination_hex, self.dbm, packet_str)
+        return '%s->%s (%d dBm): %s' % (self.sender_hex, self.destination_hex, self.dBm, packet_str)
 
     def parse(self):
         self.destination = self._combine_hex(self.optional[1:5])
