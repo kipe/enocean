@@ -57,5 +57,21 @@
         </data>
       </profile>
     </profiles>
+    <profiles description="Brightness sensors" func="0x06">
+      <profile type="0x01">
+        <data>
+          <value shortcut="BGT" description="Brightness (linear)" offset="8" size="8" unit="lux">
+            <range>
+              <min>1</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>300.000000</min>
+              <max>30000.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+    </profiles>
   </telegram>
 </telegrams>
