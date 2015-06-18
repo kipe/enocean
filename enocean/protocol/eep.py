@@ -2,6 +2,9 @@
 from __future__ import print_function, unicode_literals, division
 import os
 from bs4 import BeautifulSoup
+import logging
+
+logger = logging.getLogger('enocean.protocol.eep')
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -14,6 +17,7 @@ class EEP(object):
                 self.soup = BeautifulSoup(f.read())
             self.ok = True
         except IOError:
+            logger.warn('Cannot load protocol file!')
             pass
 
     def _get_hex(self, nmb):
@@ -67,18 +71,22 @@ class EEP(object):
 
         rorg = self.soup.find('telegram', {'rorg': self._get_hex(rorg)})
         if not rorg:
+            logger.warn('Cannot find rorg in EEP!')
             return None, None
 
         func = rorg.find('profiles', {'func': self._get_hex(func)})
         if not func:
+            logger.warn('Cannot find func in EEP!')
             return None, None
 
         profile = rorg.find('profile', {'type': self._get_hex(type)})
         if not profile:
+            logger.warn('Cannot find type in EEP!')
             return None, None
 
         data_description = profile.find('data')
         if not data_description:
+            logger.warn('Cannot find data description in EEP!')
             data_description = []
 
         return profile, data_description
