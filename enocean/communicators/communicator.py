@@ -62,7 +62,7 @@ class Communicator(threading.Thread):
 
             # If message is OK, add it to receive queue or send to the callback method
             if status == PARSE_RESULT.OK and p:
-                if self.__callback == None:
+                if self.__callback is None:
                     self.receive.put(p)
                 else:
                     self.__callback(p)

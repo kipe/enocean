@@ -173,7 +173,7 @@ class RadioPacket(Packet):
                 self.contains_eep = self.bit_data[-7]
         
         # Get rorg_func and rorg_type from a learn packet
-        if (self.learn):
+        if self.learn:
             self.rorg_func = self.data[1] >> 2
             self.rorg_type = ((self.data[1] & 0x03) << 5 ) | (self.data[2] >> 3)
 
