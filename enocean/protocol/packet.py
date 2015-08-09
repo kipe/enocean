@@ -20,6 +20,8 @@ class Packet(object):
     def __init__(self, type, data=[], optional=[]):
         self.type = type
         self.rorg = RORG.UNDEFINED
+        self.rorg_func = None
+        self.rorg_type = None
         self.data = data
         self.optional = optional
         self.bit_data = []
@@ -169,6 +171,12 @@ class RadioPacket(Packet):
             self.learn = not self.bit_data[-4]
             if self.learn:
                 self.contains_eep = self.bit_data[-7]
+        
+        # Get rorg_func and rorg_type from a learn packet
+        if (self.learn):
+            self.rorg_func = self.data[1] >> 2
+            self.rorg_type = ((self.data[1] & 0x03) << 5 ) | (self.data[2] >> 3)
+
         return super(RadioPacket, self).parse()
 
 

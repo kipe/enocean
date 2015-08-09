@@ -18,7 +18,7 @@ class Communicator(threading.Thread):
     Communicator base-class for EnOcean.
     Not to be used directly, only serves as base class for SerialCommunicator etc.
     '''
-    def __init__(self):
+    def __init__(self, callback=None):
         super(Communicator, self).__init__()
         # Create an event to stop the thread
         self._stop_flag = threading.Event()
@@ -27,7 +27,9 @@ class Communicator(threading.Thread):
         # Setup packet queues
         self.transmit = queue.Queue()
         self.receive = queue.Queue()
-
+        # Set the callback method
+        self.__callback = callback
+        
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
         try:
@@ -58,7 +60,10 @@ class Communicator(threading.Thread):
             if status == PARSE_RESULT.INCOMPLETE:
                 return status
 
-            # If message is OK, add it to receive queue
+            # If message is OK, add it to receive queue or send to the callback method
             if status == PARSE_RESULT.OK and p:
-                self.receive.put(p)
+                if self.__callback == None:
+                    self.receive.put(p)
+                else:
+                    self.__callback(p)
                 logger.debug(p)
