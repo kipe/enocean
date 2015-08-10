@@ -57,9 +57,11 @@ class Packet(object):
         return [True if digit == '1' else False for digit in bin(data)[2:].zfill(width)]
 
     def _from_bitarray(self, data):
+        ''' Convert bit array back to integer '''
         return int(''.join(['1' if x else '0' for x in data]), 2)
 
     def _to_hex_string(self, data):
+        ''' Convert list of integers to a hex string, separated by ":" '''
         return ':'.join([('%02X' % o) for o in data])
 
     @staticmethod
