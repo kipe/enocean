@@ -4,7 +4,7 @@ import logging
 
 from enocean.protocol import crc8
 from enocean.protocol.eep import EEP
-from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT
+from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3
 
 logger = logging.getLogger('enocean.protocol.packet')
 eep = EEP()
@@ -171,16 +171,16 @@ class RadioPacket(Packet):
             self.bit_data = self._to_bitarray(self.data[1], 8)
         if self.rorg == RORG.BS1:
             self.bit_data = self._to_bitarray(self.data[1], 8)
-            self.learn = not self.bit_data[-4]
+            self.learn = not self.bit_data[DB0.BIT_3]
         if self.rorg == RORG.BS4:
             self.bit_data = self._to_bitarray(self.data[1:5], 32)
-            self.learn = not self.bit_data[-4]
+            self.learn = not self.bit_data[DB0.BIT_3]
             if self.learn:
-                self.contains_eep = self.bit_data[-8]
+                self.contains_eep = self.bit_data[DB0.BIT_7]
                 if self.contains_eep:
                     # Get rorg_func and rorg_type from an unidirectional learn packet
-                    self.rorg_func = self.data[1] >> 2
-                    self.rorg_type = ((self.data[1] & 0x03) << 5) | (self.data[2] >> 3)
+                    self.rorg_func = self._from_bitarray(self.bit_data[DB3.BIT_7:DB3.BIT_1])
+                    self.rorg_type = self._from_bitarray(self.bit_data[DB3.BIT_1:DB2.BIT_2])
                     # Try to parse by EEP
                     self.parse_eep(self.rorg_func, self.rorg_type)
 

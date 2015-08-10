@@ -57,3 +57,49 @@ class PARSE_RESULT(IntEnum):
     OK = 0x00
     INCOMPLETE = 0x01
     CRC_MISMATCH = 0x03
+
+
+# Data byte indexing
+# Starts from the end, so works on messages of all length.
+class DB0:
+    BIT_0 = -1
+    BIT_1 = -2
+    BIT_2 = -3
+    BIT_3 = -4
+    BIT_4 = -5
+    BIT_5 = -6
+    BIT_6 = -7
+    BIT_7 = -8
+
+
+class DB1:
+    BIT_0 = -9
+    BIT_1 = -10
+    BIT_2 = -11
+    BIT_3 = -12
+    BIT_4 = -13
+    BIT_5 = -14
+    BIT_6 = -15
+    BIT_7 = -16
+
+
+class DB2:
+    BIT_0 = -17
+    BIT_1 = -18
+    BIT_2 = -19
+    BIT_3 = -20
+    BIT_4 = -21
+    BIT_5 = -22
+    BIT_6 = -23
+    BIT_7 = -24
+
+
+class DB3:
+    BIT_0 = -25
+    BIT_1 = -26
+    BIT_2 = -27
+    BIT_3 = -28
+    BIT_4 = -29
+    BIT_5 = -30
+    BIT_6 = -31
+    BIT_7 = -32
