@@ -18,6 +18,9 @@ def test_temperature():
     assert round(p.parsed['TMP']['value'], 1) == 26.7
     assert p.parsed['TMP']['raw_value'] == 85
     assert p.learn is False
+    assert p.contains_eep is False
+    assert p.rorg_func is None
+    assert p.rorg_type is None
 
 
 def test_magnetic_switch():
@@ -75,3 +78,20 @@ def test_switch():
     assert p.parsed['SA']['value'] == 'No 2nd action'
     assert p.parsed['EBO']['value'] == 'released'
     assert p.learn is True
+
+
+def test_eep_parsing():
+    status, buf, p = Packet.parse_msg(bytearray([
+        0x55,
+        0x00, 0x0A, 0x07, 0x01,
+        0xEB,
+        0xA5, 0x08, 0x28, 0x46, 0x80, 0x01, 0x8A, 0x7B, 0x30, 0x00,
+        0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x49, 0x00,
+        0x26
+    ]))
+    assert p.learn is True
+    assert p.contains_eep is True
+    assert p.rorg_func == 0x02
+    assert p.rorg_type == 0x05
+    assert round(p.parsed['TMP']['value'], 1) == 29.0
+    assert p.parsed['TMP']['raw_value'] == 70
