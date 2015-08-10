@@ -56,6 +56,12 @@ class Packet(object):
             data = self._combine_hex(data)
         return [True if digit == '1' else False for digit in bin(data)[2:].zfill(width)]
 
+    def _from_bitarray(self, data):
+        return int(''.join(['1' if x else '0' for x in data]), 2)
+
+    def _to_hex_string(self, data):
+        return ':'.join([('%02X' % o) for o in data])
+
     @staticmethod
     def parse_msg(buf):
         '''
@@ -152,11 +158,11 @@ class RadioPacket(Packet):
 
     def parse(self):
         self.destination = self._combine_hex(self.optional[1:5])
-        self.destination_hex = ':'.join([('%02X' % o) for o in self.optional[1:5]])
+        self.destination_hex = self._to_hex_string(self.optional[1:5])
         self.dBm = -self.optional[5]
         self.status = self.data[-1]
         self.sender = self._combine_hex(self.data[-5:-1])
-        self.sender_hex = ':'.join([('%02X' % o) for o in self.data[-5:-1]])
+        self.sender_hex = self._to_hex_string(self.data[-5:-1])
         # Default to learn == True, as some devices don't have a learn button
         self.learn = True
 
