@@ -174,7 +174,7 @@ class RadioPacket(Packet):
                 if self.contains_eep:
                     # Get rorg_func and rorg_type from an unidirectionnal learn packet
                     self.rorg_func = self.data[1] >> 2
-                    self.rorg_type = ((self.data[1] & 0x03) << 5 ) | (self.data[2] >> 3)
+                    self.rorg_type = ((self.data[1] & 0x03) << 5) | (self.data[2] >> 3)
 
         return super(RadioPacket, self).parse()
 
