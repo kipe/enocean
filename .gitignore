@@ -10,3 +10,4 @@ build
 man
 MANIFEST
 dist
+pip-selfcheck.json
