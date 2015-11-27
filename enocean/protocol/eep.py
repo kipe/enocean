@@ -79,7 +79,7 @@ class EEP(object):
             logger.warn('Cannot find func in EEP!')
             return None, None
 
-        profile = rorg.find('profile', {'type': self._get_hex(type)})
+        profile = func.find('profile', {'type': self._get_hex(type)})
         if not profile:
             logger.warn('Cannot find type in EEP!')
             return None, None
