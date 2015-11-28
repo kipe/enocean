@@ -14,7 +14,7 @@ class EEP(object):
         self.ok = False
         try:
             with open(os.path.join(path, 'EEP_2.6.1.xml'), 'r') as f:
-                self.soup = BeautifulSoup(f.read())
+                self.soup = BeautifulSoup(f.read(), "html.parser")
             self.ok = True
         except IOError:
             logger.warn('Cannot load protocol file!')
