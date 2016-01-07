@@ -3,7 +3,7 @@ from __future__ import print_function, unicode_literals, division
 import logging
 
 
-def init_logging(level=logging.DEBUG,logsize=1024,logcount=5):
+def init_logging(level=logging.DEBUG, log_to_file=False, logsize=1024, logcount=5):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     logger = logging.getLogger('enocean')
@@ -14,7 +14,8 @@ def init_logging(level=logging.DEBUG,logsize=1024,logcount=5):
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
 
-    file_handler = RotatingFileHandler('encoean.log', 'a',  logsize*1000 , logcount)
-    file_handler.setLevel(level)
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+    if log_to_file:
+        file_handler = logging.handlers.RotatingFileHandler('enocean.log', 'a', logsize*1000, logcount)
+        file_handler.setLevel(level)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
