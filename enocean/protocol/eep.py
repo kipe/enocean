@@ -13,7 +13,7 @@ class EEP(object):
     def __init__(self):
         self.ok = False
         try:
-            with open(os.path.join(path, 'EEP_2.6.1.xml'), 'r') as f:
+            with open(os.path.join(path, 'EEP.xml'), 'r') as f:
                 self.soup = BeautifulSoup(f.read(), "html.parser")
             self.ok = True
         except IOError:

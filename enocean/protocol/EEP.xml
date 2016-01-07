@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<telegrams>
+<telegrams version="2.6.4" major_version="2" minor_version="6" revision="4">
   <telegram rorg="0xF6" type="RPS" description="RPS Telegram">
     <profiles func="0x02" description="Rocker Switch, 2 Rocker">
       <profile type="0x02" description="Light and Blind Control - Application Style 2">
