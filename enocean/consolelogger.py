@@ -7,9 +7,9 @@ def init_logging(level=logging.DEBUG):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     logger = logging.getLogger('enocean')
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(level)
 
     ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    ch.setLevel(level)
     ch.setFormatter(formatter)
     logger.addHandler(ch)
