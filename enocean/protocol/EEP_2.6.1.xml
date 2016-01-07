@@ -2,7 +2,7 @@
 <telegrams>
   <telegram rorg="0xF6" type="RPS">
     <profiles description="Rocker switch, 2 rocker" func="0x02">
-      <profile type="0x04">
+      <profile type="0x02">
         <data>
           <enum shortcut="R1" description="Rocker 1st action" offset="0" size="3">
             <item description="Button AI" value="0" />
@@ -20,7 +20,7 @@
             <item description="Button BI" value="2" />
             <item description="Button BO" value="3" />
           </enum>
-          <enum shortcut="SA" description="2nd action valid" offset="7" size="1">
+          <enum shortcut="SA" description="2nd action" offset="7" size="1">
             <item description="No 2nd action" value="0" />
             <item description="2nd action valid" value="1" />
           </enum>
