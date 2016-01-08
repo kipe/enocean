@@ -29,7 +29,7 @@ while c.is_alive():
             for k in p.parse_eep(0x00, 0x01):
                 print('%s: %s' % (k, p.parsed[k]))
         if p.type == PACKET.RADIO and p.rorg == RORG.RPS:
-            for k in p.parse_eep(0x02, 0x04):
+            for k in p.parse_eep(0x02, 0x02):
                 print('%s: %s' % (k, p.parsed[k]))
     except queue.Empty:
         continue

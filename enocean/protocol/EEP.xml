@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<telegrams version="2.6.4" major_version="2" minor_version="6" revision="4">
+  <telegram rorg="0xF6" type="RPS" description="RPS Telegram">
+    <profiles func="0x02" description="Rocker Switch, 2 Rocker">
+      <profile type="0x02" description="Light and Blind Control - Application Style 2">
+        <data>
+          <enum description="Rocker 1st action" shortcut="R1" offset="0" size="3">
+            <item description="Button AI" value="0" />
+            <item description="Button AO" value="1" />
+            <item description="Button BI" value="2" />
+            <item description="Button BO" value="3" />
+          </enum>
+          <enum description="Energy bow" shortcut="EBO" offset="3" size="1">
+            <item description="released" value="0" />
+            <item description="pressed" value="1" />
+          </enum>
+          <enum description="Rocker 2nd action" shortcut="R2" offset="4" size="3">
+            <item description="Button AI" value="0" />
+            <item description="Button AO" value="1" />
+            <item description="Button BI" value="2" />
+            <item description="Button BO" value="3" />
+          </enum>
+          <enum description="2nd action" shortcut="SA" offset="7" size="1">
+            <item description="No 2nd action" value="0" />
+            <item description="2nd action valid" value="1" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
+  </telegram>
+  <telegram rorg="0xD5" type="1BS" description="1BS Telegram">
+    <profiles func="0x00" description="Contacts and Switches">
+      <profile type="0x01" description="Single Input Contact">
+        <data>
+          <enum description="Contact" shortcut="CO" offset="7" size="1">
+            <item description="open" value="0" />
+            <item description="closed" value="1" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
+  </telegram>
+  <telegram rorg="0xA5" type="4BS" description="4BS Telegram">
+    <profiles func="0x02" description="Temperature Sensors">
+      <profile type="0x05" description="Temperature Sensor Range 0°C to +40°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>0.000000</min>
+              <max>40.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+    </profiles>
+    <profiles func="0x06" description="Light Sensor">
+      <profile type="0x01" description="Range 300lx to 60.000lx">
+        <data>
+          <value description="Supply voltage (linear)" shortcut="SVC" offset="0" size="8" unit="V">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0.000000</min>
+              <max>5.100000</max>
+            </scale>
+          </value>
+          <value description="Illumination 2 (linear)" shortcut="ILL2" offset="8" size="8" unit="lx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>300.000000</min>
+              <max>30000.000000</max>
+            </scale>
+          </value>
+          <value description="Illumination 1 (linear)" shortcut="ILL1" offset="16" size="8" unit="lx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>600.000000</min>
+              <max>60000.000000</max>
+            </scale>
+          </value>
+          <enum description="Range select" shortcut="RS" offset="31" size="1">
+            <item description="Range acc. to DB_1 (ILL1)" value="0" />
+            <item description="Range acc. to DB_2 (ILL2)" value="1" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
+  </telegram>
+</telegrams>

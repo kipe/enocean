@@ -6,7 +6,7 @@ except ImportError:
 
 setup(
     name='enocean',
-    version='0.23',
+    version='0.31',
     description='EnOcean serial protocol implementation',
     author='Kimmo Huoman',
     author_email='kipenroskaposti@gmail.com',
@@ -20,10 +20,10 @@ setup(
         'examples/enocean_example.py',
     ],
     package_data={
-        '': ['EEP_2.6.1.xml']
+        '': ['EEP.xml']
     },
     install_requires=[
         'enum-compat>=0.0.2',
-        'pyserial>=2.7',
+        'pyserial>=3.0',
         'beautifulsoup4>=4.3.2',
     ])
