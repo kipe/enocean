@@ -185,7 +185,7 @@ class RadioPacket(Packet):
                     self.rorg_func = self._from_bitarray(self.bit_data[DB3.BIT_7:DB3.BIT_1])
                     self.rorg_type = self._from_bitarray(self.bit_data[DB3.BIT_1:DB2.BIT_2])
                     self.rorg_manufacturer = self._from_bitarray(self.bit_data[DB2.BIT_2:DB0.BIT_7])
-                    logger.debug('learn received, EEP detected, RORG:0x%02X, FUNC:0x%02X, Manufacturer:0x%02X' % (self.rorg,self.rorg_func,self.rorg_manufacturer))
+                    logger.debug('learn received, EEP detected, RORG:0x%02X, FUNC:0x%02X, TYPE:0x%02X, Manufacturer:0x%02X' % (self.rorg,self.rorg_func,self.rorg_type,self.rorg_manufacturer))
                     # Try to parse by EEP
                     self.parse_eep(self.rorg_func, self.rorg_type)
 
