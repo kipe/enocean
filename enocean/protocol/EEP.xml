@@ -97,5 +97,149 @@
         </data>
       </profile>
     </profiles>
+    <profiles description="Room Operating Panel" func="0x10">
+      <profile description="Temperature Sensor and Set Point" type="0x03">
+        <data>
+          <value shortcut="SP" description="Set Point (linear)" offset="8" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>-100</min>
+              <max>100</max>
+            </scale>
+          </value>
+          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>40</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+    </profiles>
+    <profiles description="Controller Status" func="0x11">
+      <profile description="Temperature Controller Output" type="0x02">
+        <data>
+          <value shortcut="CVAR" description="Actual value of controller" offset="0" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>100</max>
+            </scale>
+          </value>
+          <enum shortcut="FAN" description="Actual value of fan" offset="8" size="8" unit="%">
+            <item description="State 0 Manual" value="0" />
+            <item description="State 1 Manual" value="1" />
+            <item description="State 2 Manual" value="2" />
+            <item description="State 3 Manual" value="3" />
+            <item description="State 0 Automatic" value="16" />
+            <item description="State 1 Automatic" value="17" />
+            <item description="State 2 Automatic" value="18" />
+            <item description="State 3 Automatic" value="19" />
+            <item description="Not Available" value="255" />
+          </enum>
+          <value shortcut="ASP" description="Actual Setpoint" offset="16" size="8" unit="C">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>51.2</max>
+            </scale>
+          </value>
+          <enum shortcut="ALR" description="Alarm" offset="24" size="1">
+            <item description="No alarm" value="0" />
+            <item description="Alarm" value="1" />
+          </enum>
+          <enum shortcut="CTM" description="Controller mode" offset="25" size="1">
+            <item description="Heating" value="1" />
+            <item description="Cooling" value="2" />
+            <item description="Off" value="3" />
+          </enum>
+          <enum shortcut="CTS" description="Controller state" offset="27" size="1">
+            <item description="Automatic" value="0" />
+            <item description="Override" value="1" />
+          </enum>
+          <enum shortcut="ERH" description="Energy hold-off" offset="29" size="1">
+            <item description="Normal" value="0" />
+            <item description="Energy hold-off / Dew point" value="1" />
+          </enum>
+          <enum shortcut="RO" description="Room occupancy" offset="30" size="2">
+            <item description="Occupied" value="0" />
+            <item description="Unoccupied" value="1" />
+            <item description="StandBy" value="2" />
+            <item description="Frost" value="3" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
+    <profiles description="HVAC Components" func="0x20">
+      <profile description="Battery Powered Actuator (BI-DIR)" type="0x01">
+        <data>
+          <value shortcut="CV" description="Current Value" offset="0" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>100</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>100</max>
+            </scale>
+          </value>
+          <enum shortcut="SO" description="Service On" offset="8" size="1">
+            <item description="off" value="0" />
+            <item description="on" value="1" />
+          </enum>
+          <enum shortcut="ENIE" description="Energy input enabled" offset="9" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="ES" description="Energy storage sufficiently charged" offset="10" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="BCAP" description="Battery capacity; change battery next days" offset="11" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="CCO" description="Contact, cover open" offset="12" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="FTS" description="Failure Temperature sensor, out of range" offset="13" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="DWO" description="Detection, window open" offset="14" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="ACO" description="Actuator obstructed" offset="15" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="C">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>40</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+    </profiles>
   </telegram>
 </telegrams>
