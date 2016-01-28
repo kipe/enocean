@@ -19,8 +19,9 @@ def test_temperature():
     assert p.parsed['TMP']['raw_value'] == 85
     assert p.learn is False
     assert p.contains_eep is False
-    assert p.rorg_func is None
-    assert p.rorg_type is None
+    assert p.rorg is 0xA5
+    assert p.rorg_func is 0x02
+    assert p.rorg_type is 0x05
 
 
 def test_magnetic_switch():
@@ -93,5 +94,3 @@ def test_eep_parsing():
     assert p.contains_eep is True
     assert p.rorg_func == 0x02
     assert p.rorg_type == 0x05
-    assert round(p.parsed['TMP']['value'], 1) == 29.0
-    assert p.parsed['TMP']['raw_value'] == 70

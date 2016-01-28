@@ -29,7 +29,7 @@ class Communicator(threading.Thread):
         self.receive = queue.Queue()
         # Set the callback method
         self.__callback = callback
-        
+
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
         try:

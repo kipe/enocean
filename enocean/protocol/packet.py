@@ -7,7 +7,6 @@ from enocean.protocol.eep import EEP
 from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3
 
 logger = logging.getLogger('enocean.protocol.packet')
-eep = EEP()
 
 
 class Packet(object):
@@ -17,6 +16,8 @@ class Packet(object):
     Packet.parse_msg(buf) for parsing message.
     parse_msg() returns subclass, if one is defined for the data type.
     '''
+    eep = EEP()
+
     def __init__(self, type, data=[], optional=[]):
         self.type = type
         self.rorg = RORG.UNDEFINED
@@ -64,6 +65,21 @@ class Packet(object):
     def _to_hex_string(self, data):
         ''' Convert list of integers to a hex string, separated by ":" '''
         return ':'.join([('%02X' % o) for o in data])
+
+    def _data_to_bitdata(self):
+        ''' Updates the bit_data member based on data member.'''
+        if self.rorg == RORG.RPS or self.rorg == RORG.BS1:
+            self.bit_data = self._to_bitarray(self.data[1], 8)
+        if self.rorg == RORG.BS4:
+            self.bit_data = self._to_bitarray(self.data[1:5], 32)
+
+    def _bitdata_to_data(self):
+        ''' Updates the data member based on bit_data member.'''
+        if self.rorg == RORG.RPS or self.rorg == RORG.BS1:
+            self.data[1] = self._from_bitarray(self.bit_data)
+        if self.rorg == RORG.BS4:
+            for byte in range(4):
+                self.data[byte+1] = self._from_bitarray(self.bit_data[byte*8:(byte+1)*8])
 
     @staticmethod
     def parse_msg(buf):
@@ -128,11 +144,31 @@ class Packet(object):
         ''' Parse data from Packet '''
         return self.parsed
 
-    def parse_eep(self, func, type):
+    def select_eep(self, func, type):
+        ''' Set EEP based on FUNC and TYPE '''
+        # set EEP profile
+        self.rorg_func = func
+        self.rorg_type = type
+        return self.eep.find_profile(self.rorg, func, type)
+
+    def parse_eep(self, func=None, type=None):
         ''' Parse EEP based on FUNC and TYPE '''
-        provides, values = eep.get_values(self.rorg, func, type, self.bit_data)
+        # set EEP profile, if demanded
+        if func is not None and type is not None:
+            self.select_eep(func, type)
+        # parse data
+        provides, values = self.eep.get_values(self.bit_data)
         self.parsed.update(values)
         return list(provides)
+
+    def set_eep(self, data):
+        ''' Update packet data based on EEP '''
+        # update bit_data based on data
+        self._data_to_bitdata()
+        # data is a dict with EEP description keys
+        self.eep.set_values(self.bit_data, data)
+        # update data based on bit_data
+        self._bitdata_to_data()
 
     def build(self):
         ''' Build Packet for sending to EnOcean controller '''
@@ -170,13 +206,11 @@ class RadioPacket(Packet):
         self.learn = True
 
         self.rorg = self.data[0]
-        if self.rorg == RORG.RPS:
-            self.bit_data = self._to_bitarray(self.data[1], 8)
+        self._data_to_bitdata()
+        # parse learn bit and FUNC/TYPE, if applicable
         if self.rorg == RORG.BS1:
-            self.bit_data = self._to_bitarray(self.data[1], 8)
             self.learn = not self.bit_data[DB0.BIT_3]
         if self.rorg == RORG.BS4:
-            self.bit_data = self._to_bitarray(self.data[1:5], 32)
             self.learn = not self.bit_data[DB0.BIT_3]
             if self.learn:
                 self.contains_eep = self.bit_data[DB0.BIT_7]
@@ -186,8 +220,6 @@ class RadioPacket(Packet):
                     self.rorg_type = self._from_bitarray(self.bit_data[DB3.BIT_1:DB2.BIT_2])
                     self.rorg_manufacturer = self._from_bitarray(self.bit_data[DB2.BIT_2:DB0.BIT_7])
                     logger.debug('learn received, EEP detected, RORG: 0x%02X, FUNC: 0x%02X, TYPE: 0x%02X, Manufacturer: 0x%02X' % (self.rorg, self.rorg_func, self.rorg_type, self.rorg_manufacturer))
-                    # Try to parse by EEP
-                    self.parse_eep(self.rorg_func, self.rorg_type)
 
         return super(RadioPacket, self).parse()
 
