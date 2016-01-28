@@ -183,9 +183,9 @@ def test_packet_assembly():
     # manually assemble packet
     p = Packet(PACKET.RADIO)
     p.rorg = RORG.BS4
-    sender_bytes = [ (0xdeadbeef >> i & 0xff) for i in (24,16,8,0) ]
+    sender_bytes = [(0xdeadbeef >> i & 0xff) for i in (24, 16, 8, 0)]
     data = [1, 2, 3, 4]
-    p.data = [ p.rorg ] + data + sender_bytes + [ 0 ]
+    p.data = [p.rorg] + data + sender_bytes + [0]
 
     # test content
     packet_serialized = p.build()
@@ -195,10 +195,10 @@ def test_packet_assembly():
 
     # set optional data
     sub_tel_num = 3
-    destination = [ 255, 255, 255, 255 ]    # broadcast
+    destination = [255, 255, 255, 255]    # broadcast
     dbm = 0xff
     security = 0
-    p.optional = [ sub_tel_num ] + destination + [ dbm ] + [ security ]
+    p.optional = [sub_tel_num] + destination + [dbm] + [security]
 
     # test content
     packet_serialized = p.build()
@@ -219,7 +219,6 @@ def test_packet_assembly():
     packet_serialized = p.build()
     assert len(packet_serialized) == len(PACKET_CONTENT_3)
     for i in range(len(packet_serialized)):
-        print("{:02X}".format(packet_serialized[i]))
         assert packet_serialized[i] == PACKET_CONTENT_3[i]
     assert p.rorg_func == 0x20
     assert p.rorg_type == 0x01

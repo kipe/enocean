@@ -4,7 +4,7 @@ import logging
 
 from enocean.protocol import crc8
 from enocean.protocol.eep import EEP
-from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB1, DB2, DB3
+from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3
 
 logger = logging.getLogger('enocean.protocol.packet')
 
@@ -81,7 +81,6 @@ class Packet(object):
             for byte in range(4):
                 self.data[byte+1] = self._from_bitarray(self.bit_data[byte*8:(byte+1)*8])
 
-
     @staticmethod
     def parse_msg(buf):
         '''
@@ -152,7 +151,7 @@ class Packet(object):
         self.rorg_type = type
         return self.eep.find_profile(self.rorg, func, type)
 
-    def parse_eep(self, func = None, type = None):
+    def parse_eep(self, func=None, type=None):
         ''' Parse EEP based on FUNC and TYPE '''
         # set EEP profile, if demanded
         if func is not None and type is not None:
@@ -170,7 +169,6 @@ class Packet(object):
         self.eep.set_values(self.bit_data, data)
         # update data based on bit_data
         self._bitdata_to_data()
-
 
     def build(self):
         ''' Build Packet for sending to EnOcean controller '''

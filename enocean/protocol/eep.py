@@ -12,7 +12,6 @@ path = os.path.dirname(os.path.realpath(__file__))
 class EEP(object):
     _profile = None
     _data_description = None
-    
 
     def __init__(self):
         self.ok = False
@@ -94,7 +93,6 @@ class EEP(object):
         # store value in bitfield
         self._set_raw(value, raw_value, bitarray)
 
-
     def find_profile(self, rorg, func, type):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
         if not self.ok:
@@ -117,7 +115,7 @@ class EEP(object):
 
         # store identified profile
         self._profile = profile
-        
+
         # extract data description
         self._data_description = self._profile.find('data')
         if not self._data_description:
@@ -125,7 +123,7 @@ class EEP(object):
             self._data_description = []
 
         return True
-    
+
     def get_values(self, data):
         ''' Get keys and values from data '''
         if not self.ok:
