@@ -40,8 +40,7 @@ def test_packet_assembly():
     # test content
     packet_serialized = p.build()
     assert len(packet_serialized) == len(PACKET_CONTENT_1)
-    for i in range(len(packet_serialized)):
-        assert packet_serialized[i] == PACKET_CONTENT_1[i]
+    assert list(packet_serialized) == list(PACKET_CONTENT_1)
 
     # set optional data
     sub_tel_num = 3
@@ -53,8 +52,7 @@ def test_packet_assembly():
     # test content
     packet_serialized = p.build()
     assert len(packet_serialized) == len(PACKET_CONTENT_2)
-    for i in range(len(packet_serialized)):
-        assert packet_serialized[i] == PACKET_CONTENT_2[i]
+    assert list(packet_serialized) == list(PACKET_CONTENT_2)
 
     # update data based on EEP
     p.select_eep(0x20, 0x01)
@@ -68,7 +66,6 @@ def test_packet_assembly():
     # test content
     packet_serialized = p.build()
     assert len(packet_serialized) == len(PACKET_CONTENT_3)
-    for i in range(len(packet_serialized)):
-        assert packet_serialized[i] == PACKET_CONTENT_3[i]
+    assert list(packet_serialized) == list(PACKET_CONTENT_3)
     assert p.rorg_func == 0x20
     assert p.rorg_type == 0x01
