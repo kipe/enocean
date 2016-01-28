@@ -140,6 +140,65 @@ class Packet(object):
 
         return PARSE_RESULT.OK, buf, p
 
+    @staticmethod
+    def create(packet_type, rorg, func, type,
+               destination=[0xFF, 0xFF, 0xFF, 0xFF],
+               sender=[0xDE, 0xAD, 0xBE, 0xEF],
+               learn=False, **kwargs):
+        '''
+        Creates an packet ready for sending.
+        Uses rorg, func and type to determine the values set based on EEP.
+        Additional arguments (**kwargs) are used for setting the values.
+
+        Currently only supports:
+            - PACKET.RADIO
+            - RORGs RPS, BS1, and BS4.
+
+        Does not support:
+            - Telegram control bits (for acting as a repeater, for example)
+            - Setting the learn bit
+
+        TODO:
+            - Require sender to be set? Would force the "correct" sender to be set.
+            - Do we need to set telegram control bits?
+              Might be useful for acting as a repeater?
+        '''
+
+        if packet_type != PACKET.RADIO:
+            # At least for now, only support PACKET.RADIO.
+            raise ValueError('Packet type not supported by this function.')
+
+        if rorg not in [RORG.RPS, RORG.BS1, RORG.BS4]:
+            # At least for now, only support these RORGS.
+            raise ValueError('RORG not supported by this function.')
+
+        if not isinstance(destination, list) or len(destination) != 4:
+            raise ValueError('Destination must a list containing 4 (numeric) values.')
+
+        if not isinstance(sender, list) or len(sender) != 4:
+            raise ValueError('Sender must a list containing 4 (numeric) values.')
+
+        p = Packet(PACKET.RADIO)
+        p.rorg = rorg
+        p.data = [p.rorg]
+        # Initialize data depending on the profile.
+        p.data.extend([0] * 4 if rorg == RORG.BS4 else [0])
+        p.data.extend(sender)
+        # TODO: sender bits
+        p.data.append(0)
+        # Always use sub-telegram 3, maximum dbm (as per spec, when sending),
+        # and no security (security not supported as per EnOcean Serial Protocol).
+        p.optional = [3] + destination + [0xFF] + [0]
+        p.select_eep(func, type)
+        p.set_eep(kwargs)
+        if rorg in [RORG.BS1, RORG.BS4] and not learn:
+            if rorg == RORG.BS1:
+                p.data[1] |= (1 << 3)
+            if rorg == RORG.BS4:
+                p.data[4] |= (1 << 3)
+        p.build()
+        return p
+
     def parse(self):
         ''' Parse data from Packet '''
         return self.parsed
@@ -194,6 +253,13 @@ class RadioPacket(Packet):
     def __str__(self):
         packet_str = super(RadioPacket, self).__str__()
         return '%s->%s (%d dBm): %s' % (self.sender_hex, self.destination_hex, self.dBm, packet_str)
+
+    @staticmethod
+    def create(rorg, func, type,
+               destination=[0xFF, 0xFF, 0xFF, 0xFF],
+               sender=[0xDE, 0xAD, 0xBE, 0xEF],
+               learn=False, **kwargs):
+        return Packet.create(PACKET.RADIO, rorg, func, type, destination, sender, learn, **kwargs)
 
     def parse(self):
         self.destination = self._combine_hex(self.optional[1:5])

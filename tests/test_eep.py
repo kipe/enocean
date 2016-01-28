@@ -2,6 +2,7 @@
 from __future__ import print_function, unicode_literals, division
 
 from enocean.protocol.packet import Packet
+from enocean.protocol.constants import RORG
 
 
 def test_temperature():
@@ -20,6 +21,7 @@ def test_temperature():
     assert p.learn is False
     assert p.contains_eep is False
     assert p.rorg is 0xA5
+    assert p.rorg is int(RORG.BS4)
     assert p.rorg_func is 0x02
     assert p.rorg_type is 0x05
 

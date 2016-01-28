@@ -87,8 +87,13 @@ class EEP(object):
         self._set_raw(value, int(raw_value), bitarray)
 
     def _set_enum(self, value, data, bitarray):
+        if isinstance(data, int):
+            raise ValueError('No integers here, use the description string provided in EEP.')
+
         # derive raw value
         value_item = value.find('item', {'description': data})
+        if value_item is None:
+            raise ValueError('Enum description for value "%s" not found in EEP.' % (data))
         raw_value = int(value_item['value'])
         # store value in bitfield
         self._set_raw(value, raw_value, bitarray)
