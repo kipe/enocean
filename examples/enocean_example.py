@@ -13,9 +13,9 @@ except ImportError:
     import Queue as queue
 
 
-def assemble_radio_packet():
+def assemble_radio_packet(transmitter_id):
     return RadioPacket.create(rorg=RORG.BS4, func=0x20, type=0x01,
-                              sender=[0xDE, 0xAD, 0xBE, 0xFF],
+                              sender=transmitter_id,
                               CV=50,
                               TMP=21.5,
                               ES='true')
@@ -25,12 +25,30 @@ init_logging()
 c = SerialCommunicator()
 c.start()
 
-# send common command
+# Request transmitter ID
 p = Packet(PACKET.COMMON_COMMAND, [0x08])
 c.send(p)
 
-# send custom radio packet
-c.send(assemble_radio_packet())
+# Fetch the transmitter ID for sending packages.
+# NOT TESTED!!!
+# Needs testing, and if functional, a similar loop should be implemented to the communicator initialization.
+# This ID would then be used to send all future messages.
+transmitter_id = None
+while transmitter_id is None:
+    try:
+        p = c.receive.get(block=True, timeout=1)
+        if p.type == PACKET.RESPONSE:
+            transmitter_id = p.response_data
+            # send custom radio packet
+            c.send(assemble_radio_packet(transmitter_id))
+        break
+    except queue.Empty:
+        continue
+    except KeyboardInterrupt:
+        break
+    except Exception:
+        traceback.print_exc(file=sys.stdout)
+        break
 
 # endless loop receiving radio packets
 while c.is_alive():
