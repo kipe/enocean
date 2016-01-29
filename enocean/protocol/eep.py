@@ -28,53 +28,53 @@ class EEP(object):
         ''' Get hex-representation of number '''
         return '0x%02X' % (nmb)
 
-    def _get_raw(self, value, bitarray):
+    def _get_raw(self, source, bitarray):
         ''' Get raw data as integer, based on offset and size '''
-        offset = int(value['offset'])
-        size = int(value['size'])
+        offset = int(source['offset'])
+        size = int(source['size'])
         return int(''.join(['1' if digit else '0' for digit in bitarray[offset:offset + size]]), 2)
 
-    def _get_value(self, value, data):
+    def _get_value(self, source, bitarray):
         ''' Get value, based on the data in XML '''
-        raw_value = self._get_raw(value, data)
+        raw_value = self._get_raw(source, bitarray)
 
-        rng = value.find('range')
+        rng = source.find('range')
         rng_min = float(rng.find('min').text)
         rng_max = float(rng.find('max').text)
 
-        scl = value.find('scale')
+        scl = source.find('scale')
         scl_min = float(scl.find('min').text)
         scl_max = float(scl.find('max').text)
 
         return {
-            value['shortcut']: {
-                'description': value.get('description'),
-                'unit': value['unit'],
+            source['shortcut']: {
+                'description': source.get('description'),
+                'unit': source['unit'],
                 'value': (scl_max - scl_min) / (rng_max - rng_min) * (raw_value - rng_min) + scl_min,
                 'raw_value': raw_value,
             }
         }
 
-    def _get_enum(self, value, data):
+    def _get_enum(self, source, bitarray):
         ''' Get enum value, based on the data in XML '''
-        raw_value = self._get_raw(value, data)
-        value_desc = value.find('item', {'value': str(raw_value)})
+        raw_value = self._get_raw(source, bitarray)
+        value_desc = source.find('item', {'value': str(raw_value)})
         return {
-            value['shortcut']: {
-                'description': value.get('description'),
-                'unit': value.get('unit', ''),
+            source['shortcut']: {
+                'description': source.get('description'),
+                'unit': source.get('unit', ''),
                 'value': value_desc['description'],
                 'raw_value': raw_value,
             }
         }
 
-    def _get_boolean(self, value, data):
+    def _get_boolean(self, source, bitarray):
         ''' Get boolean value, based on the data in XML '''
-        raw_value = self._get_raw(value, data)
+        raw_value = self._get_raw(source, bitarray)
         return {
-            value['shortcut']: {
-                'description': value.get('description'),
-                'unit': value.get('unit', ''),
+            source['shortcut']: {
+                'description': source.get('description'),
+                'unit': source.get('unit', ''),
                 'value': True if raw_value else False,
                 'raw_value': raw_value,
             }
@@ -146,8 +146,8 @@ class EEP(object):
 
         return True
 
-    def get_values(self, data, status):
-        ''' Get keys and values from data '''
+    def get_values(self, bitarray, status):
+        ''' Get keys and values from bitarray '''
         if not self.ok:
             return [], {}
 
@@ -155,15 +155,15 @@ class EEP(object):
             return [], {}
 
         output = {}
-        for d in self._data_description.contents:
-            if not d.name:
+        for source in self._data_description.contents:
+            if not source.name:
                 continue
-            if d.name == 'value':
-                output.update(self._get_value(d, data))
-            if d.name == 'enum':
-                output.update(self._get_enum(d, data))
-            if d.name == 'status':
-                output.update(self._get_boolean(d, status))
+            if source.name == 'value':
+                output.update(self._get_value(source, bitarray))
+            if source.name == 'enum':
+                output.update(self._get_enum(source, bitarray))
+            if source.name == 'status':
+                output.update(self._get_boolean(source, status))
         return output.keys(), output
 
     def set_values(self, rorg, data, status, properties):
