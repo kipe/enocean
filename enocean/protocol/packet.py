@@ -238,7 +238,7 @@ class Packet(object):
         # update bit_data based on data
         self._data_to_bitdata()
         # data is a dict with EEP description keys
-        self.eep.set_values(self.bit_data, data)
+        self.bit_data = self.eep.set_values(self.bit_data, data)
         # update data based on bit_data
         self._bitdata_to_data()
 

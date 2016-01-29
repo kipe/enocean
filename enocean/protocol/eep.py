@@ -85,6 +85,7 @@ class EEP(object):
         size = int(value['size'])
         for digit in range(size):
             bitarray[offset+digit] = (raw_value >> (size-digit-1)) & 0x01 != 0
+        return bitarray
 
     def _set_value(self, value, data, bitarray):
         # derive raw value
@@ -96,7 +97,7 @@ class EEP(object):
         scl_max = float(scl.find('max').text)
         raw_value = (data - scl_min) * (rng_max - rng_min) / (scl_max - scl_min) + rng_min
         # store value in bitfield
-        self._set_raw(value, int(raw_value), bitarray)
+        return self._set_raw(value, int(raw_value), bitarray)
 
     def _set_enum(self, value, data, bitarray):
         if isinstance(data, int):
@@ -107,8 +108,7 @@ class EEP(object):
         if value_item is None:
             raise ValueError('Enum description for value "%s" not found in EEP.' % (data))
         raw_value = int(value_item['value'])
-        # store value in bitfield
-        self._set_raw(value, raw_value, bitarray)
+        return self._set_raw(value, raw_value, bitarray)
 
     def find_profile(self, rorg, func, type):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
@@ -164,10 +164,10 @@ class EEP(object):
     def set_values(self, data, properties):
         ''' Update data based on data contained in properties '''
         if not self.ok:
-            return [], {}
+            return []
 
         if not self._profile or not self._data_description:
-            return [], {}
+            return []
 
         for cur_prop in properties:
             # check if given property is contained in EEP
@@ -176,8 +176,9 @@ class EEP(object):
                 value = d[0]
                 # update bit_data
                 if value.name == 'value':
-                    self._set_value(value, properties[cur_prop], data)
+                    data = self._set_value(value, properties[cur_prop], data)
                 if value.name == 'enum':
-                    self._set_enum(value, properties[cur_prop], data)
+                    data = self._set_enum(value, properties[cur_prop], data)
             else:
                 logger.warning('Cannot find data description for shortcut %s', cur_prop)
+        return data
