@@ -133,24 +133,42 @@ def test_magnetic_switch():
     assert list(packet_serialized) == list(MAGNETIC_SWITCH)
 
 
-# TODO!!
-# Would require setting of status fields and adding them to EEP.xml also.
-# Status fields are defined as constants in EEP 2.6.4, per profile.
-#
-# def test_switch():
-#     SWITCH = bytearray([
-#         0x55,
-#         0x00, 0x07, 0x07, 0x01,
-#         0x7A,
-#         0xF6, 0x50, 0x00, 0x29, 0x89, 0x79, 0x30,
-#         0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x37, 0x00,
-#         0x9D
-#     ]))
+def test_switch():
+    SWITCH = bytearray([
+        0x55,
+        0x00, 0x07, 0x07, 0x01,
+        0x7A,
+        0xF6, 0x50, 0x00, 0x29, 0x89, 0x79, 0x30,
+        0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+        0x61
+    ])
 
-#     p = RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79], CO='closed')
-#     packet_serialized = p.build()
-#     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
-#     assert list(packet_serialized) == list(MAGNETIC_SWITCH)
+    p = RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79],
+                           SA='No 2nd action',
+                           EBO='pressed',
+                           R1='Button BI',
+                           T21=True,
+                           NU=True,
+                           )
+    packet_serialized = p.build()
+    assert len(packet_serialized) == len(SWITCH)
+    assert list(packet_serialized) == list(SWITCH)
 
-#     # for i in range(len(packet_serialized)):
-#     #     print(i, packet_serialized[i], MAGNETIC_SWITCH[i])
+    SWITCH = bytearray([
+        0x55,
+        0x00, 0x07, 0x07, 0x01,
+        0x7A,
+        0xF6, 0x00, 0x00, 0x29, 0x89, 0x79, 0x20,
+        0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+        0xD2
+    ])
+
+    p = RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79],
+                           SA='No 2nd action',
+                           EBO='released',
+                           T21=True,
+                           NU=False,
+                           )
+    packet_serialized = p.build()
+    assert len(packet_serialized) == len(SWITCH)
+    assert list(packet_serialized) == list(SWITCH)

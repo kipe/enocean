@@ -78,7 +78,7 @@ class Packet(object):
 
     def _bitdata_to_data(self):
         ''' Updates the data member based on bit_data member.'''
-        if self.rorg == RORG.RPS or self.rorg == RORG.BS1:
+        if self.rorg in [RORG.RPS, RORG.BS1]:
             self.data[1] = self._from_bitarray(self.bit_data)
         if self.rorg == RORG.BS4:
             for byte in range(4):
@@ -158,7 +158,6 @@ class Packet(object):
             - RORGs RPS, BS1, and BS4.
 
         Does not support:
-            - Telegram control bits (for acting as a repeater, for example)
             - Setting the learn bit
 
         TODO:
@@ -187,8 +186,6 @@ class Packet(object):
         # Initialize data depending on the profile.
         p.data.extend([0] * 4 if rorg == RORG.BS4 else [0])
         p.data.extend(sender)
-        # TODO: sender bits
-        p.data.append(0)
         # Always use sub-telegram 3, maximum dbm (as per spec, when sending),
         # and no security (security not supported as per EnOcean Serial Protocol).
         p.optional = [3] + destination + [0xFF] + [0]
@@ -199,6 +196,7 @@ class Packet(object):
                 p.data[1] |= (1 << 3)
             if rorg == RORG.BS4:
                 p.data[4] |= (1 << 3)
+        p.data.append(p.status)
         p.build()
         return p
 
@@ -238,7 +236,8 @@ class Packet(object):
         # update bit_data based on data
         self._data_to_bitdata()
         # data is a dict with EEP description keys
-        self.bit_data = self.eep.set_values(self.bit_data, data)
+        self.bit_data, self.bit_status = self.eep.set_values(self.rorg, self.bit_data, self.bit_status, data)
+        self.status = self._from_bitarray(self.bit_status)
         # update data based on bit_data
         self._bitdata_to_data()
 

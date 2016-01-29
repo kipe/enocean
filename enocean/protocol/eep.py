@@ -3,6 +3,7 @@ from __future__ import print_function, unicode_literals, division
 import os
 from bs4 import BeautifulSoup
 import logging
+from enocean.protocol.constants import RORG
 
 logger = logging.getLogger('enocean.protocol.eep')
 
@@ -79,36 +80,40 @@ class EEP(object):
             }
         }
 
-    def _set_raw(self, value, raw_value, bitarray):
+    def _set_raw(self, target, raw_value, bitarray):
         ''' put value into bit array '''
-        offset = int(value['offset'])
-        size = int(value['size'])
+        offset = int(target['offset'])
+        size = int(target['size'])
         for digit in range(size):
             bitarray[offset+digit] = (raw_value >> (size-digit-1)) & 0x01 != 0
         return bitarray
 
-    def _set_value(self, value, data, bitarray):
+    def _set_value(self, target, value, bitarray):
         # derive raw value
-        rng = value.find('range')
+        rng = target.find('range')
         rng_min = float(rng.find('min').text)
         rng_max = float(rng.find('max').text)
-        scl = value.find('scale')
+        scl = target.find('scale')
         scl_min = float(scl.find('min').text)
         scl_max = float(scl.find('max').text)
-        raw_value = (data - scl_min) * (rng_max - rng_min) / (scl_max - scl_min) + rng_min
+        raw_value = (value - scl_min) * (rng_max - rng_min) / (scl_max - scl_min) + rng_min
         # store value in bitfield
-        return self._set_raw(value, int(raw_value), bitarray)
+        return self._set_raw(target, int(raw_value), bitarray)
 
-    def _set_enum(self, value, data, bitarray):
-        if isinstance(data, int):
+    def _set_enum(self, target, value, bitarray):
+        if isinstance(value, int):
             raise ValueError('No integers here, use the description string provided in EEP.')
 
         # derive raw value
-        value_item = value.find('item', {'description': data})
+        value_item = target.find('item', {'description': value})
         if value_item is None:
-            raise ValueError('Enum description for value "%s" not found in EEP.' % (data))
+            raise ValueError('Enum description for value "%s" not found in EEP.' % (value))
         raw_value = int(value_item['value'])
-        return self._set_raw(value, raw_value, bitarray)
+        return self._set_raw(target, raw_value, bitarray)
+
+    def _set_boolean(self, target, data, bitarray):
+        bitarray[int(target['offset'])] = data
+        return bitarray
 
     def find_profile(self, rorg, func, type):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
@@ -161,24 +166,27 @@ class EEP(object):
                 output.update(self._get_boolean(d, status))
         return output.keys(), output
 
-    def set_values(self, data, properties):
+    def set_values(self, rorg, data, status, properties):
         ''' Update data based on data contained in properties '''
         if not self.ok:
-            return []
+            return data, status
 
         if not self._profile or not self._data_description:
-            return []
+            return data, status
 
-        for cur_prop in properties:
-            # check if given property is contained in EEP
-            d = self._data_description.find_all(shortcut=cur_prop)
-            if d:
-                value = d[0]
-                # update bit_data
-                if value.name == 'value':
-                    data = self._set_value(value, properties[cur_prop], data)
-                if value.name == 'enum':
-                    data = self._set_enum(value, properties[cur_prop], data)
-            else:
-                logger.warning('Cannot find data description for shortcut %s', cur_prop)
-        return data
+        for property, value in properties.items():
+            # find the given property from EEP
+            target = self._data_description.find(shortcut=property)
+            if not target:
+                logger.warning('Cannot find data description for shortcut %s', property)
+                continue
+
+            # update bit_data
+            if target.name == 'value':
+                data = self._set_value(target, value, data)
+            if target.name == 'enum':
+                data = self._set_enum(target, value, data)
+            if target.name == 'status':
+                if rorg in [RORG.RPS, RORG.BS1, RORG.BS4]:
+                    status = self._set_boolean(target, value, status)
+        return data, status
