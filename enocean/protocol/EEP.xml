@@ -24,6 +24,8 @@
             <item description="No 2nd action" value="0" />
             <item description="2nd action valid" value="1" />
           </enum>
+          <status shortcut="T21" offset="2" size="1" />
+          <status shortcut="NU" offset="3" size="1" />
         </data>
       </profile>
     </profiles>

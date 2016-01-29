@@ -18,7 +18,7 @@ def test_packet_examples():
                 0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0x4D, 0x00,
                 0x36]),
             'data_len': 15,
-            'opt_len': 7
+            'opt_len': 7,
         },
         # CO_WR_SLEEP
         PACKET.COMMON_COMMAND: {
@@ -29,7 +29,7 @@ def test_packet_examples():
                 0x01, 0x00, 0x00, 0x00, 0x0A,
                 0x54]),
             'data_len': 5,
-            'opt_len': 0
+            'opt_len': 0,
         },
         # CO_WR_RESET
         PACKET.COMMON_COMMAND: {
@@ -40,7 +40,7 @@ def test_packet_examples():
                 0x02,
                 0x0E]),
             'data_len': 1,
-            'opt_len': 0
+            'opt_len': 0,
         },
         # CO_RD_IDBASE
         PACKET.COMMON_COMMAND: {
@@ -62,7 +62,7 @@ def test_packet_examples():
                 0x00, 0xFF, 0x80, 0x00, 0x00,
                 0xDA]),
             'data_len': 5,
-            'opt_len': 0
+            'opt_len': 0,
         },
         # REMOTE_MAN_COMMAND
         PACKET.REMOTE_MAN_COMMAND: {
@@ -73,7 +73,7 @@ def test_packet_examples():
                 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
                 0xDA]),
             'data_len': 25,
-            'opt_len': 0
+            'opt_len': 0,
         },
         # QueryID
         PACKET.REMOTE_MAN_COMMAND: {
@@ -84,7 +84,7 @@ def test_packet_examples():
                 0x00, 0x04, 0x07, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,
                 0x65]),
             'data_len': 12,
-            'opt_len': 0
+            'opt_len': 0,
         },
         # Custom test, containing 0x55 in message
         PACKET.RESPONSE: {
@@ -99,7 +99,7 @@ def test_packet_examples():
                 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
             ]),
             'data_len': 5,
-            'opt_len': 1
+            'opt_len': 1,
         }
     }
 
@@ -110,6 +110,8 @@ def test_packet_examples():
         assert p.type == packet
         assert len(p.data) == values['data_len']
         assert len(p.optional) == values['opt_len']
+        assert p.status == 0x00
+        assert p.repeater_count == 0
 
 
 def test_packet_fails():

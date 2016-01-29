@@ -26,9 +26,12 @@ class Packet(object):
         self.rorg_manufacturer = None
         self.data = data
         self.optional = optional
+        self.status = 0
         self.bit_data = []
         self.bit_optional = []
+        self.bit_status = []
         self.parsed = {}
+        self.repeater_count = 0
 
         self.parse()
 
@@ -201,6 +204,16 @@ class Packet(object):
 
     def parse(self):
         ''' Parse data from Packet '''
+        # Parse status from messages
+        if self.rorg in [RORG.RPS, RORG.BS1, RORG.BS4]:
+            self.status = self.data[-1]
+        if self.rorg == RORG.VLD:
+            self.status = self.optional[-1]
+        self.bit_status = self._to_bitarray(self.status)
+
+        if self.rorg in [RORG.RPS, RORG.BS1, RORG.BS4]:
+            # These message types should have repeater count in the last for bits of status.
+            self.repeater_count = self._from_bitarray(self.bit_status[4:])
         return self.parsed
 
     def select_eep(self, func, type):
@@ -216,7 +229,7 @@ class Packet(object):
         if func is not None and type is not None:
             self.select_eep(func, type)
         # parse data
-        provides, values = self.eep.get_values(self.bit_data)
+        provides, values = self.eep.get_values(self.bit_data, self.bit_status)
         self.parsed.update(values)
         return list(provides)
 
@@ -244,7 +257,6 @@ class RadioPacket(Packet):
     destination = 0
     destination_hex = ''
     dBm = 0
-    status = 0
     sender = 0
     sender_hex = ''
     learn = True
@@ -265,7 +277,6 @@ class RadioPacket(Packet):
         self.destination = self._combine_hex(self.optional[1:5])
         self.destination_hex = self._to_hex_string(self.optional[1:5])
         self.dBm = -self.optional[5]
-        self.status = self.data[-1]
         self.sender = self._combine_hex(self.data[-5:-1])
         self.sender_hex = self._to_hex_string(self.data[-5:-1])
         # Default to learn == True, as some devices don't have a learn button
@@ -273,6 +284,7 @@ class RadioPacket(Packet):
 
         self.rorg = self.data[0]
         self._data_to_bitdata()
+
         # parse learn bit and FUNC/TYPE, if applicable
         if self.rorg == RORG.BS1:
             self.learn = not self.bit_data[DB0.BIT_3]

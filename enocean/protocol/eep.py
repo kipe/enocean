@@ -47,7 +47,7 @@ class EEP(object):
 
         return {
             value['shortcut']: {
-                'description': value['description'],
+                'description': value.get('description'),
                 'unit': value['unit'],
                 'value': (scl_max - scl_min) / (rng_max - rng_min) * (raw_value - rng_min) + scl_min,
                 'raw_value': raw_value,
@@ -60,9 +60,21 @@ class EEP(object):
         value_desc = value.find('item', {'value': str(raw_value)})
         return {
             value['shortcut']: {
-                'description': value['description'],
+                'description': value.get('description'),
                 'unit': value.get('unit', ''),
                 'value': value_desc['description'],
+                'raw_value': raw_value,
+            }
+        }
+
+    def _get_boolean(self, value, data):
+        ''' Get boolean value, based on the data in XML '''
+        raw_value = self._get_raw(value, data)
+        return {
+            value['shortcut']: {
+                'description': value.get('description'),
+                'unit': value.get('unit', ''),
+                'value': True if raw_value else False,
                 'raw_value': raw_value,
             }
         }
@@ -129,7 +141,7 @@ class EEP(object):
 
         return True
 
-    def get_values(self, data):
+    def get_values(self, data, status):
         ''' Get keys and values from data '''
         if not self.ok:
             return [], {}
@@ -145,6 +157,8 @@ class EEP(object):
                 output.update(self._get_value(d, data))
             if d.name == 'enum':
                 output.update(self._get_enum(d, data))
+            if d.name == 'status':
+                output.update(self._get_boolean(d, status))
         return output.keys(), output
 
     def set_values(self, data, properties):
