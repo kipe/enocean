@@ -157,9 +157,6 @@ class Packet(object):
             - PACKET.RADIO
             - RORGs RPS, BS1, and BS4.
 
-        Does not support:
-            - Setting the learn bit
-
         TODO:
             - Require sender to be set? Would force the "correct" sender to be set.
             - Do we need to set telegram control bits?
@@ -180,7 +177,7 @@ class Packet(object):
         if not isinstance(sender, list) or len(sender) != 4:
             raise ValueError('Sender must a list containing 4 (numeric) values.')
 
-        p = Packet(PACKET.RADIO)
+        p = Packet(packet_type)
         p.rorg = rorg
         p.data = [p.rorg]
         # Initialize data depending on the profile.
@@ -189,6 +186,7 @@ class Packet(object):
         # Always use sub-telegram 3, maximum dbm (as per spec, when sending),
         # and no security (security not supported as per EnOcean Serial Protocol).
         p.optional = [3] + destination + [0xFF] + [0]
+
         p.select_eep(func, type)
         p.set_eep(kwargs)
         if rorg in [RORG.BS1, RORG.BS4] and not learn:
@@ -197,7 +195,12 @@ class Packet(object):
             if rorg == RORG.BS4:
                 p.data[4] |= (1 << 3)
         p.data.append(p.status)
-        p.build()
+
+        # Parse the built package, so it corresponds to the received packages
+        # For example, stuff like checking RadioPacket.learn should be set.
+        p = Packet.parse_msg(p.build())[2]
+        p.rorg = rorg
+        p.parse_eep(func, type)
         return p
 
     def parse(self):
