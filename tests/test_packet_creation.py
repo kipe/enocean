@@ -101,6 +101,20 @@ def test_temperature():
     packet_serialized = p.build()
     assert len(packet_serialized) == len(TEMPERATURE)
     assert list(packet_serialized) == list(TEMPERATURE)
+    assert p.learn is False
+
+    TEMPERATURE = bytearray([
+        0x55,
+        0x00, 0x0A, 0x07, 0x01,
+        0xEB,
+        0xA5, 0x00, 0x00, 0x55, 0x00, 0x01, 0x81, 0xB7, 0x44, 0x00,
+        0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+        0xE0
+    ])
+    p = RadioPacket.create(rorg=RORG.BS4, func=0x02, type=0x05, sender=[0x01, 0x81, 0xB7, 0x44], learn=True, TMP=26.66666666666666666666666666666666666666666667)
+    packet_serialized = p.build()
+    assert len(packet_serialized) == len(TEMPERATURE)
+    assert p.learn is True
 
 
 # Corresponds to the tests done in test_eep
@@ -117,6 +131,21 @@ def test_magnetic_switch():
     packet_serialized = p.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
     assert list(packet_serialized) == list(MAGNETIC_SWITCH)
+    assert p.learn is False
+
+    MAGNETIC_SWITCH = bytearray([
+        0x55,
+        0x00, 0x07, 0x07, 0x01,
+        0x7A,
+        0xD5, 0x00, 0x01, 0x82, 0x5D, 0xAB, 0x00,
+        0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+        0x06
+    ])
+    p = RadioPacket.create(rorg=RORG.BS1, func=0x00, type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB], learn=True, CO='open')
+    packet_serialized = p.build()
+    assert len(packet_serialized) == len(MAGNETIC_SWITCH)
+    assert list(packet_serialized) == list(MAGNETIC_SWITCH)
+    assert p.learn is True
 
     MAGNETIC_SWITCH = bytearray([
         0x55,
@@ -131,6 +160,22 @@ def test_magnetic_switch():
     packet_serialized = p.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
     assert list(packet_serialized) == list(MAGNETIC_SWITCH)
+    assert p.learn is False
+
+    MAGNETIC_SWITCH = bytearray([
+        0x55,
+        0x00, 0x07, 0x07, 0x01,
+        0x7A,
+        0xD5, 0x01, 0x01, 0x82, 0x5D, 0xAB, 0x00,
+        0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+        0x92
+    ])
+
+    p = RadioPacket.create(rorg=RORG.BS1, func=0x00, type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB], learn=True, CO='closed')
+    packet_serialized = p.build()
+    assert len(packet_serialized) == len(MAGNETIC_SWITCH)
+    assert list(packet_serialized) == list(MAGNETIC_SWITCH)
+    assert p.learn is True
 
 
 def test_switch():
