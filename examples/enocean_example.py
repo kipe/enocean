@@ -62,9 +62,9 @@ while c.is_alive():
                 print('%s: %s' % (k, p.parsed[k]))
         if p.type == PACKET.RADIO and p.rorg == RORG.BS1:
             # alternatively you can select FUNC and TYPE explicitely
-            p.select_eep(0x00, 0x01)
+            # p.select_eep(0x00, 0x01)
             # parse it
-            for k in p.parse_eep():
+            for k in p.parse_eep(0x00, 0x01):
                 print('%s: %s' % (k, p.parsed[k]))
         if p.type == PACKET.RADIO and p.rorg == RORG.RPS:
             for k in p.parse_eep(0x02, 0x02):
