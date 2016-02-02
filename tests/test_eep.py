@@ -112,3 +112,18 @@ def test_eep_parsing():
     assert p.rorg_type == 0x05
     assert p.status == 0x00
     assert p.repeater_count == 0
+
+
+def test_eep_direction():
+    status, buf, p = Packet.parse_msg(bytearray([
+        0x55,
+        0x00, 0x0A, 0x07, 0x01,
+        0xEB,
+        0xA5, 0x32, 0x20, 0x89, 0x00, 0xDE, 0xAD, 0xBE, 0xEF, 0x00,
+        0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+        0x43
+    ]))
+    assert sorted(p.parse_eep(0x20, 0x01, 1)) == ['ACO', 'BCAP', 'CCO', 'CV', 'DWO', 'ENIE', 'ES', 'FTS', 'SO', 'TMP']
+    assert p.parsed['CV']['value'] == 50
+    assert sorted(p.parse_eep(0x20, 0x01, 2)) == ['LFS', 'RCU', 'RIN', 'SB', 'SP', 'SPI', 'SPS', 'TMP', 'VC', 'VO']
+    assert p.parsed['SP']['value'] == 50

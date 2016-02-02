@@ -144,7 +144,7 @@ class Packet(object):
         return PARSE_RESULT.OK, buf, p
 
     @staticmethod
-    def create(packet_type, rorg, func, type,
+    def create(packet_type, rorg, func, type, direction=None,
                destination=[0xFF, 0xFF, 0xFF, 0xFF],
                sender=[0xDE, 0xAD, 0xBE, 0xEF],
                learn=False, **kwargs):
@@ -187,7 +187,7 @@ class Packet(object):
         # and no security (security not supported as per EnOcean Serial Protocol).
         p.optional = [3] + destination + [0xFF] + [0]
 
-        p.select_eep(func, type)
+        p.select_eep(func, type, direction)
         p.set_eep(kwargs)
         if rorg in [RORG.BS1, RORG.BS4] and not learn:
             if rorg == RORG.BS1:
@@ -217,18 +217,18 @@ class Packet(object):
             self.repeater_count = self._from_bitarray(self.bit_status[4:])
         return self.parsed
 
-    def select_eep(self, func, type):
+    def select_eep(self, func, type, direction=None):
         ''' Set EEP based on FUNC and TYPE '''
         # set EEP profile
         self.rorg_func = func
         self.rorg_type = type
-        return self.eep.find_profile(self.rorg, func, type)
+        return self.eep.find_profile(self.rorg, func, type, direction)
 
-    def parse_eep(self, func=None, type=None):
+    def parse_eep(self, func=None, type=None, direction=None):
         ''' Parse EEP based on FUNC and TYPE '''
         # set EEP profile, if demanded
         if func is not None and type is not None:
-            self.select_eep(func, type)
+            self.select_eep(func, type, direction)
         # parse data
         provides, values = self.eep.get_values(self.bit_data, self.bit_status)
         self.parsed.update(values)
@@ -269,11 +269,11 @@ class RadioPacket(Packet):
         return '%s->%s (%d dBm): %s' % (self.sender_hex, self.destination_hex, self.dBm, packet_str)
 
     @staticmethod
-    def create(rorg, func, type,
+    def create(rorg, func, type, direction=None,
                destination=[0xFF, 0xFF, 0xFF, 0xFF],
                sender=[0xDE, 0xAD, 0xBE, 0xEF],
                learn=False, **kwargs):
-        return Packet.create(PACKET.RADIO, rorg, func, type, destination, sender, learn, **kwargs)
+        return Packet.create(PACKET.RADIO, rorg, func, type, direction, destination, sender, learn, **kwargs)
 
     def parse(self):
         self.destination = self._combine_hex(self.optional[1:5])

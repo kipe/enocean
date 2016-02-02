@@ -55,7 +55,7 @@ def test_packet_assembly():
     assert list(packet_serialized) == list(PACKET_CONTENT_2)
 
     # update data based on EEP
-    p.select_eep(0x20, 0x01)
+    p.select_eep(0x20, 0x01, 1)
     prop = {
         'CV': 50,
         'TMP': 21.5,
@@ -71,7 +71,7 @@ def test_packet_assembly():
     assert p.rorg_type == 0x01
 
     # Test the easier method of sending packets.
-    p = Packet.create(PACKET.RADIO, rorg=RORG.BS4, func=0x20, learn=True, type=0x01, **prop)
+    p = Packet.create(PACKET.RADIO, rorg=RORG.BS4, func=0x20, learn=True, type=0x01, direction=1, **prop)
     packet_serialized = p.build()
     assert len(packet_serialized) == len(PACKET_CONTENT_3)
     assert list(packet_serialized) == list(PACKET_CONTENT_3)
@@ -79,7 +79,7 @@ def test_packet_assembly():
     assert p.rorg_type == 0x01
 
     # Test creating RadioPacket directly.
-    p = RadioPacket.create(rorg=RORG.BS4, func=0x20, learn=True, type=0x01, **prop)
+    p = RadioPacket.create(rorg=RORG.BS4, func=0x20, learn=True, type=0x01, direction=1, **prop)
     packet_serialized = p.build()
     assert len(packet_serialized) == len(PACKET_CONTENT_3)
     assert list(packet_serialized) == list(PACKET_CONTENT_3)

@@ -187,7 +187,7 @@
     </profiles>
     <profiles description="HVAC Components" func="0x20">
       <profile description="Battery Powered Actuator (BI-DIR)" type="0x01">
-        <data>
+        <data direction="1">
           <value shortcut="CV" description="Current Value" offset="0" size="8" unit="%">
             <range>
               <min>0</min>
@@ -240,6 +240,60 @@
               <max>40</max>
             </scale>
           </value>
+        </data>
+        <data direction="2">
+          <value shortcut="SP" description="Valve Position" offset="0" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>100</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>100</max>
+            </scale>
+          </value>
+          <value shortcut="TMP" description="Temperature from RCU" offset="8" size="8" unit="C">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>40</max>
+            </scale>
+          </value>
+          <enum shortcut="RIN" description="Run init sequence" offset="16" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="LFS" description="Lift set" offset="17" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="VO" description="Valve open / maintenance" offset="18" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="VC" description="Valve closed" offset="19" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="SB" description="Summer bit, Reduction of energy consumption" offset="20" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="SPS" description="Set point selection" offset="21" size="1">
+            <item description="Valve position" value="0" />
+            <item description="Temperature set point" value="1" />
+          </enum>
+          <enum shortcut="SPI" description="Set point inverse" offset="22" size="1">
+            <item description="false" value="0" />
+            <item description="true" value="1" />
+          </enum>
+          <enum shortcut="RCU" description="Select function" offset="23" size="1">
+            <item description="RCU" value="0" />
+            <item description="service on" value="1" />
+          </enum>
         </data>
       </profile>
     </profiles>
