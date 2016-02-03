@@ -117,6 +117,7 @@ class EEP(object):
     def find_profile(self, rorg, func, type, direction=None):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
         if not self.ok:
+            logging.warning("Not ready.")
             return False
 
         rorg = self.soup.find('telegram', {'rorg': self._get_hex(rorg)})

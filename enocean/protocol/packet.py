@@ -200,7 +200,7 @@ class Packet(object):
         # For example, stuff like checking RadioPacket.learn should be set.
         p = Packet.parse_msg(p.build())[2]
         p.rorg = rorg
-        p.parse_eep(func, type)
+        p.parse_eep(func, type, direction)
         return p
 
     def parse(self):
