@@ -88,6 +88,7 @@ class EEP(object):
         return bitarray
 
     def _set_value(self, target, value, bitarray):
+        ''' set given numeric value to target field in bitarray '''
         # derive raw value
         rng = target.find('range')
         rng_min = float(rng.find('min').text)
@@ -100,17 +101,24 @@ class EEP(object):
         return self._set_raw(target, int(raw_value), bitarray)
 
     def _set_enum(self, target, value, bitarray):
-        if isinstance(value, int):
-            raise ValueError('No integers here, use the description string provided in EEP.')
-
+        ''' set given enum value (by string or integer value) to target field in bitarray '''
         # derive raw value
-        value_item = target.find('item', {'description': value})
-        if value_item is None:
-            raise ValueError('Enum description for value "%s" not found in EEP.' % (value))
-        raw_value = int(value_item['value'])
+        if isinstance(value, int):
+            # check whether this value exists
+            if target.find('item', {'value': value}):
+                # set integer values directly
+                raw_value = value
+            else:
+                raise ValueError('Enum value "%s" not found in EEP.' % (value))
+        else:
+            value_item = target.find('item', {'description': value})
+            if value_item is None:
+                raise ValueError('Enum description for value "%s" not found in EEP.' % (value))
+            raw_value = int(value_item['value'])
         return self._set_raw(target, raw_value, bitarray)
 
     def _set_boolean(self, target, data, bitarray):
+        ''' set given value to target bit in bitarray '''
         bitarray[int(target['offset'])] = data
         return bitarray
 

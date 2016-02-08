@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division
+from nose.tools import raises
 
 from enocean.protocol.packet import Packet, RadioPacket
 from enocean.protocol.constants import PACKET, RORG
@@ -196,9 +197,10 @@ def test_switch():
         0x61
     ])
 
+    # test also enum setting by integer value with EB0
     p = RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79],
                            SA='No 2nd action',
-                           EBO='pressed',
+                           EBO=1,
                            R1='Button BI',
                            T21=True,
                            NU=True,
@@ -225,3 +227,16 @@ def test_switch():
     packet_serialized = p.build()
     assert len(packet_serialized) == len(SWITCH)
     assert list(packet_serialized) == list(SWITCH)
+
+
+@raises(ValueError)
+def test_illegal_eep_enum1():
+    p = RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79],
+                           EBO='inexisting',
+                           )
+
+@raises(ValueError)
+def test_illegal_eep_enum2():
+    p = RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79],
+                           EBO=2,
+                           )
