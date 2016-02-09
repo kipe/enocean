@@ -28,9 +28,6 @@ class Packet(object):
         self.data = data
         self.optional = optional
         self.status = 0
-        self._bit_data = []
-        self._bit_optional = []
-        self._bit_status = []
         self.parsed = {}
         self.repeater_count = 0
         self._profile = None
@@ -46,20 +43,42 @@ class Packet(object):
     def __eq__(self, other):
         return self.type == other.type and self.rorg == other.rorg and self.data == other.data and self.optional == other.optional
 
-    def _data_to_bitdata(self):
-        ''' Updates the bit_data member based on data member.'''
+    @property
+    def _bit_data(self):
         if self.rorg == RORG.RPS or self.rorg == RORG.BS1:
-            self._bit_data = enocean.utils._to_bitarray(self.data[1], 8)
+            return enocean.utils._to_bitarray(self.data[1], 8)
         if self.rorg == RORG.BS4:
-            self._bit_data = enocean.utils._to_bitarray(self.data[1:5], 32)
+            return enocean.utils._to_bitarray(self.data[1:5], 32)
 
-    def _bitdata_to_data(self):
-        ''' Updates the data member based on bit_data member.'''
+    @_bit_data.setter
+    def _bit_data(self, value):
         if self.rorg in [RORG.RPS, RORG.BS1]:
-            self.data[1] = enocean.utils._from_bitarray(self._bit_data)
+            self.data[1] = enocean.utils._from_bitarray(value)
         if self.rorg == RORG.BS4:
             for byte in range(4):
-                self.data[byte+1] = enocean.utils._from_bitarray(self._bit_data[byte*8:(byte+1)*8])
+                self.data[byte+1] = enocean.utils._from_bitarray(value[byte*8:(byte+1)*8])
+
+    # # COMMENTED OUT, AS NOTHING TOUCHES _bit_optional FOR NOW.
+    # # Thus, this is also untested.
+    # @property
+    # def _bit_optional(self):
+    #     return enocean.utils._to_bitarray(self.optional, 8 * len(self.optional))
+
+    # @_bit_optional.setter
+    # def _bit_optional(self, value):
+    #     if self.rorg in [RORG.RPS, RORG.BS1]:
+    #         self.data[1] = enocean.utils._from_bitarray(value)
+    #     if self.rorg == RORG.BS4:
+    #         for byte in range(4):
+    #             self.data[byte+1] = enocean.utils._from_bitarray(value[byte*8:(byte+1)*8])
+
+    @property
+    def _bit_status(self):
+        return enocean.utils._to_bitarray(self.status)
+
+    @_bit_status.setter
+    def _bit_status(self, value):
+        self.status = enocean.utils._from_bitarray(value)
 
     @staticmethod
     def parse_msg(buf):
@@ -187,7 +206,6 @@ class Packet(object):
             self.status = self.data[-1]
         if self.rorg == RORG.VLD:
             self.status = self.optional[-1]
-        self._bit_status = enocean.utils._to_bitarray(self.status)
 
         if self.rorg in [RORG.RPS, RORG.BS1, RORG.BS4]:
             # These message types should have repeater count in the last for bits of status.
@@ -213,14 +231,8 @@ class Packet(object):
         return list(provides)
 
     def set_eep(self, data):
-        ''' Update packet data based on EEP '''
-        # update bit_data based on data
-        self._data_to_bitdata()
-        # data is a dict with EEP description keys
+        ''' Update packet data based on EEP. Input data is a dictionary with keys corresponding to the EEP. '''
         self._bit_data, self._bit_status = self.eep.set_values(self._profile, self._bit_data, self._bit_status, data)
-        self.status = enocean.utils._from_bitarray(self._bit_status)
-        # update data based on bit_data
-        self._bitdata_to_data()
 
     def build(self):
         ''' Build Packet for sending to EnOcean controller '''
@@ -275,7 +287,6 @@ class RadioPacket(Packet):
         self.learn = True
 
         self.rorg = self.data[0]
-        self._data_to_bitdata()
 
         # parse learn bit and FUNC/TYPE, if applicable
         if self.rorg == RORG.BS1:
