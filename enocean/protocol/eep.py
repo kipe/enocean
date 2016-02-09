@@ -4,6 +4,8 @@ import os
 from bs4 import BeautifulSoup
 import logging
 
+import enocean.utils
+
 logger = logging.getLogger('enocean.protocol.eep')
 
 path = os.path.dirname(os.path.realpath(__file__))
@@ -19,10 +21,6 @@ class EEP(object):
         except IOError:
             logger.warn('Cannot load protocol file!')
             pass
-
-    def _get_hex(self, nmb):
-        ''' Get hex-representation of number '''
-        return '0x%02X' % (nmb)
 
     def _get_raw(self, source, bitarray):
         ''' Get raw data as integer, based on offset and size '''
@@ -125,17 +123,17 @@ class EEP(object):
             logger.warn('EEP.xml not loaded!')
             return None
 
-        rorg = self.soup.find('telegram', {'rorg': self._get_hex(rorg)})
+        rorg = self.soup.find('telegram', {'rorg': '0x%s' % enocean.utils._to_hex_string(rorg)})
         if not rorg:
             logger.warn('Cannot find rorg in EEP!')
             return None
 
-        func = rorg.find('profiles', {'func': self._get_hex(func)})
+        func = rorg.find('profiles', {'func': '0x%s' % enocean.utils._to_hex_string(func)})
         if not func:
             logger.warn('Cannot find func in EEP!')
             return None
 
-        profile = func.find('profile', {'type': self._get_hex(type)})
+        profile = func.find('profile', {'type': '0x%s' % enocean.utils._to_hex_string(type)})
         if not profile:
             logger.warn('Cannot find type in EEP!')
             return None

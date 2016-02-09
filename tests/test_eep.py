@@ -26,6 +26,8 @@ def test_temperature():
     assert p.rorg_type is 0x05
     assert p.status == 0x00
     assert p.repeater_count == 0
+    assert p.sender == [0x01, 0x81, 0xB7, 0x44]
+    assert p.sender_hex == '01:81:B7:44'
 
 
 def test_magnetic_switch():
