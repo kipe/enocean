@@ -123,17 +123,17 @@ class EEP(object):
             logger.warn('EEP.xml not loaded!')
             return None
 
-        rorg = self.soup.find('telegram', {'rorg': '0x%s' % enocean.utils._to_hex_string(rorg)})
+        rorg = self.soup.find('telegram', {'rorg': '0x%s' % enocean.utils.to_hex_string(rorg)})
         if not rorg:
             logger.warn('Cannot find rorg in EEP!')
             return None
 
-        func = rorg.find('profiles', {'func': '0x%s' % enocean.utils._to_hex_string(func)})
+        func = rorg.find('profiles', {'func': '0x%s' % enocean.utils.to_hex_string(func)})
         if not func:
             logger.warn('Cannot find func in EEP!')
             return None
 
-        profile = func.find('profile', {'type': '0x%s' % enocean.utils._to_hex_string(type)})
+        profile = func.find('profile', {'type': '0x%s' % enocean.utils.to_hex_string(type)})
         if not profile:
             logger.warn('Cannot find type in EEP!')
             return None
