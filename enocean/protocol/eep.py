@@ -11,7 +11,6 @@ path = os.path.dirname(os.path.realpath(__file__))
 
 
 class EEP(object):
-    _profile = None
     _data_description = None
 
     def __init__(self):
@@ -115,9 +114,10 @@ class EEP(object):
         bitarray[int(target['offset'])] = data
         return bitarray
 
-    def find_profile(self, rorg, func, type):
+    def find_profile(self, rorg, func, type, direction=None):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
         if not self.ok:
+            logging.warning("Not ready.")
             return False
 
         rorg = self.soup.find('telegram', {'rorg': self._get_hex(rorg)})
@@ -135,11 +135,13 @@ class EEP(object):
             logger.warn('Cannot find type in EEP!')
             return False
 
-        # store identified profile
-        self._profile = profile
-
         # extract data description
-        self._data_description = self._profile.find('data')
+        # the direction tag is optional
+        if direction is None:
+            self._data_description = profile.find('data')
+        else:
+            self._data_description = profile.find('data', {'direction': direction})
+
         if not self._data_description:
             logger.warn('Cannot find data description in EEP!')
             self._data_description = []
@@ -151,7 +153,7 @@ class EEP(object):
         if not self.ok:
             return [], {}
 
-        if not self._profile or not self._data_description:
+        if not self._data_description:
             return [], {}
 
         output = {}
@@ -171,7 +173,7 @@ class EEP(object):
         if not self.ok:
             return data, status
 
-        if not self._profile or not self._data_description:
+        if not self._data_description:
             return data, status
 
         for property, value in properties.items():
