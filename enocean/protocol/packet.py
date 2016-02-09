@@ -32,6 +32,7 @@ class Packet(object):
         self.bit_status = []
         self.parsed = {}
         self.repeater_count = 0
+        self._profile = None
 
         self.parse()
 
@@ -222,7 +223,8 @@ class Packet(object):
         # set EEP profile
         self.rorg_func = func
         self.rorg_type = type
-        return self.eep.find_profile(self.rorg, func, type, direction)
+        self._profile = self.eep.find_profile(self.rorg, func, type, direction)
+        return self._profile is not None
 
     def parse_eep(self, func=None, type=None, direction=None):
         ''' Parse EEP based on FUNC and TYPE '''
@@ -230,7 +232,7 @@ class Packet(object):
         if func is not None and type is not None:
             self.select_eep(func, type, direction)
         # parse data
-        provides, values = self.eep.get_values(self.bit_data, self.bit_status)
+        provides, values = self.eep.get_values(self._profile, self.bit_data, self.bit_status)
         self.parsed.update(values)
         return list(provides)
 
@@ -239,7 +241,7 @@ class Packet(object):
         # update bit_data based on data
         self._data_to_bitdata()
         # data is a dict with EEP description keys
-        self.bit_data, self.bit_status = self.eep.set_values(self.rorg, self.bit_data, self.bit_status, data)
+        self.bit_data, self.bit_status = self.eep.set_values(self._profile, self.bit_data, self.bit_status, data)
         self.status = self._from_bitarray(self.bit_status)
         # update data based on bit_data
         self._bitdata_to_data()

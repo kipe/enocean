@@ -114,6 +114,33 @@ def test_eep_parsing():
     assert p.repeater_count == 0
 
 
+def test_eep_remaining():
+    # Magnetic switch -example
+    status, buf, p = Packet.parse_msg(bytearray([
+        0x55,
+        0x00, 0x07, 0x07, 0x01,
+        0x7A,
+        0xD5, 0x08, 0x01, 0x82, 0x5D, 0xAB, 0x00,
+        0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x36, 0x00,
+        0x53
+    ]))
+    assert p.parse_eep(0x00, 0x01) == ['CO']
+
+    # Temperature-example
+    status, buf, p = Packet.parse_msg(bytearray([
+        0x55,
+        0x00, 0x0A, 0x07, 0x01,
+        0xEB,
+        0xA5, 0x00, 0x00, 0x55, 0x08, 0x01, 0x81, 0xB7, 0x44, 0x00,
+        0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x2D, 0x00,
+        0x75
+    ]))
+    # If this fails, the data is retained from the last Packet parsing!
+    assert p.parse_eep(0x00, 0x01) == []
+    # Once we have parse with the correct func and type, this should pass.
+    assert p.parse_eep(0x02, 0x05) == ['TMP']
+
+
 def test_eep_direction():
     status, buf, p = Packet.parse_msg(bytearray([
         0x55,

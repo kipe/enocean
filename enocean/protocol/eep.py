@@ -3,7 +3,6 @@ from __future__ import print_function, unicode_literals, division
 import os
 from bs4 import BeautifulSoup
 import logging
-from enocean.protocol.constants import RORG
 
 logger = logging.getLogger('enocean.protocol.eep')
 
@@ -11,8 +10,6 @@ path = os.path.dirname(os.path.realpath(__file__))
 
 
 class EEP(object):
-    _data_description = None
-
     def __init__(self):
         self.ok = False
         try:
@@ -125,47 +122,37 @@ class EEP(object):
     def find_profile(self, rorg, func, type, direction=None):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
         if not self.ok:
-            logging.warning("Not ready.")
-            return False
+            logger.warn('EEP.xml not loaded!')
+            return None
 
         rorg = self.soup.find('telegram', {'rorg': self._get_hex(rorg)})
         if not rorg:
             logger.warn('Cannot find rorg in EEP!')
-            return False
+            return None
 
         func = rorg.find('profiles', {'func': self._get_hex(func)})
         if not func:
             logger.warn('Cannot find func in EEP!')
-            return False
+            return None
 
         profile = func.find('profile', {'type': self._get_hex(type)})
         if not profile:
             logger.warn('Cannot find type in EEP!')
-            return False
+            return None
 
         # extract data description
         # the direction tag is optional
         if direction is None:
-            self._data_description = profile.find('data')
-        else:
-            self._data_description = profile.find('data', {'direction': direction})
+            return profile.find('data')
+        return profile.find('data', {'direction': direction})
 
-        if not self._data_description:
-            logger.warn('Cannot find data description in EEP!')
-            self._data_description = []
-
-        return True
-
-    def get_values(self, bitarray, status):
+    def get_values(self, profile, bitarray, status):
         ''' Get keys and values from bitarray '''
-        if not self.ok:
-            return [], {}
-
-        if not self._data_description:
+        if not self.ok or profile is None:
             return [], {}
 
         output = {}
-        for source in self._data_description.contents:
+        for source in profile.contents:
             if not source.name:
                 continue
             if source.name == 'value':
@@ -176,17 +163,14 @@ class EEP(object):
                 output.update(self._get_boolean(source, status))
         return output.keys(), output
 
-    def set_values(self, rorg, data, status, properties):
+    def set_values(self, profile, data, status, properties):
         ''' Update data based on data contained in properties '''
-        if not self.ok:
-            return data, status
-
-        if not self._data_description:
+        if not self.ok or profile is None:
             return data, status
 
         for property, value in properties.items():
             # find the given property from EEP
-            target = self._data_description.find(shortcut=property)
+            target = profile.find(shortcut=property)
             if not target:
                 logger.warning('Cannot find data description for shortcut %s', property)
                 continue
@@ -197,6 +181,5 @@ class EEP(object):
             if target.name == 'enum':
                 data = self._set_enum(target, value, data)
             if target.name == 'status':
-                if rorg in [RORG.RPS, RORG.BS1, RORG.BS4]:
-                    status = self._set_boolean(target, value, status)
+                status = self._set_boolean(target, value, status)
         return data, status
