@@ -36,6 +36,6 @@ crcTable = (
 
 def calc(msg):
     runningCRC = 0
-    for c in msg:
-        runningCRC = crcTable[runningCRC & 0xFF ^ c & 0xFF]
+    for byte in msg:
+        runningCRC = crcTable[runningCRC & 0xFF ^ byte & 0xFF]
     return runningCRC

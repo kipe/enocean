@@ -131,13 +131,13 @@ class Packet(object):
 
         # If we got this far, everything went ok (?)
         if packet_type == PACKET.RADIO:
-            p = RadioPacket(packet_type, data, opt_data)
+            pack = RadioPacket(packet_type, data, opt_data)
         elif packet_type == PACKET.RESPONSE:
-            p = ResponsePacket(packet_type, data, opt_data)
+            pack = ResponsePacket(packet_type, data, opt_data)
         else:
-            p = Packet(packet_type, data, opt_data)
+            pack = Packet(packet_type, data, opt_data)
 
-        return PARSE_RESULT.OK, buf, p
+        return PARSE_RESULT.OK, buf, pack
 
     @staticmethod
     def create(packet_type, rorg, func, type, direction=None,
@@ -173,31 +173,31 @@ class Packet(object):
         if not isinstance(sender, list) or len(sender) != 4:
             raise ValueError('Sender must a list containing 4 (numeric) values.')
 
-        p = Packet(packet_type)
-        p.rorg = rorg
-        p.data = [p.rorg]
+        pack = Packet(packet_type)
+        pack.rorg = rorg
+        pack.data = [pack.rorg]
         # Initialize data depending on the profile.
-        p.data.extend([0] * 4 if rorg == RORG.BS4 else [0])
-        p.data.extend(sender)
+        pack.data.extend([0] * 4 if rorg == RORG.BS4 else [0])
+        pack.data.extend(sender)
         # Always use sub-telegram 3, maximum dbm (as per spec, when sending),
         # and no security (security not supported as per EnOcean Serial Protocol).
-        p.optional = [3] + destination + [0xFF] + [0]
+        pack.optional = [3] + destination + [0xFF] + [0]
 
-        p.select_eep(func, type, direction)
-        p.set_eep(kwargs)
+        pack.select_eep(func, type, direction)
+        pack.set_eep(kwargs)
         if rorg in [RORG.BS1, RORG.BS4] and not learn:
             if rorg == RORG.BS1:
-                p.data[1] |= (1 << 3)
+                pack.data[1] |= (1 << 3)
             if rorg == RORG.BS4:
-                p.data[4] |= (1 << 3)
-        p.data.append(p.status)
+                pack.data[4] |= (1 << 3)
+        pack.data.append(pack.status)
 
         # Parse the built package, so it corresponds to the received packages
         # For example, stuff like checking RadioPacket.learn should be set.
-        p = Packet.parse_msg(p.build())[2]
-        p.rorg = rorg
-        p.parse_eep(func, type, direction)
-        return p
+        pack = Packet.parse_msg(pack.build())[2]
+        pack.rorg = rorg
+        pack.parse_eep(func, type, direction)
+        return pack
 
     def parse(self):
         ''' Parse data from Packet '''
