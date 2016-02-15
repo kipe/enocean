@@ -45,23 +45,18 @@ class Packet(object):
 
     @property
     def _bit_data(self):
-        if self.rorg == RORG.RPS or self.rorg == RORG.BS1:
-            return enocean.utils.to_bitarray(self.data[1], 8)
-        if self.rorg == RORG.BS4:
-            return enocean.utils.to_bitarray(self.data[1:5], 4 * 8)
-        if self.rorg == RORG.UTE:
-            return enocean.utils.to_bitarray(self.data[1:8], 7 * 8)
+        # First and last 5 bits are always defined, so the data we're modifying is between them...
+        # TODO: This is valid for the packets we're currently manipulating.
+        # Needs the redefinition of Packet.data -> Packet.message.
+        # Packet.data would then only have the actual, documented data-bytes. Packet.message would contain the whole message.
+        # See discussion in issue #14
+        return enocean.utils.to_bitarray(self.data[1:len(self.data) - 5], (len(self.data) - 6) * 8)
 
     @_bit_data.setter
     def _bit_data(self, value):
-        if self.rorg in [RORG.RPS, RORG.BS1]:
-            self.data[1] = enocean.utils.from_bitarray(value)
-        if self.rorg == RORG.BS4:
-            for byte in range(4):
-                self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
-        if self.rorg == RORG.UTE:
-            for byte in range(7):
-                self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
+        # The same as getting the data, first and last 5 bits are ommitted, as they are defined...
+        for byte in range(len(self.data) - 6):
+            self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
 
     # # COMMENTED OUT, AS NOTHING TOUCHES _bit_optional FOR NOW.
     # # Thus, this is also untested.
@@ -188,6 +183,7 @@ class Packet(object):
         # Initialize data depending on the profile.
         p.data.extend([0] * 4 if rorg == RORG.BS4 else [0])
         p.data.extend(sender)
+        p.data.extend([0])
         # Always use sub-telegram 3, maximum dbm (as per spec, when sending),
         # and no security (security not supported as per EnOcean Serial Protocol).
         p.optional = [3] + destination + [0xFF] + [0]
@@ -199,7 +195,7 @@ class Packet(object):
                 p.data[1] |= (1 << 3)
             if rorg == RORG.BS4:
                 p.data[4] |= (1 << 3)
-        p.data.append(p.status)
+        p.data[-1] = p.status
 
         # Parse the built package, so it corresponds to the received packages
         # For example, stuff like checking RadioPacket.learn should be set.
