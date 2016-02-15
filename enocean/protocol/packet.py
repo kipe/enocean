@@ -5,7 +5,7 @@ import logging
 import enocean.utils
 from enocean.protocol import crc8
 from enocean.protocol.eep import EEP
-from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3
+from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3, DB4, DB6
 
 logger = logging.getLogger('enocean.protocol.packet')
 
@@ -48,7 +48,9 @@ class Packet(object):
         if self.rorg == RORG.RPS or self.rorg == RORG.BS1:
             return enocean.utils.to_bitarray(self.data[1], 8)
         if self.rorg == RORG.BS4:
-            return enocean.utils.to_bitarray(self.data[1:5], 32)
+            return enocean.utils.to_bitarray(self.data[1:5], 4 * 8)
+        if self.rorg == RORG.UTE:
+            return enocean.utils.to_bitarray(self.data[1:8], 7 * 8)
 
     @_bit_data.setter
     def _bit_data(self, value):
@@ -56,6 +58,9 @@ class Packet(object):
             self.data[1] = enocean.utils.from_bitarray(value)
         if self.rorg == RORG.BS4:
             for byte in range(4):
+                self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
+        if self.rorg == RORG.UTE:
+            for byte in range(7):
                 self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
 
     # # COMMENTED OUT, AS NOTHING TOUCHES _bit_optional FOR NOW.
@@ -131,7 +136,11 @@ class Packet(object):
 
         # If we got this far, everything went ok (?)
         if packet_type == PACKET.RADIO:
-            p = RadioPacket(packet_type, data, opt_data)
+            # Need to handle UTE Teach-in here, as it's a separate packet type...
+            if data[0] == RORG.UTE:
+                p = UTETeachIn(packet_type, data, opt_data)
+            else:
+                p = RadioPacket(packet_type, data, opt_data)
         elif packet_type == PACKET.RESPONSE:
             p = ResponsePacket(packet_type, data, opt_data)
         else:
@@ -303,6 +312,51 @@ class RadioPacket(Packet):
                     logger.debug('learn received, EEP detected, RORG: 0x%02X, FUNC: 0x%02X, TYPE: 0x%02X, Manufacturer: 0x%02X' % (self.rorg, self.rorg_func, self.rorg_type, self.rorg_manufacturer))
 
         return super(RadioPacket, self).parse()
+
+
+class UTETeachIn(RadioPacket):
+    # Request types
+    TEACH_IN = 0b00
+    DELETE = 0b01
+    NOT_SPECIFIC = 0b10
+
+    # Response types
+    NOT_ACCEPTED = 0b00
+    TEACHIN_ACCEPTED = 0b01
+    DELETE_ACCEPTED = 0b10
+    EEP_NOT_SUPPORTED = 0b11
+
+    unidirectional = False
+    response_expected = False
+    number_of_channels = 0xFF
+    rorg_of_eep = RORG.UNDEFINED
+    request_type = NOT_SPECIFIC
+
+    @property
+    def bidirectional(self):
+        return not self.unidirectional
+
+    @property
+    def teach_in(self):
+        return self.request_type != self.DELETE
+
+    @property
+    def delete(self):
+        return self.request_type == self.DELETE
+
+    def parse(self):
+        super(UTETeachIn, self).parse()
+        self.unidirectional = not self._bit_data[DB6.BIT_7]
+        self.response_expected = not self._bit_data[DB6.BIT_6]
+        self.request_type = enocean.utils.from_bitarray(self._bit_data[DB6.BIT_5:DB6.BIT_3])
+        self.rorg_manufacturer = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_2:DB2.BIT_7] + self._bit_data[DB4.BIT_7:DB3.BIT_7])
+        self.rorg_type = self.data[5]
+        self.rorg_func = self.data[6]
+        self.rorg_of_eep = self.data[7]
+        return self.parsed
+
+    def create_response(self, accepted=True, not_accepted_reason=EEP_NOT_SUPPORTED):
+        pass
 
 
 class ResponsePacket(Packet):

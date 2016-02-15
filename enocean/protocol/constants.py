@@ -50,6 +50,7 @@ class RORG(IntEnum):
     SYS_EX = 0xC5
     SEC = 0x30
     SEC_ENCAPS = 0x31
+    UTE = 0xD4
 
 
 # Results for message parsing
@@ -103,3 +104,36 @@ class DB3:
     BIT_5 = -30
     BIT_6 = -31
     BIT_7 = -32
+
+
+class DB4:
+    BIT_0 = -33
+    BIT_1 = -34
+    BIT_2 = -35
+    BIT_3 = -36
+    BIT_4 = -37
+    BIT_5 = -38
+    BIT_6 = -39
+    BIT_7 = -40
+
+
+class DB5:
+    BIT_0 = -41
+    BIT_1 = -42
+    BIT_2 = -43
+    BIT_3 = -44
+    BIT_4 = -45
+    BIT_5 = -46
+    BIT_6 = -47
+    BIT_7 = -48
+
+
+class DB6:
+    BIT_0 = -49
+    BIT_1 = -50
+    BIT_2 = -51
+    BIT_3 = -52
+    BIT_4 = -53
+    BIT_5 = -54
+    BIT_6 = -55
+    BIT_7 = -56
