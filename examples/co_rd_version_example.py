@@ -9,9 +9,7 @@ from enocean.consolelogger import init_logging
 from enocean.communicators.serialcommunicator import SerialCommunicator
 from enocean.protocol.packet import Packet, RadioPacket
 from enocean.protocol.constants import PACKET, RORG
-import sys
 import traceback
-import ipdb
 
 try:
     import queue
@@ -19,36 +17,28 @@ except ImportError:
     import Queue as queue
 
 
-#init_logging()
+init_logging()
 
 serCom = SerialCommunicator(port=u'/dev/ttyUSB0', callback=None)
 pack = Packet(PACKET.COMMON_COMMAND, [0x03])
+
 serCom.daemon = True
 serCom.start()
-
-# The SerialCommunicator is running in a separate thread. It will print on recieved messages
-# even if you stop this thread
-
-#ipdb.set_trace()
-# Request transmitter ID
-#SserCom.send(pack)
+serCom.send(pack)
 
 # endless loop receiving radio packets
-
 while serCom.is_alive():
     try:
-        ipdb.set_trace()
         # Loop to empty the queue...
         packRec = serCom.receive.get(block=True, timeout=1)
-        if packRec.type == PACKET.COMMON_COMMAND:
-            print "Packet is COMMON_COMMAND"
-            print pack.data
         if packRec.type == PACKET.RESPONSE:
-
-            print "Packet is RESPONSE"            
-            for i in packRec.data :
-                print str(hex(i))
-
+            print "Packet is RESPONSE"   
+            print "Return Code: " + str(packRec.data[0])    
+            print "APP version: " + str(bytearray(packRec.data[1:5])).encode('hex')
+            print "API version: " + str(bytearray(packRec.data[5:9])).encode('hex')
+            print "Chip ID: " + str(bytearray(packRec.data[9:13])).encode('hex')
+            print "Chip Version: " + str(bytearray(packRec.data[13:17])).encode('hex')
+            print "App Description Version: " + str(bytearray(packRec.data[17:])) 
 
     except queue.Empty:
         continue
