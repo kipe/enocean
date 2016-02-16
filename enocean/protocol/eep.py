@@ -157,7 +157,7 @@ class EEP(object):
             # If command wasn't found, the message isn't supported...
             if not command:
                 return None
-            return profile.find('data', {'command': command[0].get('raw_value')})
+            return profile.find('data', {'command': list(command)[0].get('raw_value')})
 
         # extract data description
         # the direction tag is optional
