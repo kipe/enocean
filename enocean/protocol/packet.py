@@ -222,7 +222,7 @@ class Packet(object):
         # set EEP profile
         self.rorg_func = func
         self.rorg_type = type
-        self._profile = self.eep.find_profile(self.rorg, func, type, direction)
+        self._profile = self.eep.find_profile(self._bit_data, self.rorg, func, type, direction)
         return self._profile is not None
 
     def parse_eep(self, func=None, type=None, direction=None):

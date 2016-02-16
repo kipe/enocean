@@ -117,7 +117,7 @@ class EEP(object):
         bitarray[int(target['offset'])] = data
         return bitarray
 
-    def find_profile(self, rorg, func, type, direction=None):
+    def find_profile(self, bitarray, rorg, func, type, direction=None):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
         if not self.ok:
             logger.warn('EEP.xml not loaded!')
