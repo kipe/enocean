@@ -16,21 +16,21 @@ def test_buffer():
         0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x2D, 0x00,
         0x75
     ])
-    c = Communicator()
-    c._buffer.extend(data[0:5])
-    c.parse()
-    assert c.receive.qsize() == 0
-    c._buffer.extend(data[5:])
-    c.parse()
-    assert c.receive.qsize() == 1
+    com = Communicator()
+    com._buffer.extend(data[0:5])
+    com.parse()
+    assert com.receive.qsize() == 0
+    com._buffer.extend(data[5:])
+    com.parse()
+    assert com.receive.qsize() == 1
 
 
 def test_send():
     ''' Test sending packets to Communicator '''
-    c = Communicator()
-    assert c.send('AJSNDJASNDJANSD') is False
-    assert c.transmit.qsize() == 0
-    assert c._get_from_send_queue() is None
-    assert c.send(Packet(PACKET.COMMON_COMMAND, [0x08])) is True
-    assert c.transmit.qsize() == 1
-    assert isinstance(c._get_from_send_queue(), Packet)
+    com = Communicator()
+    assert com.send('AJSNDJASNDJANSD') is False
+    assert com.transmit.qsize() == 0
+    assert com._get_from_send_queue() is None
+    assert com.send(Packet(PACKET.COMMON_COMMAND, [0x08])) is True
+    assert com.transmit.qsize() == 1
+    assert isinstance(com._get_from_send_queue(), Packet)
