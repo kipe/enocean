@@ -22,12 +22,12 @@ def assemble_radio_packet(transmitter_id):
 
 
 init_logging()
-serCom = SerialCommunicator()
-serCom.start()
+communicator = SerialCommunicator()
+communicator.start()
 
 # Request transmitter ID
-pack = Packet(PACKET.COMMON_COMMAND, [0x08])
-serCom.send(pack)
+packet = Packet(PACKET.COMMON_COMMAND, [0x08])
+communicator.send(packet)
 
 # Fetch the transmitter ID for sending packages.
 # NOT TESTED!!!
@@ -36,11 +36,11 @@ serCom.send(pack)
 transmitter_id = None
 while transmitter_id is None:
     try:
-        pack = serCom.receive.get(block=True, timeout=1)
-        if pack.type == PACKET.RESPONSE:
-            transmitter_id = pack.response_data
+        packet = communicator.receive.get(block=True, timeout=1)
+        if packet.type == PACKET.RESPONSE:
+            transmitter_id = packet.response_data
             # send custom radio packet
-            serCom.send(assemble_radio_packet(transmitter_id))
+            communicator.send(assemble_radio_packet(transmitter_id))
         break
     except queue.Empty:
         continue
@@ -51,24 +51,24 @@ while transmitter_id is None:
         break
 
 # endless loop receiving radio packets
-while serCom.is_alive():
+while communicator.is_alive():
     try:
         # Loop to empty the queue...
-        pack = serCom.receive.get(block=True, timeout=1)
+        packet = communicator.receive.get(block=True, timeout=1)
 
-        if pack.type == PACKET.RADIO and pack.rorg == RORG.BS4:
+        if packet.type == PACKET.RADIO and packet.rorg == RORG.BS4:
             # parse packet with given FUNC and TYPE
-            for k in pack.parse_eep(0x02, 0x05):
-                print('%s: %s' % (k, pack.parsed[k]))
-        if pack.type == PACKET.RADIO and pack.rorg == RORG.BS1:
+            for k in packet.parse_eep(0x02, 0x05):
+                print('%s: %s' % (k, packet.parsed[k]))
+        if packet.type == PACKET.RADIO and packet.rorg == RORG.BS1:
             # alternatively you can select FUNC and TYPE explicitely
-            # pack.select_eep(0x00, 0x01)
+            # packet.select_eep(0x00, 0x01)
             # parse it
-            for k in pack.parse_eep(0x00, 0x01):
-                print('%s: %s' % (k, pack.parsed[k]))
-        if pack.type == PACKET.RADIO and pack.rorg == RORG.RPS:
-            for k in pack.parse_eep(0x02, 0x02):
-                print('%s: %s' % (k, pack.parsed[k]))
+            for k in packet.parse_eep(0x00, 0x01):
+                print('%s: %s' % (k, packet.parsed[k]))
+        if packet.type == PACKET.RADIO and packet.rorg == RORG.RPS:
+            for k in packet.parse_eep(0x02, 0x02):
+                print('%s: %s' % (k, packet.parsed[k]))
     except queue.Empty:
         continue
     except KeyboardInterrupt:
@@ -77,5 +77,5 @@ while serCom.is_alive():
         traceback.print_exc(file=sys.stdout)
         break
 
-if serCom.is_alive():
-    serCom.stop()
+if communicator.is_alive():
+    communicator.stop()

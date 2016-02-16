@@ -33,10 +33,10 @@ class Communicator(threading.Thread):
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
         try:
-            pack = self.transmit.get(block=False)
+            packet = self.transmit.get(block=False)
             logger.info('Sending packet')
-            logger.debug(pack)
-            return pack
+            logger.debug(packet)
+            return packet
         except queue.Empty:
             pass
         return None
@@ -55,15 +55,15 @@ class Communicator(threading.Thread):
         ''' Parses messages and puts them to receive queue '''
         # Loop while we get new messages
         while True:
-            status, self._buffer, pack = Packet.parse_msg(self._buffer)
+            status, self._buffer, packet = Packet.parse_msg(self._buffer)
             # If message is incomplete -> break the loop
             if status == PARSE_RESULT.INCOMPLETE:
                 return status
 
             # If message is OK, add it to receive queue or send to the callback method
-            if status == PARSE_RESULT.OK and pack:
+            if status == PARSE_RESULT.OK and packet:
                 if self.__callback is None:
-                    self.receive.put(pack)
+                    self.receive.put(packet)
                 else:
-                    self.__callback(pack)
-                logger.debug(pack)
+                    self.__callback(packet)
+                logger.debug(packet)

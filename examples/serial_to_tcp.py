@@ -12,13 +12,13 @@ except ImportError:
     import Queue as queue
 
 init_logging()
-serCom = SerialCommunicator()
-serCom.start()
-while serCom.is_alive():
+communicator = SerialCommunicator()
+communicator.start()
+while communicator.is_alive():
     try:
         # Loop to empty the queue...
-        pack = serCom.receive.get(block=True, timeout=1)
-        send_to_tcp_socket('localhost', 9637, pack)
+        packet = communicator.receive.get(block=True, timeout=1)
+        send_to_tcp_socket('localhost', 9637, packet)
     except queue.Empty:
         continue
     except KeyboardInterrupt:
@@ -27,5 +27,5 @@ while serCom.is_alive():
         traceback.print_exc(file=sys.stdout)
         break
 
-if serCom.is_alive():
-    serCom.stop()
+if communicator.is_alive():
+    communicator.stop()

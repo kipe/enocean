@@ -153,5 +153,5 @@ def test_packet_fails():
     )
 
     for msg in fail_examples:
-        status, remainder, pack = Packet.parse_msg(msg)
+        status, remainder, packet = Packet.parse_msg(msg)
         assert status in [PARSE_RESULT.INCOMPLETE, PARSE_RESULT.CRC_MISMATCH]
