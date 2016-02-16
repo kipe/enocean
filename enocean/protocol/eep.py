@@ -49,15 +49,26 @@ class EEP(object):
             }
         }
 
+    def _get_rangeitem(self, source, raw_value):
+        for rangeitem in source.find_all('rangeitem'):
+            if raw_value in range(int(rangeitem.get('start', -1)), int(rangeitem.get('end', -1)) + 1):
+                return rangeitem
+
     def _get_enum(self, source, bitarray):
         ''' Get enum value, based on the data in XML '''
         raw_value = self._get_raw(source, bitarray)
-        value_desc = source.find('item', {'value': str(raw_value)})
+
+        # Try, if there's any rangeitems.
+        value_desc = self._get_rangeitem(source, raw_value)
+        if not value_desc:
+            # If a matching rangeitem wasn't found, find a traditional item.
+            value_desc = source.find('item', {'value': str(raw_value)})
+
         return {
             source['shortcut']: {
                 'description': source.get('description'),
                 'unit': source.get('unit', ''),
-                'value': value_desc['description'],
+                'value': value_desc['description'].format(value=raw_value),
                 'raw_value': raw_value,
             }
         }
