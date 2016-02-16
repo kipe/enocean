@@ -21,10 +21,10 @@ class SerialCommunicator(Communicator):
             # If there's messages in transmit queue
             # send them
             while True:
-                p = self._get_from_send_queue()
-                if not p:
+                pack = self._get_from_send_queue()
+                if not pack:
                     break
-                self.__ser.write(bytearray(p.build()))
+                self.__ser.write(bytearray(pack.build()))
 
             # Read chars from serial port as hex numbers
             try:

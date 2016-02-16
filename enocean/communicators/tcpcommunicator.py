@@ -31,12 +31,12 @@ class TCPCommunicator(Communicator):
             client.settimeout(0.5)
             while True and not self._stop_flag.is_set():
                 try:
-                    d = client.recv(2048)
+                    data = client.recv(2048)
                 except socket.timeout:
                     break
-                if not d:
+                if not data:
                     break
-                self._buffer.extend(bytearray(d))
+                self._buffer.extend(bytearray(data))
             self.parse()
             client.close()
             logger.debug('Client disconnected')

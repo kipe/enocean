@@ -4,7 +4,7 @@ import socket
 
 
 def send_to_tcp_socket(host, port, packet):
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((host, port))
-    s.send(str(bytearray(packet.build())))
-    s.close()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((host, port))
+    sock.send(str(bytearray(packet.build())))
+    sock.close()

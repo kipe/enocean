@@ -104,14 +104,14 @@ def test_packet_examples():
     }
 
     for packet, values in telegram_examples.items():
-        status, remainder, p = Packet.parse_msg(values['msg'])
+        status, remainder, pack = Packet.parse_msg(values['msg'])
         assert status == PARSE_RESULT.OK
-        assert p.type != 0x00
-        assert p.type == packet
-        assert len(p.data) == values['data_len']
-        assert len(p.optional) == values['opt_len']
-        assert p.status == 0x00
-        assert p.repeater_count == 0
+        assert pack.type != 0x00
+        assert pack.type == packet
+        assert len(pack.data) == values['data_len']
+        assert len(pack.optional) == values['opt_len']
+        assert pack.status == 0x00
+        assert pack.repeater_count == 0
 
 
 def test_packet_fails():
@@ -153,5 +153,5 @@ def test_packet_fails():
     )
 
     for msg in fail_examples:
-        status, remainder, p = Packet.parse_msg(msg)
+        status, remainder, pack = Packet.parse_msg(msg)
         assert status in [PARSE_RESULT.INCOMPLETE, PARSE_RESULT.CRC_MISMATCH]

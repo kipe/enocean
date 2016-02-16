@@ -17,16 +17,16 @@ tcp.start()
 while tcp.is_alive():
     try:
         # Loop to empty the queue...
-        p = tcp.receive.get(block=True, timeout=1)
-        if p.type == PACKET.RADIO and p.rorg == RORG.BS4:
-            for k in p.parse_eep(0x02, 0x05):
-                print('%s: %s' % (k, p.parsed[k]))
-        if p.type == PACKET.RADIO and p.rorg == RORG.BS1:
-            for k in p.parse_eep(0x00, 0x01):
-                print('%s: %s' % (k, p.parsed[k]))
-        if p.type == PACKET.RADIO and p.rorg == RORG.RPS:
-            for k in p.parse_eep(0x02, 0x04):
-                print('%s: %s' % (k, p.parsed[k]))
+        pack = tcp.receive.get(block=True, timeout=1)
+        if pack.type == PACKET.RADIO and pack.rorg == RORG.BS4:
+            for k in pack.parse_eep(0x02, 0x05):
+                print('%s: %s' % (k, pack.parsed[k]))
+        if pack.type == PACKET.RADIO and pack.rorg == RORG.BS1:
+            for k in pack.parse_eep(0x00, 0x01):
+                print('%s: %s' % (k, pack.parsed[k]))
+        if pack.type == PACKET.RADIO and pack.rorg == RORG.RPS:
+            for k in pack.parse_eep(0x02, 0x04):
+                print('%s: %s' % (k, pack.parsed[k]))
     except queue.Empty:
         continue
     except KeyboardInterrupt:
