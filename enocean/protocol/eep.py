@@ -138,6 +138,16 @@ class EEP(object):
             logger.warn('Cannot find type in EEP!')
             return None
 
+        # For VLD; multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
+        # If this is the case, find data by the command id.
+        command = profile.find('command')
+        if command:
+            command = self._get_enum(command, bitarray).values()
+            # If command wasn't found, the message isn't supported...
+            if not command:
+                return None
+            return profile.find('data', {'command': command[0].get('raw_value')})
+
         # extract data description
         # the direction tag is optional
         if direction is None:
