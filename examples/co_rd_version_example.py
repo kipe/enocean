@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-#For working with the lib without 
-import sys
-sys.path.append("/home/alan/Workspace/python-enocean/rename-enocean-lib/")
+"""
+Example on getting the information about the EnOcean controller.
+The sending is happening between the application and the EnOcean controller,
+no wireless communication is taking place here.
+
+The command used here is specified as 1.10.5 Code 03: CO_RD_VERSION
+in the ESP3 document.
+"""
 
 from enocean.consolelogger import init_logging
 from enocean.communicators.serialcommunicator import SerialCommunicator
-from enocean.protocol.packet import Packet, RadioPacket
-from enocean.protocol.constants import PACKET, RORG
+from enocean.protocol.packet import Packet
+from enocean.protocol.constants import PACKET
 import traceback
 
 try:
@@ -16,9 +21,12 @@ try:
 except ImportError:
     import Queue as queue
 
-
 init_logging()
-
+"""
+'/dev/ttyUSB0' might change depending on where your device is.
+To prevent running the app as root, change the access permissions:
+'sudo chmod 777 /dev/ttyUSB0'
+"""
 serCom = SerialCommunicator(port=u'/dev/ttyUSB0', callback=None)
 pack = Packet(PACKET.COMMON_COMMAND, [0x03])
 
@@ -26,13 +34,10 @@ serCom.daemon = True
 serCom.start()
 serCom.send(pack)
 
-# endless loop receiving radio packets
 while serCom.is_alive():
     try:
-        # Loop to empty the queue...
         packRec = serCom.receive.get(block=True, timeout=1)
         if packRec.type == PACKET.RESPONSE:
-            print "Packet is RESPONSE"   
             print "Return Code: " + str(packRec.data[0])    
             print "APP version: " + str(bytearray(packRec.data[1:5])).encode('hex')
             print "API version: " + str(bytearray(packRec.data[5:9])).encode('hex')
