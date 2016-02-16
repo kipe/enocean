@@ -156,3 +156,69 @@ def test_eep_direction():
     assert p.parsed['CV']['value'] == 50
     assert sorted(p.parse_eep(0x20, 0x01, 2)) == ['LFS', 'RCU', 'RIN', 'SB', 'SP', 'SPI', 'SPS', 'TMP', 'VC', 'VO']
     assert p.parsed['SP']['value'] == 50
+
+
+def test_vld():
+    status, buf, p = Packet.parse_msg(bytearray([
+        0x55,
+        0x00, 0x09, 0x07, 0x01,
+        0x56,
+        0xD2, 0x04, 0x00, 0x64, 0x01, 0x94, 0xE3, 0xB9, 0x00,
+        0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x40, 0x00,
+        0xE4
+    ]))
+    assert p.rorg == RORG.VLD
+    assert sorted(p.parse_eep(0x01, 0x01)) == ['EL', 'IO', 'LC', 'OC', 'OV', 'PF', 'PFD']
+
+    assert p.parsed['EL']['raw_value'] == 0
+    assert p.parsed['EL']['value'] == 'Error level 0: hardware OK'
+
+    assert p.parsed['PF']['raw_value'] == 0
+    assert p.parsed['PF']['value'] == 'Power Failure Detection disabled/not supported'
+
+    assert p.parsed['PFD']['raw_value'] == 0
+    assert p.parsed['PFD']['value'] == 'Power Failure Detection not detected/not supported/disabled'
+
+    assert p.parsed['IO']['raw_value'] == 0
+    assert p.parsed['IO']['value'] == 'Output channel 0 (to load)'
+
+    assert p.parsed['OV']['raw_value'] == 100
+    assert p.parsed['OV']['value'] == 'Output value 100% or ON'
+
+    assert p.parsed['OC']['raw_value'] == 0
+    assert p.parsed['OC']['value'] == 'Over current switch off: ready / not supported'
+
+    assert p.parsed['LC']['raw_value'] == 0
+    assert p.parsed['LC']['value'] == 'Local control disabled / not supported'
+
+    status, buf, p = Packet.parse_msg(bytearray([
+        0x55,
+        0x00, 0x09, 0x07, 0x01,
+        0x56,
+        0xD2, 0x04, 0x00, 0x00, 0x01, 0x94, 0xE3, 0xB9, 0x00,
+        0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x40, 0x00,
+        0xBF
+    ]))
+    assert p.rorg == RORG.VLD
+    assert sorted(p.parse_eep(0x01, 0x01)) == ['EL', 'IO', 'LC', 'OC', 'OV', 'PF', 'PFD']
+
+    assert p.parsed['EL']['raw_value'] == 0
+    assert p.parsed['EL']['value'] == 'Error level 0: hardware OK'
+
+    assert p.parsed['PF']['raw_value'] == 0
+    assert p.parsed['PF']['value'] == 'Power Failure Detection disabled/not supported'
+
+    assert p.parsed['PFD']['raw_value'] == 0
+    assert p.parsed['PFD']['value'] == 'Power Failure Detection not detected/not supported/disabled'
+
+    assert p.parsed['IO']['raw_value'] == 0
+    assert p.parsed['IO']['value'] == 'Output channel 0 (to load)'
+
+    assert p.parsed['OV']['raw_value'] == 0
+    assert p.parsed['OV']['value'] == 'Output value 0% or OFF'
+
+    assert p.parsed['OC']['raw_value'] == 0
+    assert p.parsed['OC']['value'] == 'Over current switch off: ready / not supported'
+
+    assert p.parsed['LC']['raw_value'] == 0
+    assert p.parsed['LC']['value'] == 'Local control disabled / not supported'
