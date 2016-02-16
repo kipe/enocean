@@ -298,4 +298,213 @@
       </profile>
     </profiles>
   </telegram>
+  <telegram rorg="0xD2" type="VLD" description="VLD Telegram">
+    <profiles func="0x01" description="Electronic switches and dimmers with Energy Measurement and Local Control">
+      <profile type="0x01" description="Electronic switch with Local Control">
+        <command description="command indentifier" shortcut="CMD" offset="4" size="4">
+          <item description="Actuator Set Output" value="1" />
+          <item description="Actuator Set Local" value="2" />
+          <item description="Actuator Status Query" value="3" />
+          <item description="Actuator Status Response" value="4" />
+          <item description="Actuator Set Measurement" value="5" />
+          <item description="Actuator Measurement Query" value="6" />
+          <item description="Actuator Measurement Response" value="7" />
+          <item description="Actuator Set Pilot Wire Mode" value="8" />
+          <item description="Actuator Pilot Wire Mode Query" value="9" />
+          <item description="Actuator Pilot Wire Mode Response" value="10" />
+          <item description="Actuator Set External Interface Settings" value="11" />
+          <item description="Actuator External Interface Settings Query" value="12" />
+          <item description="Actuator External Interface Settings Response" value="13" />
+        </command>
+        <data command="4" bits="3">
+          <enum description="Power Failure" shortcut="PF" offset="0" size="1">
+            <item description="Power Failure Detection disabled/not supported" value="0" />
+            <item description="Power Failure Detection enabled" value="1" />
+          </enum>
+          <enum description="Power Failure Detection" shortcut="PFD" offset="1" size="1">
+            <item description="Power Failure Detection not detected/not supported/disabled" value="0" />
+            <item description="Power Failure Detection Detected" value="1" />
+          </enum>
+          <enum description="Over current switch off" shortcut="OC" offset="8" size="1">
+            <item description="Over current switch off: ready / not supported" value="0" />
+            <item description="Over current switch off: executed" value="1" />
+          </enum>
+          <enum description="Error level" shortcut="EL" offset="9" size="2">
+            <item description="Error level 0: hardware OK" value="0" />
+            <item description="Error level 1: hardware warning" value="1" />
+            <item description="Error level 2: hardware failure" value="2" />
+            <item description="Error level not supported" value="3" />
+          </enum>
+          <enum description="I/O channel" shortcut="IO" offset="11" size="5">
+            <item description="Output channel 0 (to load)" value="0" />
+            <item description="Output channel 1 (to load)" value="1" />
+            <item description="Output channel 2 (to load)" value="2" />
+            <item description="Output channel 3 (to load)" value="3" />
+            <item description="Output channel 4 (to load)" value="4" />
+            <item description="Output channel 5 (to load)" value="5" />
+            <item description="Output channel 6 (to load)" value="6" />
+            <item description="Output channel 7 (to load)" value="7" />
+            <item description="Output channel 8 (to load)" value="8" />
+            <item description="Output channel 9 (to load)" value="9" />
+            <item description="Output channel 10 (to load)" value="10" />
+            <item description="Output channel 11 (to load)" value="11" />
+            <item description="Output channel 12 (to load)" value="12" />
+            <item description="Output channel 13 (to load)" value="13" />
+            <item description="Output channel 14 (to load)" value="14" />
+            <item description="Output channel 15 (to load)" value="15" />
+            <item description="Output channel 16 (to load)" value="16" />
+            <item description="Output channel 17 (to load)" value="17" />
+            <item description="Output channel 18 (to load)" value="18" />
+            <item description="Output channel 19 (to load)" value="19" />
+            <item description="Output channel 20 (to load)" value="20" />
+            <item description="Output channel 21 (to load)" value="21" />
+            <item description="Output channel 22 (to load)" value="22" />
+            <item description="Output channel 23 (to load)" value="23" />
+            <item description="Output channel 24 (to load)" value="24" />
+            <item description="Output channel 25 (to load)" value="25" />
+            <item description="Output channel 26 (to load)" value="26" />
+            <item description="Output channel 27 (to load)" value="27" />
+            <item description="Output channel 28 (to load)" value="28" />
+            <item description="Output channel 29 (to load)" value="29" />
+            <item description="Not applicable, do not use" value="30" />
+            <item description="Input channel (from mains supply)" value="31" />
+          </enum>
+          <enum description="Local control" shortcut="LC" offset="16" size="1">
+            <item description="Local control disabled / not supported" value="0" />
+            <item description="Local control enabled" value="1" />
+          </enum>
+          <enum description="Output value" shortcut="OV" offset="17" size="7">
+            <item description="Output value 0% or OFF" value="0" />
+            <item description="Output value 1% or ON" value="1" />
+            <item description="Output value 2% or ON" value="2" />
+            <item description="Output value 3% or ON" value="3" />
+            <item description="Output value 4% or ON" value="4" />
+            <item description="Output value 5% or ON" value="5" />
+            <item description="Output value 6% or ON" value="6" />
+            <item description="Output value 7% or ON" value="7" />
+            <item description="Output value 8% or ON" value="8" />
+            <item description="Output value 9% or ON" value="9" />
+            <item description="Output value 10% or ON" value="10" />
+            <item description="Output value 11% or ON" value="11" />
+            <item description="Output value 12% or ON" value="12" />
+            <item description="Output value 13% or ON" value="13" />
+            <item description="Output value 14% or ON" value="14" />
+            <item description="Output value 15% or ON" value="15" />
+            <item description="Output value 16% or ON" value="16" />
+            <item description="Output value 17% or ON" value="17" />
+            <item description="Output value 18% or ON" value="18" />
+            <item description="Output value 19% or ON" value="19" />
+            <item description="Output value 20% or ON" value="20" />
+            <item description="Output value 21% or ON" value="21" />
+            <item description="Output value 22% or ON" value="22" />
+            <item description="Output value 23% or ON" value="23" />
+            <item description="Output value 24% or ON" value="24" />
+            <item description="Output value 25% or ON" value="25" />
+            <item description="Output value 26% or ON" value="26" />
+            <item description="Output value 27% or ON" value="27" />
+            <item description="Output value 28% or ON" value="28" />
+            <item description="Output value 29% or ON" value="29" />
+            <item description="Output value 30% or ON" value="30" />
+            <item description="Output value 31% or ON" value="31" />
+            <item description="Output value 32% or ON" value="32" />
+            <item description="Output value 33% or ON" value="33" />
+            <item description="Output value 34% or ON" value="34" />
+            <item description="Output value 35% or ON" value="35" />
+            <item description="Output value 36% or ON" value="36" />
+            <item description="Output value 37% or ON" value="37" />
+            <item description="Output value 38% or ON" value="38" />
+            <item description="Output value 39% or ON" value="39" />
+            <item description="Output value 40% or ON" value="40" />
+            <item description="Output value 41% or ON" value="41" />
+            <item description="Output value 42% or ON" value="42" />
+            <item description="Output value 43% or ON" value="43" />
+            <item description="Output value 44% or ON" value="44" />
+            <item description="Output value 45% or ON" value="45" />
+            <item description="Output value 46% or ON" value="46" />
+            <item description="Output value 47% or ON" value="47" />
+            <item description="Output value 48% or ON" value="48" />
+            <item description="Output value 49% or ON" value="49" />
+            <item description="Output value 50% or ON" value="50" />
+            <item description="Output value 51% or ON" value="51" />
+            <item description="Output value 52% or ON" value="52" />
+            <item description="Output value 53% or ON" value="53" />
+            <item description="Output value 54% or ON" value="54" />
+            <item description="Output value 55% or ON" value="55" />
+            <item description="Output value 56% or ON" value="56" />
+            <item description="Output value 57% or ON" value="57" />
+            <item description="Output value 58% or ON" value="58" />
+            <item description="Output value 59% or ON" value="59" />
+            <item description="Output value 60% or ON" value="60" />
+            <item description="Output value 61% or ON" value="61" />
+            <item description="Output value 62% or ON" value="62" />
+            <item description="Output value 63% or ON" value="63" />
+            <item description="Output value 64% or ON" value="64" />
+            <item description="Output value 65% or ON" value="65" />
+            <item description="Output value 66% or ON" value="66" />
+            <item description="Output value 67% or ON" value="67" />
+            <item description="Output value 68% or ON" value="68" />
+            <item description="Output value 69% or ON" value="69" />
+            <item description="Output value 70% or ON" value="70" />
+            <item description="Output value 71% or ON" value="71" />
+            <item description="Output value 72% or ON" value="72" />
+            <item description="Output value 73% or ON" value="73" />
+            <item description="Output value 74% or ON" value="74" />
+            <item description="Output value 75% or ON" value="75" />
+            <item description="Output value 76% or ON" value="76" />
+            <item description="Output value 77% or ON" value="77" />
+            <item description="Output value 78% or ON" value="78" />
+            <item description="Output value 79% or ON" value="79" />
+            <item description="Output value 80% or ON" value="80" />
+            <item description="Output value 81% or ON" value="81" />
+            <item description="Output value 82% or ON" value="82" />
+            <item description="Output value 83% or ON" value="83" />
+            <item description="Output value 84% or ON" value="84" />
+            <item description="Output value 85% or ON" value="85" />
+            <item description="Output value 86% or ON" value="86" />
+            <item description="Output value 87% or ON" value="87" />
+            <item description="Output value 88% or ON" value="88" />
+            <item description="Output value 89% or ON" value="89" />
+            <item description="Output value 90% or ON" value="90" />
+            <item description="Output value 91% or ON" value="91" />
+            <item description="Output value 92% or ON" value="92" />
+            <item description="Output value 93% or ON" value="93" />
+            <item description="Output value 94% or ON" value="94" />
+            <item description="Output value 95% or ON" value="95" />
+            <item description="Output value 96% or ON" value="96" />
+            <item description="Output value 97% or ON" value="97" />
+            <item description="Output value 98% or ON" value="98" />
+            <item description="Output value 99% or ON" value="99" />
+            <item description="Output value 100% or ON" value="100" />
+            <item description="Not used" value="101" />
+            <item description="Not used" value="102" />
+            <item description="Not used" value="103" />
+            <item description="Not used" value="104" />
+            <item description="Not used" value="105" />
+            <item description="Not used" value="106" />
+            <item description="Not used" value="107" />
+            <item description="Not used" value="108" />
+            <item description="Not used" value="109" />
+            <item description="Not used" value="110" />
+            <item description="Not used" value="111" />
+            <item description="Not used" value="112" />
+            <item description="Not used" value="113" />
+            <item description="Not used" value="114" />
+            <item description="Not used" value="115" />
+            <item description="Not used" value="116" />
+            <item description="Not used" value="117" />
+            <item description="Not used" value="118" />
+            <item description="Not used" value="119" />
+            <item description="Not used" value="120" />
+            <item description="Not used" value="121" />
+            <item description="Not used" value="122" />
+            <item description="Not used" value="123" />
+            <item description="Not used" value="124" />
+            <item description="Not used" value="125" />
+            <item description="Not used" value="126" />
+            <item description="output value not valid / not set" value="127" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
+  </telegram>
 </telegrams>
