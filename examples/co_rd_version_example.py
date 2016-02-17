@@ -14,7 +14,9 @@ from enocean.consolelogger import init_logging
 from enocean.communicators.serialcommunicator import SerialCommunicator
 from enocean.protocol.packet import Packet
 from enocean.protocol.constants import PACKET
+from enocean import utils
 import traceback
+import sys
 
 try:
     import queue
@@ -36,14 +38,15 @@ communicator.send(packet)
 
 while communicator.is_alive():
     try:
-        packRec = communicator.receive.get(block=True, timeout=1)
-        if packRec.type == PACKET.RESPONSE:
-            print "Return Code: " + str(packRec.data[0])    
-            print "APP version: " + str(bytearray(packRec.data[1:5])).encode('hex')
-            print "API version: " + str(bytearray(packRec.data[5:9])).encode('hex')
-            print "Chip ID: " + str(bytearray(packRec.data[9:13])).encode('hex')
-            print "Chip Version: " + str(bytearray(packRec.data[13:17])).encode('hex')
-            print "App Description Version: " + str(bytearray(packRec.data[17:])) 
+        receivedPacket = communicator.receive.get(block=True, timeout=1)
+        if receivedPacket.type == PACKET.RESPONSE:
+            print "Return Code: " + utils.to_hex_string(receivedPacket.data[0])    
+            print "APP version: " + utils.to_hex_string(receivedPacket.data[1:5])
+            print "API version: " +  utils.to_hex_string(receivedPacket.data[5:9])
+            print "Chip ID: " + utils.to_hex_string(receivedPacket.data[9:13])
+            print "Chip Version: " + utils.to_hex_string(receivedPacket.data[13:17])
+            print "App Description Version: " + utils.to_hex_string(receivedPacket.data[17:]) 
+            print "App Description Version (ASCII): " + str(bytearray(receivedPacket.data[17:])) 
 
     except queue.Empty:
         continue
