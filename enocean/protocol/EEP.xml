@@ -336,36 +336,7 @@
             <item description="Error level not supported" value="3" />
           </enum>
           <enum description="I/O channel" shortcut="IO" offset="11" size="5">
-            <item description="Output channel 0 (to load)" value="0" />
-            <item description="Output channel 1 (to load)" value="1" />
-            <item description="Output channel 2 (to load)" value="2" />
-            <item description="Output channel 3 (to load)" value="3" />
-            <item description="Output channel 4 (to load)" value="4" />
-            <item description="Output channel 5 (to load)" value="5" />
-            <item description="Output channel 6 (to load)" value="6" />
-            <item description="Output channel 7 (to load)" value="7" />
-            <item description="Output channel 8 (to load)" value="8" />
-            <item description="Output channel 9 (to load)" value="9" />
-            <item description="Output channel 10 (to load)" value="10" />
-            <item description="Output channel 11 (to load)" value="11" />
-            <item description="Output channel 12 (to load)" value="12" />
-            <item description="Output channel 13 (to load)" value="13" />
-            <item description="Output channel 14 (to load)" value="14" />
-            <item description="Output channel 15 (to load)" value="15" />
-            <item description="Output channel 16 (to load)" value="16" />
-            <item description="Output channel 17 (to load)" value="17" />
-            <item description="Output channel 18 (to load)" value="18" />
-            <item description="Output channel 19 (to load)" value="19" />
-            <item description="Output channel 20 (to load)" value="20" />
-            <item description="Output channel 21 (to load)" value="21" />
-            <item description="Output channel 22 (to load)" value="22" />
-            <item description="Output channel 23 (to load)" value="23" />
-            <item description="Output channel 24 (to load)" value="24" />
-            <item description="Output channel 25 (to load)" value="25" />
-            <item description="Output channel 26 (to load)" value="26" />
-            <item description="Output channel 27 (to load)" value="27" />
-            <item description="Output channel 28 (to load)" value="28" />
-            <item description="Output channel 29 (to load)" value="29" />
+            <rangeitem description="Output channel {value} (to load)" start="0" end="29" />
             <item description="Not applicable, do not use" value="30" />
             <item description="Input channel (from mains supply)" value="31" />
           </enum>
