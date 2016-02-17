@@ -27,16 +27,16 @@ init_logging()
 To prevent running the app as root, change the access permissions:
 'sudo chmod 777 /dev/ttyUSB0'
 """
-serCom = SerialCommunicator(port=u'/dev/ttyUSB0', callback=None)
-pack = Packet(PACKET.COMMON_COMMAND, [0x03])
+communicator = SerialCommunicator(port=u'/dev/ttyUSB0', callback=None)
+packet = Packet(PACKET.COMMON_COMMAND, [0x03])
 
-serCom.daemon = True
-serCom.start()
-serCom.send(pack)
+communicator.daemon = True
+communicator.start()
+communicator.send(packet)
 
-while serCom.is_alive():
+while communicator.is_alive():
     try:
-        packRec = serCom.receive.get(block=True, timeout=1)
+        packRec = communicator.receive.get(block=True, timeout=1)
         if packRec.type == PACKET.RESPONSE:
             print "Return Code: " + str(packRec.data[0])    
             print "APP version: " + str(bytearray(packRec.data[1:5])).encode('hex')
@@ -53,5 +53,5 @@ while serCom.is_alive():
         traceback.print_exc(file=sys.stdout)
         break
 
-if serCom.is_alive():
-    serCom.stop()
+if communicator.is_alive():
+    communicator.stop()
