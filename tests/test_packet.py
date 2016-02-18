@@ -6,7 +6,7 @@ from enocean.protocol.constants import PACKET, PARSE_RESULT
 from .decorators import timing
 
 
-@timing(100)
+@timing(1000)
 def test_packet_examples():
     ''' Tests examples found at EnOceanSerialProtocol3.pdf / 74 '''
     telegram_examples = {
@@ -116,7 +116,7 @@ def test_packet_examples():
         assert pack.repeater_count == 0
 
 
-@timing(100)
+@timing(1000)
 def test_packet_fails():
     '''
     Tests designed to fail.
