@@ -3,6 +3,9 @@ include
 lib
 local
 share
+lib-python
+lib_pypy
+site-packages
 *.pyc
 
 *.egg-info
