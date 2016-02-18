@@ -14,13 +14,30 @@ path = os.path.dirname(os.path.realpath(__file__))
 class EEP(object):
     def __init__(self):
         self.ok = False
+        self.telegrams = {}
+
         try:
             with open(os.path.join(path, 'EEP.xml'), 'r') as f:
                 self.soup = BeautifulSoup(f.read(), "html.parser")
             self.ok = True
         except IOError:
             logger.warn('Cannot load protocol file!')
-            pass
+
+        if not self.ok:
+            return
+        self.__load_xml()
+
+    def __load_xml(self):
+        self.telegrams = {
+            enocean.utils.from_hex_string(telegram['rorg']): {
+                enocean.utils.from_hex_string(function['func']): {
+                    enocean.utils.from_hex_string(type['type'], ): type
+                    for type in function.find_all('profile')
+                }
+                for function in telegram.find_all('profiles')
+            }
+            for telegram in self.soup.find_all('telegram')
+        }
 
     def _get_raw(self, source, bitarray):
         ''' Get raw data as integer, based on offset and size '''
@@ -134,20 +151,19 @@ class EEP(object):
             logger.warn('EEP.xml not loaded!')
             return None
 
-        rorg = self.soup.find('telegram', {'rorg': '0x%s' % enocean.utils.to_hex_string(rorg)})
-        if not rorg:
+        if rorg not in self.telegrams.keys():
             logger.warn('Cannot find rorg in EEP!')
             return None
 
-        func = rorg.find('profiles', {'func': '0x%s' % enocean.utils.to_hex_string(func)})
-        if not func:
+        if func not in self.telegrams[rorg].keys():
             logger.warn('Cannot find func in EEP!')
             return None
 
-        profile = func.find('profile', {'type': '0x%s' % enocean.utils.to_hex_string(type)})
-        if not profile:
-            logger.warn('Cannot find type in EEP!')
+        if type not in self.telegrams[rorg][func].keys():
+            logger.warn('Cannot find func in EEP!')
             return None
+
+        profile = self.telegrams[rorg][func][type]
 
         # For VLD; multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
         # If this is the case, find data by the command id.
