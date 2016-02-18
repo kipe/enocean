@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-from __future__ import print_function, unicode_literals, division
+from __future__ import print_function, unicode_literals, division, absolute_import
 
 # https://gist.github.com/hypebeast/3833758
 crcTable = (
