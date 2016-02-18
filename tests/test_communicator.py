@@ -4,8 +4,10 @@ from __future__ import print_function, unicode_literals, division
 from enocean.communicators.communicator import Communicator
 from enocean.protocol.packet import Packet
 from enocean.protocol.constants import PACKET
+from decorators import timing
 
 
+@timing(100)
 def test_buffer():
     ''' Test buffer parsing for Communicator '''
     data = bytearray([
@@ -25,6 +27,7 @@ def test_buffer():
     assert com.receive.qsize() == 1
 
 
+@timing(100)
 def test_send():
     ''' Test sending packets to Communicator '''
     com = Communicator()

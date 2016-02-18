@@ -3,8 +3,10 @@ from __future__ import print_function, unicode_literals, division
 
 from enocean.protocol.packet import Packet
 from enocean.protocol.constants import RORG
+from decorators import timing
 
 
+@timing(100)
 def test_temperature():
     ''' Tests RADIO message for EEP -profile 0xA5 0x02 0x05 '''
     status, buf, packet = Packet.parse_msg(bytearray([
@@ -30,6 +32,7 @@ def test_temperature():
     assert packet.sender_hex == '01:81:B7:44'
 
 
+@timing(100)
 def test_magnetic_switch():
     ''' Tests RADIO message for EEP -profile 0xD5 0x00 0x01 '''
     status, buf, packet = Packet.parse_msg(bytearray([
@@ -62,6 +65,7 @@ def test_magnetic_switch():
     assert packet.repeater_count == 0
 
 
+@timing(100)
 def test_switch():
     status, buf, packet = Packet.parse_msg(bytearray([
         0x55,
@@ -99,6 +103,7 @@ def test_switch():
     assert packet.repeater_count == 0
 
 
+@timing(100)
 def test_eep_parsing():
     status, buf, packet = Packet.parse_msg(bytearray([
         0x55,
@@ -116,6 +121,7 @@ def test_eep_parsing():
     assert packet.repeater_count == 0
 
 
+@timing(100)
 def test_eep_remaining():
     # Magnetic switch -example
     status, buf, packet = Packet.parse_msg(bytearray([
@@ -143,6 +149,7 @@ def test_eep_remaining():
     assert packet.parse_eep(0x02, 0x05) == ['TMP']
 
 
+@timing(100)
 def test_eep_direction():
     status, buf, packet = Packet.parse_msg(bytearray([
         0x55,
@@ -158,6 +165,7 @@ def test_eep_direction():
     assert packet.parsed['SP']['value'] == 50
 
 
+@timing(100)
 def test_vld():
     status, buf, p = Packet.parse_msg(bytearray([
         0x55,
