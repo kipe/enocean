@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 import logging
+from collections import OrderedDict
 
 import enocean.utils
 from enocean.protocol import crc8
@@ -28,7 +29,7 @@ class Packet(object):
         self.data = data
         self.optional = optional
         self.status = 0
-        self.parsed = {}
+        self.parsed = OrderedDict({})
         self.repeater_count = 0
         self._profile = None
 

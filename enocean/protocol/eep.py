@@ -1,8 +1,9 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 import os
-from bs4 import BeautifulSoup
 import logging
+from bs4 import BeautifulSoup
+from collections import OrderedDict
 
 import enocean.utils
 
@@ -170,7 +171,7 @@ class EEP(object):
         if not self.ok or profile is None:
             return [], {}
 
-        output = {}
+        output = OrderedDict({})
         for source in profile.contents:
             if not source.name:
                 continue
