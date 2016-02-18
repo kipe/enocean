@@ -3,7 +3,7 @@ from __future__ import print_function, unicode_literals, division
 
 from enocean.protocol.packet import Packet
 from enocean.protocol.constants import RORG
-from decorators import timing
+from .decorators import timing
 
 
 @timing(100)
