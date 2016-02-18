@@ -33,6 +33,6 @@ def timing(rounds=1, limit=None):
         # Run tests with timings, only if WITH_TIMINGS environment variable is set.
         # This is because tests with multiple rounds can take long to process.
         if environ.get('WITH_TIMINGS', None) is '1':
-            return method
-        return f
+            return f
+        return method
     return decorator
