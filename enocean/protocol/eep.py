@@ -167,19 +167,19 @@ class EEP(object):
 
         # For VLD; multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
         # If this is the case, find data by the command id.
-        command = profile.find('command')
+        command = profile.find('command', recursive=False)
         if command:
             command = self._get_enum(command, bitarray).values()
             # If command wasn't found, the message isn't supported...
             if not command:
                 return None
-            return profile.find('data', {'command': list(command)[0].get('raw_value')})
+            return profile.find('data', {'command': list(command)[0].get('raw_value')}, recursive=False)
 
         # extract data description
         # the direction tag is optional
         if direction is None:
-            return profile.find('data')
-        return profile.find('data', {'direction': direction})
+            return profile.find('data', recursive=False)
+        return profile.find('data', {'direction': direction}, recursive=False)
 
     def get_values(self, profile, bitarray, status):
         ''' Get keys and values from bitarray '''
