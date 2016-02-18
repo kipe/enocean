@@ -62,9 +62,10 @@ while communicator.is_alive():
                 print('%s: %s' % (k, packet.parsed[k]))
         if packet.type == PACKET.RADIO and packet.rorg == RORG.BS1:
             # alternatively you can select FUNC and TYPE explicitely
-            # packet.select_eep(0x00, 0x01)
+            packet.select_eep(0x00, 0x01)
             # parse it
-            for k in packet.parse_eep(0x00, 0x01):
+            packet.parse_eep()
+            for k in packet.parsed:
                 print('%s: %s' % (k, packet.parsed[k]))
         if packet.type == PACKET.RADIO and packet.rorg == RORG.RPS:
             for k in packet.parse_eep(0x02, 0x02):
