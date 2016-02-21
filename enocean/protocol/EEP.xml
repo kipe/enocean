@@ -10,7 +10,7 @@
             <item description="Button BI" value="2" />
             <item description="Button BO" value="3" />
           </enum>
-          <enum description="Energy bow" shortcut="EBO" offset="3" size="1">
+          <enum description="Energy bow" shortcut="EB" offset="3" size="1">
             <item description="released" value="0" />
             <item description="pressed" value="1" />
           </enum>

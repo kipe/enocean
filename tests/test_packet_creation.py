@@ -200,7 +200,7 @@ def test_switch():
     # test also enum setting by integer value with EB0
     packet = RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79],
                                 SA='No 2nd action',
-                                EBO=1,
+                                EB=1,
                                 R1='Button BI',
                                 T21=True,
                                 NU=True,
@@ -220,7 +220,7 @@ def test_switch():
 
     packet = RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79],
                                 SA='No 2nd action',
-                                EBO='released',
+                                EB='released',
                                 T21=True,
                                 NU=False,
                                 )
@@ -231,12 +231,12 @@ def test_switch():
 
 @raises(ValueError)
 def test_illegal_eep_enum1():
-    RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EBO='inexisting')
+    RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB='inexisting')
 
 
 @raises(ValueError)
 def test_illegal_eep_enum2():
-    RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EBO=2)
+    RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB=2)
 
 
 # Corresponds to the tests done in test_eep

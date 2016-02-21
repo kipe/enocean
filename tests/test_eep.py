@@ -71,9 +71,9 @@ def test_switch():
         0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x37, 0x00,
         0x9D
     ]))
-    assert sorted(packet.parse_eep(0x02, 0x02)) == ['EBO', 'NU', 'R1', 'R2', 'SA', 'T21']
+    assert sorted(packet.parse_eep(0x02, 0x02)) == ['EB', 'NU', 'R1', 'R2', 'SA', 'T21']
     assert packet.parsed['SA']['value'] == 'No 2nd action'
-    assert packet.parsed['EBO']['value'] == 'pressed'
+    assert packet.parsed['EB']['value'] == 'pressed'
     assert packet.parsed['R1']['value'] == 'Button BI'
     assert packet.parsed['T21']['value'] is True
     assert packet.parsed['NU']['value'] is True
@@ -89,9 +89,9 @@ def test_switch():
         0x02, 0xFF, 0xFF, 0xFF, 0xFF, 0x4A, 0x00,
         0x03
     ]))
-    assert sorted(packet.parse_eep(0x02, 0x02)) == ['EBO', 'NU', 'R1', 'R2', 'SA', 'T21']
+    assert sorted(packet.parse_eep(0x02, 0x02)) == ['EB', 'NU', 'R1', 'R2', 'SA', 'T21']
     assert packet.parsed['SA']['value'] == 'No 2nd action'
-    assert packet.parsed['EBO']['value'] == 'released'
+    assert packet.parsed['EB']['value'] == 'released'
     assert packet.parsed['T21']['value'] is True
     assert packet.parsed['NU']['value'] is False
     assert packet.learn is True
