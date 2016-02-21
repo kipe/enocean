@@ -40,13 +40,13 @@ while communicator.is_alive():
     try:
         receivedPacket = communicator.receive.get(block=True, timeout=1)
         if receivedPacket.type == PACKET.RESPONSE:
-            print "Return Code: " + utils.to_hex_string(receivedPacket.data[0])    
-            print "APP version: " + utils.to_hex_string(receivedPacket.data[1:5])
-            print "API version: " +  utils.to_hex_string(receivedPacket.data[5:9])
-            print "Chip ID: " + utils.to_hex_string(receivedPacket.data[9:13])
-            print "Chip Version: " + utils.to_hex_string(receivedPacket.data[13:17])
-            print "App Description Version: " + utils.to_hex_string(receivedPacket.data[17:]) 
-            print "App Description Version (ASCII): " + str(bytearray(receivedPacket.data[17:])) 
+            print('Return Code: %s' % utils.to_hex_string(receivedPacket.data[0]))
+            print('APP version: %s' % utils.to_hex_string(receivedPacket.data[1:5]))
+            print('API version: %s' % utils.to_hex_string(receivedPacket.data[5:9]))
+            print('Chip ID: %s' % utils.to_hex_string(receivedPacket.data[9:13]))
+            print('Chip Version: %s' % utils.to_hex_string(receivedPacket.data[13:17]))
+            print('App Description Version: %s' % utils.to_hex_string(receivedPacket.data[17:]))
+            print('App Description Version (ASCII): %s' % str(bytearray(receivedPacket.data[17:])))
 
     except queue.Empty:
         continue
