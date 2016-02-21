@@ -71,7 +71,7 @@ def test_switch():
         0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x37, 0x00,
         0x9D
     ]))
-    assert sorted(packet.parse_eep(0x02, 0x02)) == ['EB', 'NU', 'R1', 'R2', 'SA', 'T21']
+    assert packet.parse_eep(0x02, 0x02) == ['R1', 'EB', 'R2', 'SA', 'T21', 'NU']
     assert packet.parsed['SA']['value'] == 'No 2nd action'
     assert packet.parsed['EB']['value'] == 'pressed'
     assert packet.parsed['R1']['value'] == 'Button BI'
@@ -89,7 +89,7 @@ def test_switch():
         0x02, 0xFF, 0xFF, 0xFF, 0xFF, 0x4A, 0x00,
         0x03
     ]))
-    assert sorted(packet.parse_eep(0x02, 0x02)) == ['EB', 'NU', 'R1', 'R2', 'SA', 'T21']
+    assert packet.parse_eep(0x02, 0x02) == ['R1', 'EB', 'R2', 'SA', 'T21', 'NU']
     assert packet.parsed['SA']['value'] == 'No 2nd action'
     assert packet.parsed['EB']['value'] == 'released'
     assert packet.parsed['T21']['value'] is True
@@ -152,9 +152,9 @@ def test_eep_direction():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0x43
     ]))
-    assert sorted(packet.parse_eep(0x20, 0x01, 1)) == ['ACO', 'BCAP', 'CCO', 'CV', 'DWO', 'ENIE', 'ES', 'FTS', 'SO', 'TMP']
+    assert packet.parse_eep(0x20, 0x01, 1) == ['CV', 'SO', 'ENIE', 'ES', 'BCAP', 'CCO', 'FTS', 'DWO', 'ACO', 'TMP']
     assert packet.parsed['CV']['value'] == 50
-    assert sorted(packet.parse_eep(0x20, 0x01, 2)) == ['LFS', 'RCU', 'RIN', 'SB', 'SP', 'SPI', 'SPS', 'TMP', 'VC', 'VO']
+    assert packet.parse_eep(0x20, 0x01, 2) == ['SP', 'TMP', 'RIN', 'LFS', 'VO', 'VC', 'SB', 'SPS', 'SPN', 'RCU']
     assert packet.parsed['SP']['value'] == 50
 
 
@@ -168,7 +168,7 @@ def test_vld():
         0xE4
     ]))
     assert p.rorg == RORG.VLD
-    assert sorted(p.parse_eep(0x01, 0x01)) == ['EL', 'IO', 'LC', 'OC', 'OV', 'PF', 'PFD']
+    assert p.parse_eep(0x01, 0x01) == ['PF', 'PFD', 'CMD', 'OC', 'EL', 'IO', 'LC', 'OV']
 
     assert p.parsed['EL']['raw_value'] == 0
     assert p.parsed['EL']['value'] == 'Error level 0: hardware OK'
@@ -200,7 +200,7 @@ def test_vld():
         0xBF
     ]))
     assert p.rorg == RORG.VLD
-    assert sorted(p.parse_eep(0x01, 0x01)) == ['EL', 'IO', 'LC', 'OC', 'OV', 'PF', 'PFD']
+    assert p.parse_eep(0x01, 0x01) == ['PF', 'PFD', 'CMD', 'OC', 'EL', 'IO', 'LC', 'OV']
 
     assert p.parsed['EL']['raw_value'] == 0
     assert p.parsed['EL']['value'] == 'Error level 0: hardware OK'
