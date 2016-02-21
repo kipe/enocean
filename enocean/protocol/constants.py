@@ -62,7 +62,7 @@ class PARSE_RESULT(IntEnum):
 
 # Data byte indexing
 # Starts from the end, so works on messages of all length.
-class DB0:
+class DB0(object):
     BIT_0 = -1
     BIT_1 = -2
     BIT_2 = -3
@@ -73,7 +73,7 @@ class DB0:
     BIT_7 = -8
 
 
-class DB1:
+class DB1(object):
     BIT_0 = -9
     BIT_1 = -10
     BIT_2 = -11
@@ -84,7 +84,7 @@ class DB1:
     BIT_7 = -16
 
 
-class DB2:
+class DB2(object):
     BIT_0 = -17
     BIT_1 = -18
     BIT_2 = -19
@@ -95,7 +95,7 @@ class DB2:
     BIT_7 = -24
 
 
-class DB3:
+class DB3(object):
     BIT_0 = -25
     BIT_1 = -26
     BIT_2 = -27
@@ -106,7 +106,7 @@ class DB3:
     BIT_7 = -32
 
 
-class DB4:
+class DB4(object):
     BIT_0 = -33
     BIT_1 = -34
     BIT_2 = -35
@@ -117,7 +117,7 @@ class DB4:
     BIT_7 = -40
 
 
-class DB5:
+class DB5(object):
     BIT_0 = -41
     BIT_1 = -42
     BIT_2 = -43
@@ -128,7 +128,7 @@ class DB5:
     BIT_7 = -48
 
 
-class DB6:
+class DB6(object):
     BIT_0 = -49
     BIT_1 = -50
     BIT_2 = -51

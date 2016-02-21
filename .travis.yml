@@ -9,6 +9,7 @@ python:
   - "pypy"
   - "pypy3"
 install:
+  - pip install pylint
   - pip install -e .
 script:
   - nosetests -s -q
@@ -20,3 +21,6 @@ matrix:
   fast_finish: true
   allow_failures:
     - env: WITH_TIMINGS=1
+
+after_success:
+  - pylint enocean -d line-too-long

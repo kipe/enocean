@@ -108,8 +108,8 @@ def test_packet_examples():
     for packet, values in telegram_examples.items():
         status, remainder, pack = Packet.parse_msg(values['msg'])
         assert status == PARSE_RESULT.OK
-        assert pack.type != 0x00
-        assert pack.type == packet
+        assert pack.packet_type != 0x00
+        assert pack.packet_type == packet
         assert len(pack.data) == values['data_len']
         assert len(pack.optional) == values['opt_len']
         assert pack.status == 0x00

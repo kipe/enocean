@@ -2,29 +2,27 @@
 from __future__ import print_function, unicode_literals, division, absolute_import
 import os
 import logging
-from bs4 import BeautifulSoup
 from collections import OrderedDict
+from bs4 import BeautifulSoup
 
 import enocean.utils
 
-logger = logging.getLogger('enocean.protocol.eep')
-
-path = os.path.dirname(os.path.realpath(__file__))
-
 
 class EEP(object):
+    logger = logging.getLogger('enocean.protocol.eep')
+
     def __init__(self):
-        self.ok = False
+        self.init_ok = False
         self.telegrams = {}
 
         try:
-            with open(os.path.join(path, 'EEP.xml'), 'r') as f:
-                self.soup = BeautifulSoup(f.read(), "html.parser")
-            self.ok = True
+            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml'), 'r') as xml_file:
+                self.soup = BeautifulSoup(xml_file.read(), "html.parser")
+            self.init_ok = True
         except IOError:
-            logger.warn('Cannot load protocol file!')
+            self.logger.warn('Cannot load protocol file!')
 
-        if not self.ok:
+        if not self.init_ok:
             return
         self.__load_xml()
 
@@ -40,11 +38,27 @@ class EEP(object):
             for telegram in self.soup.find_all('telegram')
         }
 
-    def _get_raw(self, source, bitarray):
+    @staticmethod
+    def _get_raw(source, bitarray):
         ''' Get raw data as integer, based on offset and size '''
         offset = int(source['offset'])
         size = int(source['size'])
         return int(''.join(['1' if digit else '0' for digit in bitarray[offset:offset + size]]), 2)
+
+    @staticmethod
+    def _set_raw(target, raw_value, bitarray):
+        ''' put value into bit array '''
+        offset = int(target['offset'])
+        size = int(target['size'])
+        for digit in range(size):
+            bitarray[offset+digit] = (raw_value >> (size-digit-1)) & 0x01 != 0
+        return bitarray
+
+    @staticmethod
+    def _get_rangeitem(source, raw_value):
+        for rangeitem in source.find_all('rangeitem'):
+            if raw_value in range(int(rangeitem.get('start', -1)), int(rangeitem.get('end', -1)) + 1):
+                return rangeitem
 
     def _get_value(self, source, bitarray):
         ''' Get value, based on the data in XML '''
@@ -66,11 +80,6 @@ class EEP(object):
                 'raw_value': raw_value,
             }
         }
-
-    def _get_rangeitem(self, source, raw_value):
-        for rangeitem in source.find_all('rangeitem'):
-            if raw_value in range(int(rangeitem.get('start', -1)), int(rangeitem.get('end', -1)) + 1):
-                return rangeitem
 
     def _get_enum(self, source, bitarray):
         ''' Get enum value, based on the data in XML '''
@@ -103,14 +112,6 @@ class EEP(object):
             }
         }
 
-    def _set_raw(self, target, raw_value, bitarray):
-        ''' put value into bit array '''
-        offset = int(target['offset'])
-        size = int(target['size'])
-        for digit in range(size):
-            bitarray[offset+digit] = (raw_value >> (size-digit-1)) & 0x01 != 0
-        return bitarray
-
     def _set_value(self, target, value, bitarray):
         ''' set given numeric value to target field in bitarray '''
         # derive raw value
@@ -141,30 +142,31 @@ class EEP(object):
             raw_value = int(value_item['value'])
         return self._set_raw(target, raw_value, bitarray)
 
-    def _set_boolean(self, target, data, bitarray):
+    @staticmethod
+    def _set_boolean(target, data, bitarray):
         ''' set given value to target bit in bitarray '''
         bitarray[int(target['offset'])] = data
         return bitarray
 
-    def find_profile(self, bitarray, rorg, func, type, direction=None):
+    def find_profile(self, bitarray, eep_rorg, rorg_func, rorg_type, direction=None):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
-        if not self.ok:
-            logger.warn('EEP.xml not loaded!')
+        if not self.init_ok:
+            self.logger.warn('EEP.xml not loaded!')
             return None
 
-        if rorg not in self.telegrams.keys():
-            logger.warn('Cannot find rorg in EEP!')
+        if eep_rorg not in self.telegrams.keys():
+            self.logger.warn('Cannot find rorg in EEP!')
             return None
 
-        if func not in self.telegrams[rorg].keys():
-            logger.warn('Cannot find func in EEP!')
+        if rorg_func not in self.telegrams[eep_rorg].keys():
+            self.logger.warn('Cannot find func in EEP!')
             return None
 
-        if type not in self.telegrams[rorg][func].keys():
-            logger.warn('Cannot find func in EEP!')
+        if rorg_type not in self.telegrams[eep_rorg][rorg_func].keys():
+            self.logger.warn('Cannot find func in EEP!')
             return None
 
-        profile = self.telegrams[rorg][func][type]
+        profile = self.telegrams[eep_rorg][rorg_func][rorg_type]
 
         # For VLD; multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
         # If this is the case, find data by the command id.
@@ -184,7 +186,7 @@ class EEP(object):
 
     def get_values(self, profile, bitarray, status):
         ''' Get keys and values from bitarray '''
-        if not self.ok or profile is None:
+        if not self.init_ok or profile is None:
             return [], {}
 
         output = OrderedDict({})
@@ -201,14 +203,14 @@ class EEP(object):
 
     def set_values(self, profile, data, status, properties):
         ''' Update data based on data contained in properties '''
-        if not self.ok or profile is None:
+        if not self.init_ok or profile is None:
             return data, status
 
-        for property, value in properties.items():
+        for shortcut, value in properties.items():
             # find the given property from EEP
-            target = profile.find(shortcut=property)
+            target = profile.find(shortcut=shortcut)
             if not target:
-                logger.warning('Cannot find data description for shortcut %s', property)
+                self.logger.warning('Cannot find data description for shortcut %s', shortcut)
                 continue
 
             # update bit_data

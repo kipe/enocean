@@ -10,14 +10,14 @@ except ImportError:
 from enocean.protocol.packet import Packet
 from enocean.protocol.constants import PARSE_RESULT
 
-logger = logging.getLogger('enocean.communicators.Communicator')
-
 
 class Communicator(threading.Thread):
     '''
     Communicator base-class for EnOcean.
     Not to be used directly, only serves as base class for SerialCommunicator etc.
     '''
+    logger = logging.getLogger('enocean.communicators.Communicator')
+
     def __init__(self, callback=None):
         super(Communicator, self).__init__()
         # Create an event to stop the thread
@@ -34,8 +34,8 @@ class Communicator(threading.Thread):
         ''' Get message from send queue, if one exists '''
         try:
             packet = self.transmit.get(block=False)
-            logger.info('Sending packet')
-            logger.debug(packet)
+            self.logger.info('Sending packet')
+            self.logger.debug(packet)
             return packet
         except queue.Empty:
             pass
@@ -43,7 +43,7 @@ class Communicator(threading.Thread):
 
     def send(self, packet):
         if not isinstance(packet, Packet):
-            logger.error('Object to send must be an instance of Packet')
+            self.logger.error('Object to send must be an instance of Packet')
             return False
         self.transmit.put(packet)
         return True
@@ -66,4 +66,4 @@ class Communicator(threading.Thread):
                     self.receive.put(packet)
                 else:
                     self.__callback(packet)
-                logger.debug(packet)
+                self.logger.debug(packet)

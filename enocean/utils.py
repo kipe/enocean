@@ -10,8 +10,8 @@ def get_bit(byte, bit):
 def combine_hex(data):
     ''' Combine list of integer values to one big integer '''
     output = 0x00
-    for i, d in enumerate(reversed(data)):
-        output |= (d << i * 8)
+    for i, value in enumerate(reversed(data)):
+        output |= (value << i * 8)
     return output
 
 
@@ -34,8 +34,8 @@ def to_hex_string(data):
     return ':'.join([('%02X' % o) for o in data])
 
 
-def from_hex_string(s):
-    reval = [int(x, 16) for x in s.split(':')]
+def from_hex_string(hex_string):
+    reval = [int(x, 16) for x in hex_string.split(':')]
     if len(reval) == 1:
         return reval[0]
     return reval

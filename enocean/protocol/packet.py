@@ -8,8 +8,6 @@ from enocean.protocol import crc8
 from enocean.protocol.eep import EEP
 from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3, DB4, DB6
 
-logger = logging.getLogger('enocean.protocol.packet')
-
 
 class Packet(object):
     '''
@@ -19,15 +17,27 @@ class Packet(object):
     parse_msg() returns subclass, if one is defined for the data type.
     '''
     eep = EEP()
+    logger = logging.getLogger('enocean.protocol.packet')
 
-    def __init__(self, type, data=[], optional=[]):
-        self.type = type
+    def __init__(self, packet_type, data=None, optional=None):
+        self.packet_type = packet_type
         self.rorg = RORG.UNDEFINED
         self.rorg_func = None
         self.rorg_type = None
         self.rorg_manufacturer = None
-        self.data = data
-        self.optional = optional
+
+        if not isinstance(data, list) or data is None:
+            self.logger.warning('Replacing Packet.data with default value.')
+            self.data = []
+        else:
+            self.data = data
+
+        if not isinstance(optional, list) or optional is None:
+            self.logger.warning('Replacing Packet.optional with default value.')
+            self.optional = []
+        else:
+            self.optional = optional
+
         self.status = 0
         self.parsed = OrderedDict({})
         self.repeater_count = 0
@@ -36,13 +46,13 @@ class Packet(object):
         self.parse()
 
     def __str__(self):
-        return '0x%02X %s %s %s' % (self.type, [hex(o) for o in self.data], [hex(o) for o in self.optional], self.parsed)
+        return '0x%02X %s %s %s' % (self.packet_type, [hex(o) for o in self.data], [hex(o) for o in self.optional], self.parsed)
 
     def __unicode__(self):
         return self.__str__()
 
     def __eq__(self, other):
-        return self.type == other.type and self.rorg == other.rorg and self.data == other.data and self.optional == other.optional
+        return self.packet_type == other.packet_type and self.rorg == other.rorg and self.data == other.data and self.optional == other.optional
 
     @property
     def _bit_data(self):
@@ -121,12 +131,12 @@ class Packet(object):
         # Check CRCs for header and data
         if msg[5] != crc8.calc(msg[1:5]):
             # Fail if doesn't match message
-            logger.error('Header CRC error!')
+            Packet.logger.error('Header CRC error!')
             # Return CRC_MISMATCH
             return PARSE_RESULT.CRC_MISMATCH, buf, None
         if msg[6 + data_len + opt_len] != crc8.calc(msg[6:6 + data_len + opt_len]):
             # Fail if doesn't match message
-            logger.error('Data CRC error!')
+            Packet.logger.error('Data CRC error!')
             # Return CRC_MISMATCH
             return PARSE_RESULT.CRC_MISMATCH, buf, None
 
@@ -145,13 +155,13 @@ class Packet(object):
         return PARSE_RESULT.OK, buf, packet
 
     @staticmethod
-    def create(packet_type, rorg, func, type, direction=None,
-               destination=[0xFF, 0xFF, 0xFF, 0xFF],
-               sender=[0xDE, 0xAD, 0xBE, 0xEF],
+    def create(packet_type, rorg, rorg_func, rorg_type, direction=None,
+               destination=None,
+               sender=None,
                learn=False, **kwargs):
         '''
         Creates an packet ready for sending.
-        Uses rorg, func and type to determine the values set based on EEP.
+        Uses rorg, rorg_func and rorg_type to determine the values set based on EEP.
         Additional arguments (**kwargs) are used for setting the values.
 
         Currently only supports:
@@ -172,6 +182,16 @@ class Packet(object):
             # At least for now, only support these RORGS.
             raise ValueError('RORG not supported by this function.')
 
+        if destination is None:
+            Packet.logger.warning('Replacing destination with broadcast address.')
+            destination = [0xFF, 0xFF, 0xFF, 0xFF]
+
+        # TODO: Should use the correct Base ID as default.
+        #       Might want to change the sender to be an offset from the actual address?
+        if sender is None:
+            Packet.logger.warning('Replacing sender with default address.')
+            sender = [0xDE, 0xAD, 0xBE, 0xEF]
+
         if not isinstance(destination, list) or len(destination) != 4:
             raise ValueError('Destination must a list containing 4 (numeric) values.')
 
@@ -189,7 +209,7 @@ class Packet(object):
         # and no security (security not supported as per EnOcean Serial Protocol).
         packet.optional = [3] + destination + [0xFF] + [0]
 
-        packet.select_eep(func, type, direction)
+        packet.select_eep(rorg_func, rorg_type, direction)
         packet.set_eep(kwargs)
         if rorg in [RORG.BS1, RORG.BS4] and not learn:
             if rorg == RORG.BS1:
@@ -202,7 +222,7 @@ class Packet(object):
         # For example, stuff like RadioPacket.learn should be set.
         packet = Packet.parse_msg(packet.build())[2]
         packet.rorg = rorg
-        packet.parse_eep(func, type, direction)
+        packet.parse_eep(rorg_func, rorg_type, direction)
         return packet
 
     def parse(self):
@@ -218,19 +238,19 @@ class Packet(object):
             self.repeater_count = enocean.utils.from_bitarray(self._bit_status[4:])
         return self.parsed
 
-    def select_eep(self, func, type, direction=None):
+    def select_eep(self, rorg_func, rorg_type, direction=None):
         ''' Set EEP based on FUNC and TYPE '''
         # set EEP profile
-        self.rorg_func = func
-        self.rorg_type = type
-        self._profile = self.eep.find_profile(self._bit_data, self.rorg, func, type, direction)
+        self.rorg_func = rorg_func
+        self.rorg_type = rorg_type
+        self._profile = self.eep.find_profile(self._bit_data, self.rorg, rorg_func, rorg_type, direction)
         return self._profile is not None
 
-    def parse_eep(self, func=None, type=None, direction=None):
+    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None):
         ''' Parse EEP based on FUNC and TYPE '''
         # set EEP profile, if demanded
-        if func is not None and type is not None:
-            self.select_eep(func, type, direction)
+        if rorg_func is not None and rorg_type is not None:
+            self.select_eep(rorg_func, rorg_type, direction)
         # parse data
         provides, values = self.eep.get_values(self._profile, self._bit_data, self._bit_status)
         self.parsed.update(values)
@@ -243,7 +263,7 @@ class Packet(object):
     def build(self):
         ''' Build Packet for sending to EnOcean controller '''
         data_length = len(self.data)
-        ords = [0x55, (data_length >> 8) & 0xFF, data_length & 0xFF, len(self.optional), int(self.type)]
+        ords = [0x55, (data_length >> 8) & 0xFF, data_length & 0xFF, len(self.optional), int(self.packet_type)]
         ords.append(crc8.calc(ords[1:5]))
         ords.extend(self.data)
         ords.extend(self.optional)
@@ -263,11 +283,9 @@ class RadioPacket(Packet):
         return '%s->%s (%d dBm): %s' % (self.sender_hex, self.destination_hex, self.dBm, packet_str)
 
     @staticmethod
-    def create(rorg, func, type, direction=None,
-               destination=[0xFF, 0xFF, 0xFF, 0xFF],
-               sender=[0xDE, 0xAD, 0xBE, 0xEF],
-               learn=False, **kwargs):
-        return Packet.create(PACKET.RADIO, rorg, func, type, direction, destination, sender, learn, **kwargs)
+    def create(rorg, rorg_func, rorg_type, direction=None,
+               destination=None, sender=None, learn=False, **kwargs):
+        return Packet.create(PACKET.RADIO, rorg, rorg_func, rorg_type, direction, destination, sender, learn, **kwargs)
 
     @property
     def sender_int(self):
@@ -306,7 +324,7 @@ class RadioPacket(Packet):
                     self.rorg_func = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_7:DB3.BIT_1])
                     self.rorg_type = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_1:DB2.BIT_2])
                     self.rorg_manufacturer = enocean.utils.from_bitarray(self._bit_data[DB2.BIT_2:DB0.BIT_7])
-                    logger.debug('learn received, EEP detected, RORG: 0x%02X, FUNC: 0x%02X, TYPE: 0x%02X, Manufacturer: 0x%02X' % (self.rorg, self.rorg_func, self.rorg_type, self.rorg_manufacturer))
+                    self.logger.debug('learn received, EEP detected, RORG: 0x%02X, FUNC: 0x%02X, TYPE: 0x%02X, Manufacturer: 0x%02X' % (self.rorg, self.rorg_func, self.rorg_type, self.rorg_manufacturer))
 
         return super(RadioPacket, self).parse()
 
