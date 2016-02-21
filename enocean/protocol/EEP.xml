@@ -325,6 +325,9 @@
             <item description="Power Failure Detection not detected/not supported/disabled" value="0" />
             <item description="Power Failure Detection Detected" value="1" />
           </enum>
+          <enum description="Command indentifier" shortcut="CMD" offset="4" size="4">
+            <rangeitem description="Command ID {value}" start="0" end="13" />
+          </enum>
           <enum description="Over current switch off" shortcut="OC" offset="8" size="1">
             <item description="Over current switch off: ready / not supported" value="0" />
             <item description="Over current switch off: executed" value="1" />
