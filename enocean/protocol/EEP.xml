@@ -286,7 +286,7 @@
             <item description="Valve position" value="0" />
             <item description="Temperature set point" value="1" />
           </enum>
-          <enum shortcut="SPI" description="Set point inverse" offset="22" size="1">
+          <enum shortcut="SPN" description="Set point inverse" offset="22" size="1">
             <item description="false" value="0" />
             <item description="true" value="1" />
           </enum>
