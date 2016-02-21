@@ -32,3 +32,10 @@ def to_hex_string(data):
     if isinstance(data, int):
         return '%02X' % data
     return ':'.join([('%02X' % o) for o in data])
+
+
+def from_hex_string(s):
+    reval = [int(x, 16) for x in s.split(':')]
+    if len(reval) == 1:
+        return reval[0]
+    return reval

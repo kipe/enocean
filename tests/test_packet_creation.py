@@ -4,8 +4,10 @@ from nose.tools import raises
 
 from enocean.protocol.packet import Packet, RadioPacket
 from enocean.protocol.constants import PACKET, RORG
+from .decorators import timing
 
 
+@timing(1000)
 def test_packet_assembly():
     PACKET_CONTENT_1 = bytearray([
         0x55,
@@ -97,6 +99,7 @@ def test_packet_assembly():
 
 
 # Corresponds to the tests done in test_eep
+@timing(1000)
 def test_temperature():
     TEMPERATURE = bytearray([
         0x55,
@@ -127,6 +130,7 @@ def test_temperature():
 
 
 # Corresponds to the tests done in test_eep
+@timing(1000)
 def test_magnetic_switch():
     MAGNETIC_SWITCH = bytearray([
         0x55,
@@ -187,6 +191,7 @@ def test_magnetic_switch():
     assert packet.learn is True
 
 
+@timing(1000)
 def test_switch():
     SWITCH = bytearray([
         0x55,
@@ -229,17 +234,20 @@ def test_switch():
     assert list(packet_serialized) == list(SWITCH)
 
 
+@timing(1000)
 @raises(ValueError)
 def test_illegal_eep_enum1():
     RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB='inexisting')
 
 
 @raises(ValueError)
+@timing(1000)
 def test_illegal_eep_enum2():
     RadioPacket.create(rorg=RORG.RPS, func=0x02, type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB=2)
 
 
 # Corresponds to the tests done in test_eep
+@timing(1000)
 def test_packets_with_destination():
     TEMPERATURE = bytearray([
         0x55,

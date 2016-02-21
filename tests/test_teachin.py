@@ -3,9 +3,11 @@ from __future__ import print_function, unicode_literals, division, absolute_impo
 
 from enocean.protocol.packet import Packet
 from enocean.protocol.constants import RORG
+from .decorators import timing
 
 
-def test_ute():
+@timing(rounds=100, limit=0.2)
+def test_ute_in():
     # ['0xd4', '0xa0', '0xff', '0x3e', '0x0', '0x1', '0x1', '0xd2', '0x1', '0x94', '0xe3', '0xb9', '0x0'] ['0x1', '0xff', '0xff', '0xff', '0xff', '0x40', '0x0']
     status, buf, p = Packet.parse_msg(bytearray([
         0x55,
