@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 from enocean.consolelogger import init_logging
+import enocean.utils
 from enocean.communicators.serialcommunicator import SerialCommunicator
-from enocean.protocol.packet import Packet, RadioPacket
+from enocean.protocol.packet import RadioPacket
 from enocean.protocol.constants import PACKET, RORG
 import sys
 import traceback
@@ -24,31 +25,11 @@ def assemble_radio_packet(transmitter_id):
 init_logging()
 communicator = SerialCommunicator()
 communicator.start()
+print('The Base ID of your module is %s.' % enocean.utils.to_hex_string(communicator.base_id))
 
-# Request transmitter ID
-packet = Packet(PACKET.COMMON_COMMAND, [0x08])
-communicator.send(packet)
-
-# Fetch the transmitter ID for sending packages.
-# NOT TESTED!!!
-# Needs testing, and if functional, a similar loop should be implemented to the communicator initialization.
-# This ID would then be used to send all future messages.
-transmitter_id = None
-while transmitter_id is None:
-    try:
-        packet = communicator.receive.get(block=True, timeout=1)
-        if packet.packet_type == PACKET.RESPONSE:
-            transmitter_id = packet.response_data
-            # send custom radio packet
-            communicator.send(assemble_radio_packet(transmitter_id))
-        break
-    except queue.Empty:
-        continue
-    except KeyboardInterrupt:
-        break
-    except Exception:
-        traceback.print_exc(file=sys.stdout)
-        break
+if communicator.base_id is not None:
+    print('Sending example package.')
+    communicator.send(assemble_radio_packet(communicator.base_id))
 
 # endless loop receiving radio packets
 while communicator.is_alive():
