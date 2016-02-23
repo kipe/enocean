@@ -92,7 +92,7 @@ class Packet(object):
         self.status = enocean.utils.from_bitarray(value)
 
     @staticmethod
-    def parse_msg(buf):
+    def parse_msg(buf, communicator=None):
         '''
         Parses message from buffer.
         returns:
@@ -144,7 +144,7 @@ class Packet(object):
         if packet_type == PACKET.RADIO:
             # Need to handle UTE Teach-in here, as it's a separate packet type...
             if data[0] == RORG.UTE:
-                packet = UTETeachIn(packet_type, data, opt_data)
+                packet = UTETeachIn(packet_type, data, opt_data, communicator=communicator)
             else:
                 packet = RadioPacket(packet_type, data, opt_data)
         elif packet_type == PACKET.RESPONSE:
@@ -347,6 +347,10 @@ class UTETeachIn(RadioPacket):
     rorg_of_eep = RORG.UNDEFINED
     request_type = NOT_SPECIFIC
 
+    def __init__(self, packet_type, data=None, optional=None, communicator=None):
+        self.__communicator = communicator
+        super(UTETeachIn, self).__init__(packet_type=packet_type, data=data, optional=optional)
+
     @property
     def bidirectional(self):
         return not self.unidirectional
@@ -371,6 +375,9 @@ class UTETeachIn(RadioPacket):
         return self.parsed
 
     def create_response(self, accepted=True, not_accepted_reason=EEP_NOT_SUPPORTED):
+        pass
+
+    def send_response(self):
         pass
 
 
