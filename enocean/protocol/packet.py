@@ -155,7 +155,7 @@ class Packet(object):
         return PARSE_RESULT.OK, buf, packet
 
     @staticmethod
-    def create(packet_type, rorg, rorg_func, rorg_type, direction=None,
+    def create(packet_type, rorg, rorg_func, rorg_type, direction=None, command=None,
                destination=None,
                sender=None,
                learn=False, **kwargs):
@@ -166,7 +166,7 @@ class Packet(object):
 
         Currently only supports:
             - PACKET.RADIO
-            - RORGs RPS, BS1, and BS4.
+            - RORGs RPS, BS1, BS4, VLD.
 
         TODO:
             - Require sender to be set? Would force the "correct" sender to be set.
@@ -178,7 +178,7 @@ class Packet(object):
             # At least for now, only support PACKET.RADIO.
             raise ValueError('Packet type not supported by this function.')
 
-        if rorg not in [RORG.RPS, RORG.BS1, RORG.BS4]:
+        if rorg not in [RORG.RPS, RORG.BS1, RORG.BS4, RORG.VLD]:
             # At least for now, only support these RORGS.
             raise ValueError('RORG not supported by this function.')
 
@@ -201,15 +201,22 @@ class Packet(object):
         packet = Packet(packet_type)
         packet.rorg = rorg
         packet.data = [packet.rorg]
+        # Select EEP at this point, so we know how many bits we're dealing with (for VLD).
+        packet.select_eep(rorg_func, rorg_type, direction, command)
+
         # Initialize data depending on the profile.
-        packet.data.extend([0] * 4 if rorg == RORG.BS4 else [0])
+        if rorg in [RORG.RPS, RORG.BS1]:
+            packet.data.extend([0])
+        elif rorg == RORG.BS4:
+            packet.data.extend([0, 0, 0, 0])
+        else:
+            packet.data.extend([0] * int(packet._profile.get('bits', '1')))
         packet.data.extend(sender)
         packet.data.extend([0])
         # Always use sub-telegram 3, maximum dbm (as per spec, when sending),
         # and no security (security not supported as per EnOcean Serial Protocol).
         packet.optional = [3] + destination + [0xFF] + [0]
 
-        packet.select_eep(rorg_func, rorg_type, direction)
         packet.set_eep(kwargs)
         if rorg in [RORG.BS1, RORG.BS4] and not learn:
             if rorg == RORG.BS1:
@@ -222,7 +229,7 @@ class Packet(object):
         # For example, stuff like RadioPacket.learn should be set.
         packet = Packet.parse_msg(packet.build())[2]
         packet.rorg = rorg
-        packet.parse_eep(rorg_func, rorg_type, direction)
+        packet.parse_eep(rorg_func, rorg_type, direction, command)
         return packet
 
     def parse(self):
@@ -238,19 +245,19 @@ class Packet(object):
             self.repeater_count = enocean.utils.from_bitarray(self._bit_status[4:])
         return self.parsed
 
-    def select_eep(self, rorg_func, rorg_type, direction=None):
+    def select_eep(self, rorg_func, rorg_type, direction=None, command=None):
         ''' Set EEP based on FUNC and TYPE '''
         # set EEP profile
         self.rorg_func = rorg_func
         self.rorg_type = rorg_type
-        self._profile = self.eep.find_profile(self._bit_data, self.rorg, rorg_func, rorg_type, direction)
+        self._profile = self.eep.find_profile(self._bit_data, self.rorg, rorg_func, rorg_type, direction, command)
         return self._profile is not None
 
-    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None):
+    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None, command=None):
         ''' Parse EEP based on FUNC and TYPE '''
         # set EEP profile, if demanded
         if rorg_func is not None and rorg_type is not None:
-            self.select_eep(rorg_func, rorg_type, direction)
+            self.select_eep(rorg_func, rorg_type, direction, command)
         # parse data
         provides, values = self.eep.get_values(self._profile, self._bit_data, self._bit_status)
         self.parsed.update(values)
@@ -283,9 +290,9 @@ class RadioPacket(Packet):
         return '%s->%s (%d dBm): %s' % (self.sender_hex, self.destination_hex, self.dBm, packet_str)
 
     @staticmethod
-    def create(rorg, rorg_func, rorg_type, direction=None,
+    def create(rorg, rorg_func, rorg_type, direction=None, command=None,
                destination=None, sender=None, learn=False, **kwargs):
-        return Packet.create(PACKET.RADIO, rorg, rorg_func, rorg_type, direction, destination, sender, learn, **kwargs)
+        return Packet.create(PACKET.RADIO, rorg, rorg_func, rorg_type, direction, command, destination, sender, learn, **kwargs)
 
     @property
     def sender_int(self):
