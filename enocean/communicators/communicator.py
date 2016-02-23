@@ -8,7 +8,7 @@ try:
 except ImportError:
     import Queue as queue
 from enocean.protocol.packet import Packet
-from enocean.protocol.constants import PARSE_RESULT
+from enocean.protocol.constants import PACKET, PARSE_RESULT, RETURN_CODE
 
 
 class Communicator(threading.Thread):
@@ -29,6 +29,7 @@ class Communicator(threading.Thread):
         self.receive = queue.Queue()
         # Set the callback method
         self.__callback = callback
+        self._base_id = None
 
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
@@ -67,3 +68,28 @@ class Communicator(threading.Thread):
                 else:
                     self.__callback(packet)
                 self.logger.debug(packet)
+
+    @property
+    def base_id(self):
+        ''' Fetches Base ID from the transmitter, if required. Otherwise returns the currently set Base ID. '''
+        # If base id is already set, return it.
+        if self._base_id is not None:
+            return self._base_id
+
+        # Send COMMON_COMMAND 0x08, CO_RD_IDBASE request to the module
+        self.send(Packet(PACKET.COMMON_COMMAND, data=[0x08]))
+        # Loop over 10 times, to make sure we catch the response.
+        # Thanks to timeout, shouldn't take more than a second.
+        # Unfortunately, all other messages received during this time are ignored.
+        for i in range(0, 10):
+            try:
+                p = self.receive.get(block=True, timeout=0.1)
+                # We're only interested in responses to the request in question.
+                if p.packet_type == PACKET.RESPONSE and p.response == RETURN_CODE.OK and len(p.response_data) == 4:
+                    # Base ID is set in the response data.
+                    self._base_id = p.response_data
+                    break
+            except queue.Empty:
+                continue
+        # Return the current Base ID (might be None).
+        return self._base_id
