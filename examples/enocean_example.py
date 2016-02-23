@@ -37,7 +37,7 @@ transmitter_id = None
 while transmitter_id is None:
     try:
         packet = communicator.receive.get(block=True, timeout=1)
-        if packet.type == PACKET.RESPONSE:
+        if packet.packet_type == PACKET.RESPONSE:
             transmitter_id = packet.response_data
             # send custom radio packet
             communicator.send(assemble_radio_packet(transmitter_id))
@@ -56,18 +56,18 @@ while communicator.is_alive():
         # Loop to empty the queue...
         packet = communicator.receive.get(block=True, timeout=1)
 
-        if packet.type == PACKET.RADIO and packet.rorg == RORG.BS4:
+        if packet.packet_type == PACKET.RADIO and packet.rorg == RORG.BS4:
             # parse packet with given FUNC and TYPE
             for k in packet.parse_eep(0x02, 0x05):
                 print('%s: %s' % (k, packet.parsed[k]))
-        if packet.type == PACKET.RADIO and packet.rorg == RORG.BS1:
+        if packet.packet_type == PACKET.RADIO and packet.rorg == RORG.BS1:
             # alternatively you can select FUNC and TYPE explicitely
             packet.select_eep(0x00, 0x01)
             # parse it
             packet.parse_eep()
             for k in packet.parsed:
                 print('%s: %s' % (k, packet.parsed[k]))
-        if packet.type == PACKET.RADIO and packet.rorg == RORG.RPS:
+        if packet.packet_type == PACKET.RADIO and packet.rorg == RORG.RPS:
             for k in packet.parse_eep(0x02, 0x02):
                 print('%s: %s' % (k, packet.parsed[k]))
     except queue.Empty:

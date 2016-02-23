@@ -39,7 +39,7 @@ communicator.send(packet)
 while communicator.is_alive():
     try:
         receivedPacket = communicator.receive.get(block=True, timeout=1)
-        if receivedPacket.type == PACKET.RESPONSE:
+        if receivedPacket.packet_type == PACKET.RESPONSE:
             print('Return Code: %s' % utils.to_hex_string(receivedPacket.data[0]))
             print('APP version: %s' % utils.to_hex_string(receivedPacket.data[1:5]))
             print('API version: %s' % utils.to_hex_string(receivedPacket.data[5:9]))
