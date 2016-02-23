@@ -276,3 +276,25 @@ def test_packets_with_destination():
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
     assert list(packet_serialized) == list(MAGNETIC_SWITCH)
     assert packet.learn is False
+
+
+@timing(1000)
+def test_vld():
+    SWITCH = bytearray([
+        0x55,
+        0x00, 0x09, 0x07, 0x01,
+        0x56,
+        0xD2, 0x01, 0x1E, 0x64, 0xDE, 0xAD, 0xBE, 0xEF, 0x00,
+        0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+        0x5A
+    ])
+    packet = RadioPacket.create(rorg=RORG.VLD, rorg_func=0x01, rorg_type=0x01, command=1, CMD=1, DV=0, IO=0x1E, OV=0x64)
+    packet_serialized = packet.build()
+
+    assert len(packet_serialized) == len(SWITCH)
+    assert list(packet_serialized) == list(SWITCH)
+    assert packet.parsed['CMD']['raw_value'] == 0x01
+    assert packet.parsed['IO']['raw_value'] == 0x1E
+    assert packet.parsed['IO']['value'] == 'All output channels supported by the device'
+    assert packet.parsed['DV']['value'] == 'Switch to new output value'
+    assert packet.parsed['OV']['value'] == 'Output value 100% or ON'
