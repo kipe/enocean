@@ -18,7 +18,7 @@ class Communicator(threading.Thread):
     '''
     logger = logging.getLogger('enocean.communicators.Communicator')
 
-    def __init__(self, callback=None, learn_in=True):
+    def __init__(self, callback=None, teach_in=True):
         super(Communicator, self).__init__()
         # Create an event to stop the thread
         self._stop_flag = threading.Event()
@@ -33,7 +33,7 @@ class Communicator(threading.Thread):
         self._base_id = None
         # Should new messages be learned automatically? Defaults to True.
         # TODO: Not sure if we should use CO_WR_LEARNMODE??
-        self.learn_in = learn_in
+        self.teach_in = teach_in
 
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
