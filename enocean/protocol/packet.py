@@ -145,6 +145,10 @@ class Packet(object):
             # Need to handle UTE Teach-in here, as it's a separate packet type...
             if data[0] == RORG.UTE:
                 packet = UTETeachIn(packet_type, data, opt_data, communicator=communicator)
+                # Send a response automatically, works only if
+                # - communicator is set
+                # - communicator.teach_in == True
+                packet.send_response()
             else:
                 packet = RadioPacket(packet_type, data, opt_data)
         elif packet_type == PACKET.RESPONSE:
@@ -216,6 +220,10 @@ class Packet(object):
         # Always use sub-telegram 3, maximum dbm (as per spec, when sending),
         # and no security (security not supported as per EnOcean Serial Protocol).
         packet.optional = [3] + destination + [0xFF] + [0]
+
+        if command:
+            # Set CMD to command, if applicable.. Helps with VLD.
+            kwargs['CMD'] = command
 
         packet.set_eep(kwargs)
         if rorg in [RORG.BS1, RORG.BS4] and not learn:
@@ -343,16 +351,17 @@ class UTETeachIn(RadioPacket):
     NOT_SPECIFIC = 0b10
 
     # Response types
-    NOT_ACCEPTED = 0b00
-    TEACHIN_ACCEPTED = 0b01
-    DELETE_ACCEPTED = 0b10
-    EEP_NOT_SUPPORTED = 0b11
+    NOT_ACCEPTED = [False, False]
+    TEACHIN_ACCEPTED = [False, True]
+    DELETE_ACCEPTED = [True, False]
+    EEP_NOT_SUPPORTED = [True, True]
 
     unidirectional = False
     response_expected = False
     number_of_channels = 0xFF
     rorg_of_eep = RORG.UNDEFINED
     request_type = NOT_SPECIFIC
+    channel = None
 
     def __init__(self, packet_type, data=None, optional=None, communicator=None):
         self.__communicator = communicator
@@ -376,16 +385,38 @@ class UTETeachIn(RadioPacket):
         self.response_expected = not self._bit_data[DB6.BIT_6]
         self.request_type = enocean.utils.from_bitarray(self._bit_data[DB6.BIT_5:DB6.BIT_3])
         self.rorg_manufacturer = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_2:DB2.BIT_7] + self._bit_data[DB4.BIT_7:DB3.BIT_7])
+        self.channel = self.data[2]
         self.rorg_type = self.data[5]
         self.rorg_func = self.data[6]
         self.rorg_of_eep = self.data[7]
         return self.parsed
 
-    def create_response(self, accepted=True, not_accepted_reason=EEP_NOT_SUPPORTED):
-        pass
+    def _create_response_packet(self, sender_id, response=TEACHIN_ACCEPTED):
+        # Create data:
+        # - Respond with same RORG (UTE Teach-in)
+        # - Always use bidirectional communication, set response code, set command identifier.
+        # - Databytes 5 to 0 are copied from the original message
+        # - Set sender id and status
+        data = [self.rorg] + \
+               [enocean.utils.from_bitarray([True, False] + response + [False, False, False, True])] + \
+               self.data[2:8] + \
+               sender_id + [0]
 
-    def send_response(self):
-        pass
+        # Always use 0x03 to indicate sending, attach sender ID, dBm, and security level
+        optional = [0x03] + self.sender + [0xFF, 0x00]
+
+        return RadioPacket(PACKET.RADIO, data=data, optional=optional)
+
+    def send_response(self, response=TEACHIN_ACCEPTED):
+        if self.__communicator is None:
+            self.logger.error('Communicator not set, cannot send UTE teach-in response.')
+            return
+        if not self.__communicator.teach_in:
+            self.logger.info('Communicator not set to teach-in mode, not sending UTE teach-in response.')
+            return
+        self.logger.info('Sending response to UTE teach-in.')
+        self.__communicator.send(
+            self._create_response_packet(self.__communicator.base_id))
 
 
 class ResponsePacket(Packet):
