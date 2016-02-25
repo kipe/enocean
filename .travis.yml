@@ -12,7 +12,7 @@ install:
   - pip install pylint coverage
   - pip install -e .
 script:
-  - nosetests -s -q --with-coverage --cover-package=enocean
+  - nosetests -s -q
 env:
   - WITH_TIMINGS=0
   - WITH_TIMINGS=1
@@ -24,3 +24,4 @@ matrix:
 
 after_success:
   - pylint enocean -d line-too-long
+  - nosetests -s -q --with-coverage --cover-package=enocean
