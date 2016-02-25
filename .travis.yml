@@ -9,10 +9,10 @@ python:
   - "pypy"
   - "pypy3"
 install:
-  - pip install pylint
+  - pip install pylint coverage
   - pip install -e .
 script:
-  - nosetests -s -q
+  - nosetests -s -q --with-coverage --cover-package=enocean
 env:
   - WITH_TIMINGS=0
   - WITH_TIMINGS=1
