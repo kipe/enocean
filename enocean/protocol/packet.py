@@ -145,6 +145,10 @@ class Packet(object):
             # Need to handle UTE Teach-in here, as it's a separate packet type...
             if data[0] == RORG.UTE:
                 packet = UTETeachIn(packet_type, data, opt_data, communicator=communicator)
+                # Send a response automatically, works only if
+                # - communicator is set
+                # - communicator.teach_in == True
+                packet.send_response()
             else:
                 packet = RadioPacket(packet_type, data, opt_data)
         elif packet_type == PACKET.RESPONSE:
@@ -155,7 +159,7 @@ class Packet(object):
         return PARSE_RESULT.OK, buf, packet
 
     @staticmethod
-    def create(packet_type, rorg, rorg_func, rorg_type, direction=None,
+    def create(packet_type, rorg, rorg_func, rorg_type, direction=None, command=None,
                destination=None,
                sender=None,
                learn=False, **kwargs):
@@ -166,7 +170,7 @@ class Packet(object):
 
         Currently only supports:
             - PACKET.RADIO
-            - RORGs RPS, BS1, and BS4.
+            - RORGs RPS, BS1, BS4, VLD.
 
         TODO:
             - Require sender to be set? Would force the "correct" sender to be set.
@@ -178,7 +182,7 @@ class Packet(object):
             # At least for now, only support PACKET.RADIO.
             raise ValueError('Packet type not supported by this function.')
 
-        if rorg not in [RORG.RPS, RORG.BS1, RORG.BS4]:
+        if rorg not in [RORG.RPS, RORG.BS1, RORG.BS4, RORG.VLD]:
             # At least for now, only support these RORGS.
             raise ValueError('RORG not supported by this function.')
 
@@ -201,15 +205,26 @@ class Packet(object):
         packet = Packet(packet_type)
         packet.rorg = rorg
         packet.data = [packet.rorg]
+        # Select EEP at this point, so we know how many bits we're dealing with (for VLD).
+        packet.select_eep(rorg_func, rorg_type, direction, command)
+
         # Initialize data depending on the profile.
-        packet.data.extend([0] * 4 if rorg == RORG.BS4 else [0])
+        if rorg in [RORG.RPS, RORG.BS1]:
+            packet.data.extend([0])
+        elif rorg == RORG.BS4:
+            packet.data.extend([0, 0, 0, 0])
+        else:
+            packet.data.extend([0] * int(packet._profile.get('bits', '1')))
         packet.data.extend(sender)
         packet.data.extend([0])
         # Always use sub-telegram 3, maximum dbm (as per spec, when sending),
         # and no security (security not supported as per EnOcean Serial Protocol).
         packet.optional = [3] + destination + [0xFF] + [0]
 
-        packet.select_eep(rorg_func, rorg_type, direction)
+        if command:
+            # Set CMD to command, if applicable.. Helps with VLD.
+            kwargs['CMD'] = command
+
         packet.set_eep(kwargs)
         if rorg in [RORG.BS1, RORG.BS4] and not learn:
             if rorg == RORG.BS1:
@@ -222,7 +237,7 @@ class Packet(object):
         # For example, stuff like RadioPacket.learn should be set.
         packet = Packet.parse_msg(packet.build())[2]
         packet.rorg = rorg
-        packet.parse_eep(rorg_func, rorg_type, direction)
+        packet.parse_eep(rorg_func, rorg_type, direction, command)
         return packet
 
     def parse(self):
@@ -238,19 +253,19 @@ class Packet(object):
             self.repeater_count = enocean.utils.from_bitarray(self._bit_status[4:])
         return self.parsed
 
-    def select_eep(self, rorg_func, rorg_type, direction=None):
+    def select_eep(self, rorg_func, rorg_type, direction=None, command=None):
         ''' Set EEP based on FUNC and TYPE '''
         # set EEP profile
         self.rorg_func = rorg_func
         self.rorg_type = rorg_type
-        self._profile = self.eep.find_profile(self._bit_data, self.rorg, rorg_func, rorg_type, direction)
+        self._profile = self.eep.find_profile(self._bit_data, self.rorg, rorg_func, rorg_type, direction, command)
         return self._profile is not None
 
-    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None):
+    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None, command=None):
         ''' Parse EEP based on FUNC and TYPE '''
         # set EEP profile, if demanded
         if rorg_func is not None and rorg_type is not None:
-            self.select_eep(rorg_func, rorg_type, direction)
+            self.select_eep(rorg_func, rorg_type, direction, command)
         # parse data
         provides, values = self.eep.get_values(self._profile, self._bit_data, self._bit_status)
         self.parsed.update(values)
@@ -283,9 +298,9 @@ class RadioPacket(Packet):
         return '%s->%s (%d dBm): %s' % (self.sender_hex, self.destination_hex, self.dBm, packet_str)
 
     @staticmethod
-    def create(rorg, rorg_func, rorg_type, direction=None,
+    def create(rorg, rorg_func, rorg_type, direction=None, command=None,
                destination=None, sender=None, learn=False, **kwargs):
-        return Packet.create(PACKET.RADIO, rorg, rorg_func, rorg_type, direction, destination, sender, learn, **kwargs)
+        return Packet.create(PACKET.RADIO, rorg, rorg_func, rorg_type, direction, command, destination, sender, learn, **kwargs)
 
     @property
     def sender_int(self):
@@ -336,16 +351,17 @@ class UTETeachIn(RadioPacket):
     NOT_SPECIFIC = 0b10
 
     # Response types
-    NOT_ACCEPTED = 0b00
-    TEACHIN_ACCEPTED = 0b01
-    DELETE_ACCEPTED = 0b10
-    EEP_NOT_SUPPORTED = 0b11
+    NOT_ACCEPTED = [False, False]
+    TEACHIN_ACCEPTED = [False, True]
+    DELETE_ACCEPTED = [True, False]
+    EEP_NOT_SUPPORTED = [True, True]
 
     unidirectional = False
     response_expected = False
     number_of_channels = 0xFF
     rorg_of_eep = RORG.UNDEFINED
     request_type = NOT_SPECIFIC
+    channel = None
 
     def __init__(self, packet_type, data=None, optional=None, communicator=None):
         self.__communicator = communicator
@@ -369,16 +385,38 @@ class UTETeachIn(RadioPacket):
         self.response_expected = not self._bit_data[DB6.BIT_6]
         self.request_type = enocean.utils.from_bitarray(self._bit_data[DB6.BIT_5:DB6.BIT_3])
         self.rorg_manufacturer = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_2:DB2.BIT_7] + self._bit_data[DB4.BIT_7:DB3.BIT_7])
+        self.channel = self.data[2]
         self.rorg_type = self.data[5]
         self.rorg_func = self.data[6]
         self.rorg_of_eep = self.data[7]
         return self.parsed
 
-    def create_response(self, accepted=True, not_accepted_reason=EEP_NOT_SUPPORTED):
-        pass
+    def _create_response_packet(self, sender_id, response=TEACHIN_ACCEPTED):
+        # Create data:
+        # - Respond with same RORG (UTE Teach-in)
+        # - Always use bidirectional communication, set response code, set command identifier.
+        # - Databytes 5 to 0 are copied from the original message
+        # - Set sender id and status
+        data = [self.rorg] + \
+               [enocean.utils.from_bitarray([True, False] + response + [False, False, False, True])] + \
+               self.data[2:8] + \
+               sender_id + [0]
 
-    def send_response(self):
-        pass
+        # Always use 0x03 to indicate sending, attach sender ID, dBm, and security level
+        optional = [0x03] + self.sender + [0xFF, 0x00]
+
+        return RadioPacket(PACKET.RADIO, data=data, optional=optional)
+
+    def send_response(self, response=TEACHIN_ACCEPTED):
+        if self.__communicator is None:
+            self.logger.error('Communicator not set, cannot send UTE teach-in response.')
+            return
+        if not self.__communicator.teach_in:
+            self.logger.info('Communicator not set to teach-in mode, not sending UTE teach-in response.')
+            return
+        self.logger.info('Sending response to UTE teach-in.')
+        self.__communicator.send(
+            self._create_response_packet(self.__communicator.base_id))
 
 
 class ResponsePacket(Packet):

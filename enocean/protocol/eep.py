@@ -6,6 +6,7 @@ from collections import OrderedDict
 from bs4 import BeautifulSoup
 
 import enocean.utils
+from enocean.protocol.constants import RORG
 
 
 class EEP(object):
@@ -85,11 +86,8 @@ class EEP(object):
         ''' Get enum value, based on the data in XML '''
         raw_value = self._get_raw(source, bitarray)
 
-        # Try, if there's any rangeitems.
-        value_desc = self._get_rangeitem(source, raw_value)
-        if not value_desc:
-            # If a matching rangeitem wasn't found, find a traditional item.
-            value_desc = source.find('item', {'value': str(raw_value)})
+        # Find value description.
+        value_desc = source.find('item', {'value': str(raw_value)}) or self._get_rangeitem(source, raw_value)
 
         return {
             source['shortcut']: {
@@ -130,7 +128,7 @@ class EEP(object):
         # derive raw value
         if isinstance(value, int):
             # check whether this value exists
-            if target.find('item', {'value': value}):
+            if target.find('item', {'value': value}) or self._get_rangeitem(target, value):
                 # set integer values directly
                 raw_value = value
             else:
@@ -148,7 +146,7 @@ class EEP(object):
         bitarray[int(target['offset'])] = data
         return bitarray
 
-    def find_profile(self, bitarray, eep_rorg, rorg_func, rorg_type, direction=None):
+    def find_profile(self, bitarray, eep_rorg, rorg_func, rorg_type, direction=None, command=None):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
         if not self.init_ok:
             self.logger.warn('EEP.xml not loaded!')
@@ -168,15 +166,20 @@ class EEP(object):
 
         profile = self.telegrams[eep_rorg][rorg_func][rorg_type]
 
-        # For VLD; multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
-        # If this is the case, find data by the command id.
-        command = profile.find('command', recursive=False)
-        if command:
-            command = self._get_enum(command, bitarray).values()
-            # If command wasn't found, the message isn't supported...
-            if not command:
-                return None
-            return profile.find('data', {'command': list(command)[0].get('raw_value')}, recursive=False)
+        if eep_rorg == RORG.VLD:
+            # For VLD; multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
+            # If this is the case, find data by the command id.
+            # Select command by user argument, and fall back to finding the command from EEP.
+            command = command or profile.find('command', recursive=False)
+            if command:
+                if not isinstance(command, int):
+                    command = self._get_enum(command, bitarray).values()
+                    # If command wasn't found, the message isn't supported...
+                    if not command:
+                        return None
+                    command = list(command)[0].get('raw_value')
+                # Command should be set at this point, if possible...
+                return profile.find('data', {'command': str(command)}, recursive=False)
 
         # extract data description
         # the direction tag is optional

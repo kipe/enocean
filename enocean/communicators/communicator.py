@@ -18,7 +18,7 @@ class Communicator(threading.Thread):
     '''
     logger = logging.getLogger('enocean.communicators.Communicator')
 
-    def __init__(self, callback=None, learn_in=True):
+    def __init__(self, callback=None, teach_in=True):
         super(Communicator, self).__init__()
         # Create an event to stop the thread
         self._stop_flag = threading.Event()
@@ -33,7 +33,7 @@ class Communicator(threading.Thread):
         self._base_id = None
         # Should new messages be learned automatically? Defaults to True.
         # TODO: Not sure if we should use CO_WR_LEARNMODE??
-        self.learn_in = learn_in
+        self.teach_in = teach_in
 
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
@@ -87,13 +87,18 @@ class Communicator(threading.Thread):
         # Unfortunately, all other messages received during this time are ignored.
         for i in range(0, 10):
             try:
-                p = self.receive.get(block=True, timeout=0.1)
+                packet = self.receive.get(block=True, timeout=0.1)
                 # We're only interested in responses to the request in question.
-                if p.packet_type == PACKET.RESPONSE and p.response == RETURN_CODE.OK and len(p.response_data) == 4:
+                if packet.packet_type == PACKET.RESPONSE and packet.response == RETURN_CODE.OK and len(packet.response_data) == 4:
                     # Base ID is set in the response data.
-                    self._base_id = p.response_data
+                    self._base_id = packet.response_data
                     break
             except queue.Empty:
                 continue
         # Return the current Base ID (might be None).
         return self._base_id
+
+    @base_id.setter
+    def base_id(self, base_id):
+        ''' Sets the Base ID manually, only for testing purposes. '''
+        self._base_id = base_id
