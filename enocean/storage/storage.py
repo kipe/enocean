@@ -96,7 +96,7 @@ class Storage(object):
         if not os.path.exists(self.location):
             try:
                 # Try to create the directories
-                os.makedirs(os.path.dirname(self.location), mode=0755)
+                os.makedirs(os.path.dirname(self.location), mode=0o755)
             except OSError as exception:
                 # If the directories already exist, it's OK
                 if exception.errno == errno.EEXIST:
