@@ -57,7 +57,8 @@ def test_used_offsets():
     s.wipe()
 
 
-@timing(100)
+# IMO this shouldn't take more than 100 ms.
+@timing(100, 100)
 def test_devices_add_remove():
     s = Storage(PATH)
     assert s.load_device('DE:AD:BE:EF') is None
