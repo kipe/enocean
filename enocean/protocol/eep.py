@@ -20,12 +20,10 @@ class EEP(object):
             with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml'), 'r') as xml_file:
                 self.soup = BeautifulSoup(xml_file.read(), "html.parser")
             self.init_ok = True
+            self.__load_xml()
         except IOError:
             self.logger.warn('Cannot load protocol file!')
-
-        if not self.init_ok:
-            return
-        self.__load_xml()
+            self.init_ok = False
 
     def __load_xml(self):
         self.telegrams = {
