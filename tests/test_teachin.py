@@ -7,7 +7,7 @@ from enocean.protocol.constants import RORG, DB6
 from .decorators import timing
 
 
-@timing(rounds=100, limit=0.2)
+@timing(rounds=100, limit=750)
 def test_ute_in():
     communicator = Communicator()
     communicator.base_id = [0xDE, 0xAD, 0xBE, 0xEF]
