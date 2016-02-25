@@ -35,7 +35,7 @@ def test_used_offsets():
     for i in range(0, 127):
         s.add_to_used_offsets(i)
         assert s.next_offset == i + 1
-    assert s.used_offsets == range(0, 127)
+    assert s.used_offsets == list(range(0, 127))
 
     s.add_to_used_offsets(127)
     try:
@@ -43,7 +43,7 @@ def test_used_offsets():
         assert False
     except ValueError:
         pass
-    assert s.used_offsets == range(0, 128)
+    assert s.used_offsets == list(range(0, 128))
 
     try:
         s.add_to_used_offsets(4096)
@@ -53,12 +53,11 @@ def test_used_offsets():
 
     s.remove_from_used_offsets(45)
     assert s.next_offset == 45
-    assert s.used_offsets == range(0, 45) + range(46, 128)
+    assert s.used_offsets == list(range(0, 45)) + list(range(46, 128))
     s.wipe()
 
 
-# IMO this shouldn't take more than 100 ms.
-@timing(100, 100)
+@timing(100)
 def test_devices_add_remove():
     s = Storage(PATH)
     assert s.load_device('DE:AD:BE:EF') is None
