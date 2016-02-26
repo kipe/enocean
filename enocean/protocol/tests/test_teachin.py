@@ -4,7 +4,7 @@ from __future__ import print_function, unicode_literals, division, absolute_impo
 from enocean.communicators import Communicator
 from enocean.protocol.packet import Packet
 from enocean.protocol.constants import RORG, DB6
-from .decorators import timing
+from enocean.decorators import timing
 
 
 @timing(rounds=100, limit=750)
