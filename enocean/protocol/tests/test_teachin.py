@@ -4,7 +4,7 @@ from __future__ import print_function, unicode_literals, division, absolute_impo
 from enocean.communicators import Communicator
 from enocean.protocol.packet import Packet
 from enocean.protocol.constants import RORG, DB6
-from .decorators import timing
+from enocean.decorators import timing
 
 
 @timing(rounds=100, limit=750)
@@ -34,6 +34,8 @@ def test_ute_in():
     assert packet.rorg_type == 0x01
     assert packet.teach_in is True
     assert packet.delete is False
+    assert packet.learn is True
+    assert packet.contains_eep is True
 
     response_packet = packet.create_response_packet(communicator.base_id)
     assert response_packet.sender_hex == 'DE:AD:BE:EF'
