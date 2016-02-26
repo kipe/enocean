@@ -2,7 +2,7 @@
 from __future__ import print_function, unicode_literals, division, absolute_import
 import os
 from enocean.storage import Storage
-from .decorators import timing
+from enocean.decorators import timing
 
 PATH = '/tmp/enocean-tests.json'
 
