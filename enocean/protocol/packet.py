@@ -360,6 +360,7 @@ class UTETeachIn(RadioPacket):
     channel = None
 
     response_sent = False
+    contains_eep = True
 
     def __init__(self, packet_type, data=None, optional=None):
         super(UTETeachIn, self).__init__(packet_type=packet_type, data=data, optional=optional)
@@ -386,6 +387,8 @@ class UTETeachIn(RadioPacket):
         self.rorg_type = self.data[5]
         self.rorg_func = self.data[6]
         self.rorg_of_eep = self.data[7]
+        if self.teach_in:
+            self.learn = True
         return self.parsed
 
     def create_response_packet(self, sender_id, response=TEACHIN_ACCEPTED):
