@@ -35,6 +35,8 @@ def test_ute_in():
     assert packet.rorg_type == 0x01
     assert packet.teach_in is True
     assert packet.delete is False
+    assert packet.learn is True
+    assert packet.contains_eep is True
 
     response_packet = packet._create_response_packet(communicator.base_id)
     assert response_packet.sender_hex == 'DE:AD:BE:EF'
