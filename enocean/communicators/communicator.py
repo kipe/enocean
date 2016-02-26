@@ -25,7 +25,7 @@ class Communicator(threading.Thread):
         # Input buffer
         self._buffer = []
         # Setup packet queues
-        self.transmit = queue.Queue()
+        self.transmit = queue.PriorityQueue()
         self.receive = queue.Queue()
         # Set the callback method
         self.__callback = callback
@@ -38,7 +38,7 @@ class Communicator(threading.Thread):
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
         try:
-            packet = self.transmit.get(block=False)
+            priority, packet = self.transmit.get(block=False)
             self.logger.info('Sending packet')
             self.logger.debug(packet)
             return packet
@@ -70,12 +70,12 @@ class Communicator(threading.Thread):
             self._receive()
             self.parse()
 
-    def send(self, packet):
+    def send(self, packet, priority=100):
         ''' Adds a packet to the transmit queue. '''
         if not isinstance(packet, Packet):
             self.logger.error('Object to send must be an instance of Packet')
             return False
-        self.transmit.put(packet)
+        self.transmit.put((priority, packet))
         return True
 
     def stop(self):
@@ -99,7 +99,7 @@ class Communicator(threading.Thread):
                         self.logger.info('Communicator not set to teach-in mode, not sending UTE teach-in response.')
                     else:
                         self.logger.info('Sending response to UTE teach-in.')
-                        self.send(packet.create_response_packet(self.base_id))
+                        self.send(packet.create_response_packet(self.base_id), priority=0)
                         packet.response_sent = True
 
                 if self.__callback is None:

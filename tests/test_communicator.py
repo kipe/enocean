@@ -18,22 +18,38 @@ def test_buffer():
         0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x2D, 0x00,
         0x75
     ])
-    com = Communicator()
-    com._buffer.extend(data[0:5])
-    com.parse()
-    assert com.receive.qsize() == 0
-    com._buffer.extend(data[5:])
-    com.parse()
-    assert com.receive.qsize() == 1
+    communicator = Communicator()
+    communicator._buffer.extend(data[0:5])
+    communicator.parse()
+    assert communicator.receive.qsize() == 0
+    communicator._buffer.extend(data[5:])
+    communicator.parse()
+    assert communicator.receive.qsize() == 1
 
 
 @timing(1000)
 def test_send():
     ''' Test sending packets to Communicator '''
-    com = Communicator()
-    assert com.send('AJSNDJASNDJANSD') is False
-    assert com.transmit.qsize() == 0
-    assert com._get_from_send_queue() is None
-    assert com.send(Packet(PACKET.COMMON_COMMAND, [0x08])) is True
-    assert com.transmit.qsize() == 1
-    assert isinstance(com._get_from_send_queue(), Packet)
+    communicator = Communicator()
+    assert communicator.send('AJSNDJASNDJANSD') is False
+    assert communicator.transmit.qsize() == 0
+    assert communicator._get_from_send_queue() is None
+    assert communicator.send(Packet(PACKET.COMMON_COMMAND, [0x08])) is True
+    assert communicator.transmit.qsize() == 1
+    assert isinstance(communicator._get_from_send_queue(), Packet)
+
+
+def test_send_priority():
+    ''' Test priorities when sending packages. '''
+    communicator = Communicator()
+    communicator.send(Packet(PACKET.COMMON_COMMAND, [0x04]), priority=4)
+    communicator.send(Packet(PACKET.COMMON_COMMAND, [0x05]), priority=5)
+    communicator.send(Packet(PACKET.COMMON_COMMAND, [0x02]), priority=2)
+    communicator.send(Packet(PACKET.COMMON_COMMAND, [0x00]), priority=0)
+    communicator.send(Packet(PACKET.COMMON_COMMAND, [0x01]), priority=1)
+    communicator.send(Packet(PACKET.COMMON_COMMAND, [0x03]), priority=3)
+
+    for i in range(6):
+        priority, packet = communicator.transmit.get()
+        assert priority == i
+        assert packet.data == [i]
