@@ -6,21 +6,16 @@ from enocean.communicators.utils import send_to_tcp_socket
 import sys
 import traceback
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
-
 init_logging()
 communicator = SerialCommunicator()
 communicator.start()
 while communicator.is_alive():
     try:
         # Loop to empty the queue...
-        packet = communicator.receive.get(block=True, timeout=1)
+        packet = communicator.get_packet()
+        if packet is None:
+            continue
         send_to_tcp_socket('localhost', 9637, packet)
-    except queue.Empty:
-        continue
     except KeyboardInterrupt:
         break
     except Exception:

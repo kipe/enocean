@@ -8,11 +8,6 @@ from enocean.protocol.constants import PACKET, RORG
 import sys
 import traceback
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
-
 
 def assemble_radio_packet(transmitter_id):
     return RadioPacket.create(rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01,
@@ -35,7 +30,9 @@ if communicator.base_id is not None:
 while communicator.is_alive():
     try:
         # Loop to empty the queue...
-        packet = communicator.receive.get(block=True, timeout=1)
+        packet = communicator.get_packet()
+        if packet is None:
+            continue
 
         if packet.packet_type == PACKET.RADIO and packet.rorg == RORG.BS4:
             # parse packet with given FUNC and TYPE
@@ -51,8 +48,6 @@ while communicator.is_alive():
         if packet.packet_type == PACKET.RADIO and packet.rorg == RORG.RPS:
             for k in packet.parse_eep(0x02, 0x02):
                 print('%s: %s' % (k, packet.parsed[k]))
-    except queue.Empty:
-        continue
     except KeyboardInterrupt:
         break
     except Exception:

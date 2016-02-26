@@ -15,11 +15,6 @@ from enocean.communicators import SerialCommunicator
 from enocean.protocol.packet import RadioPacket, UTETeachIn
 from enocean.protocol.constants import RORG
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
-
 
 def send_command(destination, output_value):
     global communicator
@@ -59,12 +54,13 @@ devices_learned = []
 while communicator.is_alive():
     try:
         # Loop to empty the queue...
-        packet = communicator.receive.get(block=True, timeout=1)
+        packet = communicator.get_packet()
+        if packet is None:
+            continue
+
         if isinstance(packet, UTETeachIn):
             print('New device learned! The ID is %s.' % (packet.sender_hex))
             devices_learned.append(packet.sender)
-    except queue.Empty:
-        continue
     except KeyboardInterrupt:
         break
     except Exception:

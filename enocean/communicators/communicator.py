@@ -7,7 +7,7 @@ try:
     import queue
 except ImportError:
     import Queue as queue
-from enocean.protocol.packet import Packet
+from enocean.protocol.packet import Packet, UTETeachIn
 from enocean.protocol.constants import PACKET, PARSE_RESULT, RETURN_CODE
 
 
@@ -25,7 +25,7 @@ class Communicator(threading.Thread):
         # Input buffer
         self._buffer = []
         # Setup packet queues
-        self.transmit = queue.Queue()
+        self.transmit = queue.PriorityQueue()
         self.receive = queue.Queue()
         # Set the callback method
         self.__callback = callback
@@ -38,7 +38,7 @@ class Communicator(threading.Thread):
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
         try:
-            packet = self.transmit.get(block=False)
+            priority, packet = self.transmit.get(block=False)
             self.logger.info('Sending packet')
             self.logger.debug(packet)
             return packet
@@ -46,27 +46,74 @@ class Communicator(threading.Thread):
             pass
         return None
 
-    def send(self, packet):
+    def _receive(self):
+        ''' Receive messages from the device, to be implemented in the child class. '''
+        raise NotImplementedError
+
+    def _transmit(self, packet):
+        ''' Transmit messages with the device, to be implemented in the child class. '''
+        raise NotImplementedError
+
+    def run(self):
+        '''
+        Main loop for communicator.
+        Calls _receive() and _transmit() from the child class to receive and send messages.
+        '''
+        while not self._stop_flag.is_set():
+            # If there's messages in transmit queue, send them
+            while True:
+                packet = self._get_from_send_queue()
+                if not packet:
+                    break
+                self._transmit(packet)
+            # Read new messages from the device.
+            self._receive()
+            self.parse()
+
+    def get_packet(self, block=True, timeout=1):
+        '''
+        Fetches packet from receive queue.
+        Optional arguments are the same as in Queue.get().
+        https://docs.python.org/2/library/queue.html#Queue.Queue.get
+        '''
+        # TODO: change to PriorityQueue in v0.5.
+        try:
+            return self.receive.get(block=block, timeout=timeout)
+        except queue.Empty:
+            return None
+
+    def send(self, packet, priority=100):
+        ''' Adds a packet to the transmit queue. '''
         if not isinstance(packet, Packet):
             self.logger.error('Object to send must be an instance of Packet')
             return False
-        self.transmit.put(packet)
+        self.transmit.put((priority, packet))
         return True
 
     def stop(self):
+        ''' Stops the communicator. '''
         self._stop_flag.set()
 
     def parse(self):
         ''' Parses messages and puts them to receive queue '''
         # Loop while we get new messages
         while True:
-            status, self._buffer, packet = Packet.parse_msg(self._buffer, communicator=self)
+            status, self._buffer, packet = Packet.parse_msg(self._buffer)
             # If message is incomplete -> break the loop
             if status == PARSE_RESULT.INCOMPLETE:
                 return status
 
             # If message is OK, add it to receive queue or send to the callback method
             if status == PARSE_RESULT.OK and packet:
+                # Send automatic responses to UTETeachIn -packets.
+                if isinstance(packet, UTETeachIn):
+                    if not self.teach_in:
+                        self.logger.info('Communicator not set to teach-in mode, not sending UTE teach-in response.')
+                    else:
+                        self.logger.info('Sending response to UTE teach-in.')
+                        self.send(packet.create_response_packet(self.base_id), priority=0)
+                        packet.response_sent = True
+
                 if self.__callback is None:
                     self.receive.put(packet)
                 else:
