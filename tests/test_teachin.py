@@ -36,7 +36,7 @@ def test_ute_in():
     assert packet.teach_in is True
     assert packet.delete is False
 
-    response_packet = packet._create_response_packet(communicator.base_id)
+    response_packet = packet.create_response_packet(communicator.base_id)
     assert response_packet.sender_hex == 'DE:AD:BE:EF'
     assert response_packet.destination_hex == '01:94:E3:B9'
     assert response_packet._bit_data[DB6.BIT_5:DB6.BIT_3] == [False, True]

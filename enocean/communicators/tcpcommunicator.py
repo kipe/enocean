@@ -15,30 +15,36 @@ class TCPCommunicator(Communicator):
         self.host = host
         self.port = port
 
-    def run(self):
         self.logger.info('TCPCommunicator started')
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.bind((self.host, self.port))
-        sock.listen(5)
-        sock.settimeout(0.5)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.bind((self.host, self.port))
+        self.sock.listen(5)
+        self.sock.settimeout(0.5)
 
-        while not self._stop_flag.is_set():
-            try:
-                (client, addr) = sock.accept()
-            except socket.timeout:
-                continue
-            self.logger.debug('Client "%s" connected' % (addr))
-            client.settimeout(0.5)
-            while True and not self._stop_flag.is_set():
-                try:
-                    data = client.recv(2048)
-                except socket.timeout:
-                    break
-                if not data:
-                    break
-                self._buffer.extend(bytearray(data))
-            self.parse()
-            client.close()
-            self.logger.debug('Client disconnected')
-        sock.close()
+    def _receive(self):
+        try:
+            (client, addr) = self.sock.accept()
+        except socket.timeout:
+            return
+
+        self.logger.debug('Client "%s" connected' % (addr))
+        client.settimeout(0.5)
+
+        try:
+            data = client.recv(2048)
+        except socket.timeout:
+            return
+        if not data:
+            return
+        self._buffer.extend(bytearray(data))
+
+        client.close()
+        self.logger.debug('Client disconnected')
+
+    def _transmit(self, packet):
+        pass
+
+    def stop(self):
+        self.sock.close()
         self.logger.info('TCPCommunicator stopped')
+        super(TCPCommunicator, self).stop()

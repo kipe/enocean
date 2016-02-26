@@ -14,25 +14,20 @@ class SerialCommunicator(Communicator):
         super(SerialCommunicator, self).__init__(callback)
         # Initialize serial port
         self.__ser = serial.Serial(port, 57600, timeout=0.1)
-
-    def run(self):
         self.logger.info('SerialCommunicator started')
-        while not self._stop_flag.is_set():
-            # If there's messages in transmit queue
-            # send them
-            while True:
-                packet = self._get_from_send_queue()
-                if not packet:
-                    break
-                self.__ser.write(bytearray(packet.build()))
 
-            # Read chars from serial port as hex numbers
-            try:
-                self._buffer.extend(bytearray(self.__ser.read(16)))
-            except serial.SerialException:
-                self.logger.error('Serial port exception! (device disconnected or multiple access on port?)')
-                break
-            self.parse()
+    def _receive(self):
+        # Read chars from serial port as hex numbers
+        try:
+            self._buffer.extend(bytearray(self.__ser.read(16)))
+        except serial.SerialException:
+            self.logger.error('Serial port exception! (device disconnected or multiple access on port?)')
+            pass
 
+    def _transmit(self, packet):
+        self.__ser.write(bytearray(packet.build()))
+
+    def stop(self):
         self.__ser.close()
         self.logger.info('SerialCommunicator stopped')
+        super(SerialCommunicator, self).stop()
