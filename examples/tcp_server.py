@@ -6,18 +6,15 @@ from enocean.protocol.constants import PACKET, RORG
 import sys
 import traceback
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
-
 init_logging()
 communicator = TCPCommunicator()
 communicator.start()
 while communicator.is_alive():
     try:
         # Loop to empty the queue...
-        packet = communicator.receive.get(block=True, timeout=1)
+        packet = communicator.get_packet()
+        if packet is None:
+            continue
         if packet.packet_type == PACKET.RADIO and packet.rorg == RORG.BS4:
             for k in packet.parse_eep(0x02, 0x05):
                 print('%s: %s' % (k, packet.parsed[k]))
@@ -27,8 +24,6 @@ while communicator.is_alive():
         if packet.packet_type == PACKET.RADIO and packet.rorg == RORG.RPS:
             for k in packet.parse_eep(0x02, 0x04):
                 print('%s: %s' % (k, packet.parsed[k]))
-    except queue.Empty:
-        continue
     except KeyboardInterrupt:
         break
     except Exception:

@@ -18,11 +18,6 @@ from enocean import utils
 import traceback
 import sys
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
-
 init_logging()
 """
 '/dev/ttyUSB0' might change depending on where your device is.
@@ -38,7 +33,9 @@ communicator.send(packet)
 
 while communicator.is_alive():
     try:
-        receivedPacket = communicator.receive.get(block=True, timeout=1)
+        receivedPacket = communicator.get_packet()
+        if receivedPacket is None:
+            continue
         if receivedPacket.packet_type == PACKET.RESPONSE:
             print('Return Code: %s' % utils.to_hex_string(receivedPacket.data[0]))
             print('APP version: %s' % utils.to_hex_string(receivedPacket.data[1:5]))
@@ -47,9 +44,6 @@ while communicator.is_alive():
             print('Chip Version: %s' % utils.to_hex_string(receivedPacket.data[13:17]))
             print('App Description Version: %s' % utils.to_hex_string(receivedPacket.data[17:]))
             print('App Description Version (ASCII): %s' % str(bytearray(receivedPacket.data[17:])))
-
-    except queue.Empty:
-        continue
     except KeyboardInterrupt:
         break
     except Exception:

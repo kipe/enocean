@@ -70,6 +70,18 @@ class Communicator(threading.Thread):
             self._receive()
             self.parse()
 
+    def get_packet(self, block=True, timeout=1):
+        '''
+        Fetches packet from receive queue.
+        Optional arguments are the same as in Queue.get().
+        https://docs.python.org/2/library/queue.html#Queue.Queue.get
+        '''
+        # TODO: change to PriorityQueue in v0.5.
+        try:
+            return self.receive.get(block=block, timeout=timeout)
+        except queue.Empty:
+            return None
+
     def send(self, packet, priority=100):
         ''' Adds a packet to the transmit queue. '''
         if not isinstance(packet, Packet):

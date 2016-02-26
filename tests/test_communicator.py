@@ -2,7 +2,7 @@
 from __future__ import print_function, unicode_literals, division, absolute_import
 
 from enocean.communicators.communicator import Communicator
-from enocean.protocol.packet import Packet
+from enocean.protocol.packet import Packet, RadioPacket
 from enocean.protocol.constants import PACKET
 from .decorators import timing
 
@@ -25,6 +25,7 @@ def test_buffer():
     communicator._buffer.extend(data[5:])
     communicator.parse()
     assert communicator.receive.qsize() == 1
+    assert isinstance(communicator.get_packet(), RadioPacket)
 
 
 @timing(1000)
