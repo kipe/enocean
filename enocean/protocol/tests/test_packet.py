@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 
-from enocean.protocol.packet import Packet
-from enocean.protocol.constants import PACKET, PARSE_RESULT
+from enocean.protocol.packet import Packet, EventPacket
+from enocean.protocol.constants import PACKET, PARSE_RESULT, EVENT_CODE
 from enocean.decorators import timing
 
 
@@ -102,7 +102,7 @@ def test_packet_examples():
             ]),
             'data_len': 5,
             'opt_len': 1,
-        }
+        },
     }
 
     for packet, values in telegram_examples.items():
@@ -153,8 +153,51 @@ def test_packet_fails():
             0x70,
             0x38
         ]),
+        bytearray([
+            0x55,
+            0x00, 0x01
+        ]),
     )
 
     for msg in fail_examples:
         status, remainder, packet = Packet.parse_msg(msg)
         assert status in [PARSE_RESULT.INCOMPLETE, PARSE_RESULT.CRC_MISMATCH]
+
+
+def test_packet_equals():
+    data_1 = bytearray([
+        0x55,
+        0x00, 0x01, 0x00, 0x05,
+        0x70,
+        0x08,
+        0x38
+    ])
+    data_2 = bytearray([
+        0x55,
+        0x00, 0x01, 0x00, 0x05,
+        0x70,
+        0x08,
+        0x38
+    ])
+    _, _, packet_1 = Packet.parse_msg(data_1)
+    _, _, packet_2 = Packet.parse_msg(data_2)
+
+    assert str(packet_1) == '0x%02X %s %s %s' % (packet_1.packet_type, [hex(o) for o in packet_1.data], [hex(o) for o in packet_1.optional], packet_1.parsed)
+    assert str(packet_1) == str(packet_2)
+    assert packet_1 == packet_2
+
+
+def test_event_packet():
+    data = bytearray([
+        0x55,
+        0x00, 0x01, 0x00, 0x04,
+        0x77,
+        0x01,
+        0x07
+    ])
+
+    _, _, packet = Packet.parse_msg(data)
+    assert isinstance(packet, EventPacket)
+    assert packet.event == EVENT_CODE.SA_RECLAIM_NOT_SUCCESFUL
+    assert packet.event_data == []
+    assert packet.optional == []

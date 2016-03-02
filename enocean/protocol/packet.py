@@ -149,6 +149,8 @@ class Packet(object):
                 packet = RadioPacket(packet_type, data, opt_data)
         elif packet_type == PACKET.RESPONSE:
             packet = ResponsePacket(packet_type, data, opt_data)
+        elif packet_type == PACKET.EVENT:
+            packet = EventPacket(packet_type, data, opt_data)
         else:
             packet = Packet(packet_type, data, opt_data)
 
