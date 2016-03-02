@@ -153,8 +153,34 @@ def test_packet_fails():
             0x70,
             0x38
         ]),
+        bytearray([
+            0x55,
+            0x00, 0x01
+        ]),
     )
 
     for msg in fail_examples:
         status, remainder, packet = Packet.parse_msg(msg)
         assert status in [PARSE_RESULT.INCOMPLETE, PARSE_RESULT.CRC_MISMATCH]
+
+
+def test_packet_equals():
+    data_1 = bytearray([
+        0x55,
+        0x00, 0x01, 0x00, 0x05,
+        0x70,
+        0x08,
+        0x38
+    ])
+    data_2 = bytearray([
+        0x55,
+        0x00, 0x01, 0x00, 0x05,
+        0x70,
+        0x08,
+        0x38
+    ])
+    _, _, packet_1 = Packet.parse_msg(data_1)
+    _, _, packet_2 = Packet.parse_msg(data_2)
+
+    assert str(packet_1) == unicode(packet_1)
+    assert packet_1 == packet_2
