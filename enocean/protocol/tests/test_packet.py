@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 
-from enocean.protocol.packet import Packet
-from enocean.protocol.constants import PACKET, PARSE_RESULT
+from enocean.protocol.packet import Packet, EventPacket
+from enocean.protocol.constants import PACKET, PARSE_RESULT, EVENT_CODE
 from enocean.decorators import timing
 
 
@@ -102,7 +102,7 @@ def test_packet_examples():
             ]),
             'data_len': 5,
             'opt_len': 1,
-        }
+        },
     }
 
     for packet, values in telegram_examples.items():
@@ -184,3 +184,19 @@ def test_packet_equals():
 
     assert str(packet_1) == unicode(packet_1)
     assert packet_1 == packet_2
+
+
+def test_event_packet():
+    data = bytearray([
+        0x55,
+        0x00, 0x01, 0x00, 0x04,
+        0x77,
+        0x01,
+        0x07
+    ])
+
+    _, _, packet = Packet.parse_msg(data)
+    assert isinstance(packet, EventPacket)
+    assert packet.event == EVENT_CODE.SA_RECLAIM_NOT_SUCCESFUL
+    assert packet.event_data == []
+    assert packet.optional == []
