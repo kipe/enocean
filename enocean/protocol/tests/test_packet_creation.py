@@ -4,7 +4,7 @@ from nose.tools import raises
 
 from enocean.protocol.packet import Packet, RadioPacket
 from enocean.protocol.constants import PACKET, RORG
-from enocean.decorators import timing
+from enocean.tests.decorators import timing
 
 
 @timing(1000)
@@ -262,6 +262,8 @@ def test_packets_with_destination():
     assert len(packet_serialized) == len(TEMPERATURE)
     assert list(packet_serialized) == list(TEMPERATURE)
     assert packet.learn is False
+    assert packet.sender_int == 25278276
+    assert packet.destination_int == 3735928559
 
     MAGNETIC_SWITCH = bytearray([
         0x55,
@@ -288,7 +290,7 @@ def test_vld():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0x5A
     ])
-    packet = RadioPacket.create(rorg=RORG.VLD, rorg_func=0x01, rorg_type=0x01, command=1, CMD=1, DV=0, IO=0x1E, OV=0x64)
+    packet = RadioPacket.create(rorg=RORG.VLD, rorg_func=0x01, rorg_type=0x01, command=1, DV=0, IO=0x1E, OV=0x64)
     packet_serialized = packet.build()
 
     assert len(packet_serialized) == len(SWITCH)
@@ -298,3 +300,26 @@ def test_vld():
     assert packet.parsed['IO']['value'] == 'All output channels supported by the device'
     assert packet.parsed['DV']['value'] == 'Switch to new output value'
     assert packet.parsed['OV']['value'] == 'Output value 100% or ON'
+
+
+def test_fails():
+    try:
+        Packet.create(PACKET.RESPONSE, 0xA5, 0x01, 0x01)
+        assert False
+    except ValueError:
+        assert True
+    try:
+        Packet.create(PACKET.RADIO, 0xA6, 0x01, 0x01)
+        assert False
+    except ValueError:
+        assert True
+    try:
+        Packet.create(PACKET.RADIO, 0xA5, 0x01, 0x01, destination='ASDASDASD')
+        assert False
+    except ValueError:
+        assert True
+    try:
+        Packet.create(PACKET.RADIO, 0xA5, 0x01, 0x01, sender='ASDASDASD')
+        assert False
+    except ValueError:
+        assert True
