@@ -3,7 +3,7 @@ from __future__ import print_function, unicode_literals, division, absolute_impo
 
 from enocean.communicators.communicator import Communicator
 from enocean.protocol.packet import Packet, RadioPacket
-from enocean.protocol.constants import PACKET
+from enocean.protocol.constants import PACKET, RORG
 from enocean.decorators import timing
 
 
@@ -114,3 +114,30 @@ def test_base_id():
     com.parse()
     assert com.base_id == [0xFF, 0x87, 0xCA, 0x00]
     assert com.receive.qsize() == 2
+
+
+def test_fails():
+    com = Communicator()
+    try:
+        com._receive()
+        assert False
+    except NotImplementedError:
+        assert True
+
+    try:
+        com._transmit(RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB], CO='closed'))
+        assert False
+    except NotImplementedError:
+        assert True
+
+
+def test_thread():
+    com = Communicator()
+    assert com.get_packet() is None
+    # Stupid mock to get around Communicator._receive and Communicator._transmit raising an error.
+    com._receive = lambda: ''
+    com._transmit = lambda packet: ''
+
+    com.start()
+    com.base_id
+    com.stop()
