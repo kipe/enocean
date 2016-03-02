@@ -139,7 +139,11 @@ class Communicator(threading.Thread):
                 if packet.packet_type == PACKET.RESPONSE and packet.response == RETURN_CODE.OK and len(packet.response_data) == 4:
                     # Base ID is set in the response data.
                     self._base_id = packet.response_data
+                    # Put packet back to the Queue, so the user can also react to it if required...
+                    self.receive.put(packet)
                     break
+                # Put other packets back to the Queue.
+                self.receive.put(packet)
             except queue.Empty:
                 continue
         # Return the current Base ID (might be None).
