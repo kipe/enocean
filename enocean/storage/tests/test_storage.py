@@ -1,12 +1,21 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 import os
-from enocean.storage import Storage
+from enocean.storage import Storage, Device
 from enocean.decorators import timing
 
 PATH = '/tmp/enocean-tests.json'
+# Remove the file to be sure...
+try:
+    os.unlink(PATH)
+except OSError:
+    pass
 
-# NOTE: Always end the tests with Storage.wipe, so nothing is left behind.
+
+def test_storage_creation_default_path():
+    # DO NOT WIPE HERE!!!!
+    # Would cause data loss!
+    Storage()
 
 
 @timing(1000)
@@ -42,44 +51,55 @@ def test_used_offsets():
         s.next_offset
         assert False
     except ValueError:
-        pass
+        assert True
     assert s.used_offsets == list(range(0, 128))
 
     try:
         s.add_to_used_offsets(4096)
         assert False
     except ValueError:
-        pass
+        assert True
 
     s.remove_from_used_offsets(45)
+    try:
+        s.remove_from_used_offsets(45)
+    except ValueError:
+        pass
     assert s.next_offset == 45
     assert s.used_offsets == list(range(0, 45)) + list(range(46, 128))
+
+    s.used_offsets = []
+    assert s.used_offsets == []
     s.wipe()
 
 
-# IMO this shouldn't take more than 100 ms.
 @timing(100, 100)
 def test_devices_add_remove():
     s = Storage(PATH)
-    assert s.load_device('DE:AD:BE:EF') is None
+    try:
+        s.load_device('DE:AD:BE:EF')
+        assert False
+    except KeyError:
+        assert True
 
-    s.save_device(
-        [0xDE, 0xAD, 0xBE, 0xEF],
-        0xA5,
-    )
+    s.save_device(Device(
+        id=[0xDE, 0xAD, 0xBE, 0xEF],
+        eep_rorg=0xA5,
+    ))
 
     device = s.load_device('DE:AD:BE:EF')
     assert device is not None
-    assert device.get('device_id') == [0xDE, 0xAD, 0xBE, 0xEF]
-    assert device.get('eep_rorg') == 0xA5
-    assert device.get('eep_func') is None
-    assert device.get('eep_type') is None
-    assert device.get('transmitter_offset') is None
+    assert device.id == [0xDE, 0xAD, 0xBE, 0xEF]
+    assert device.eep_rorg == 0xA5
+    assert device.eep_func is None
+    assert device.eep_type is None
+    assert device.transmitter_offset is None
 
-    device['eep_func'] = 0x01
-    device['eep_type'] = 0x01
-    device['transmitter_offset'] = 1
-    s.save_device(**device)
+    device.eep_func = 0x01
+    device.eep_type = 0x01
+    device.transmitter_offset = 1
+    device.name = 'test'
+    s.save_device(device)
     assert s.next_offset == 0
     assert s.used_offsets == [1]
 
@@ -88,16 +108,30 @@ def test_devices_add_remove():
 
     device = s.load_device('DE:AD:BE:EF')
     assert device is not None
-    assert device.get('device_id') == [0xDE, 0xAD, 0xBE, 0xEF]
-    assert device.get('eep_rorg') == 0xA5
-    assert device.get('eep_func') == 0x01
-    assert device.get('eep_type') == 0x01
-    assert device.get('transmitter_offset') == 1
+    assert device.id == [0xDE, 0xAD, 0xBE, 0xEF]
+    assert device.eep_rorg == 0xA5
+    assert device.eep_func == 0x01
+    assert device.eep_type == 0x01
+    assert device.transmitter_offset == 1
+    assert device.name == 'test'
     assert 1 in s.used_offsets
+
+    try:
+        s.save_device(device.as_dict())
+        assert False
+    except ValueError:
+        pass
+
+    s.remove_device('DE:AD:BE:EF')
 
     # Reload Storage, just to make sure save was successful.
     s.load()
-    s.remove_device('DE:AD:BE:EF')
     assert s.devices == {}
+
+    try:
+        s.remove_device('DE:AD:BE:EF')
+        assert False
+    except KeyError:
+        assert True
 
     s.wipe()

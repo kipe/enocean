@@ -5,6 +5,8 @@ import json
 import errno
 import logging
 import enocean.utils
+from enocean.storage.device import Device
+from enocean.storage.enoceanencoder import EnOceanEncoder
 
 
 class Storage(object):
@@ -13,6 +15,7 @@ class Storage(object):
     logger = logging.getLogger('enocean.storage.storage')
 
     def __init__(self, location=None):
+        ''' Loads storage from set location, defaulting to ~/.config/enocean/storage.json '''
         if location is None:
             location = '~/.config/enocean/storage.json'
         self.location = os.path.abspath(os.path.expanduser(location))
@@ -30,18 +33,21 @@ class Storage(object):
 
     @used_offsets.setter
     def used_offsets(self, value):
-        ''' Sets a list of used transmitter offsets '''
-        if isinstance(value, list):
-            self.data['used_transmitter_offsets'] = value
-        raise ValueError('Storage.used_offsets value must be a list.')
+        '''
+        Sets a list of used transmitter offsets.
+        If value is not a list, raises ValueError.
+        '''
+        if not isinstance(value, list):
+            raise ValueError('Storage.used_offsets value must be a list.')
+        self.data['used_transmitter_offsets'] = value
 
     def add_to_used_offsets(self, value):
-        ''' Adds value to used offsets. '''
+        '''
+        Adds value to used offsets.
+        If offset value is not in range 0-127, raises ValueError.
+        '''
         if not isinstance(value, int) or value < 0 or value > 127:
             raise ValueError('offset value must be an integer in the range 0 - 127.')
-
-        if 'used_transmitter_offsets' not in self.data:
-            self.data['used_transmitter_offsets'] = []
 
         if value not in self.data['used_transmitter_offsets']:
             self.data['used_transmitter_offsets'].append(value)
@@ -69,16 +75,21 @@ class Storage(object):
     def load(self):
         ''' Loads data from storage. '''
         self.logger.debug('Loading storage')
+        self.data = {
+            'storage_version': self.__version__,
+            'used_transmitter_offsets': [],
+            'devices': {},
+        }
+
         if not os.path.exists(self.location):
-            self.data = {
-                'storage_version': self.__version__,
-                'used_transmitter_offsets': [],
-                'devices': {},
-            }
-            return {}
+            return self.data
 
         with open(self.location, 'r') as f:
-            self.data = json.loads(f.read())
+            self.data.update(**json.loads(f.read()))
+            self.data['devices'] = {
+                device_id: Device(**device_data)
+                for device_id, device_data in self.data.get('devices', {}).items()
+            }
         # Convert storage versions here, if needed.
         # To be implemented if (and when) needed.
         # Something like:
@@ -99,14 +110,12 @@ class Storage(object):
                 os.makedirs(os.path.dirname(self.location), mode=0o755)
             except OSError as exception:
                 # If the directories already exist, it's OK
-                if exception.errno == errno.EEXIST:
-                    pass
-                # Otherwise, re-raise the exception.
-                else:
+                # Otherwise, raise the exception.
+                if exception.errno != errno.EEXIST:
                     raise
 
         with open(self.location, 'w') as f:
-            f.write(json.dumps(self.data))
+            f.write(json.dumps(self.data, cls=EnOceanEncoder))
 
     def wipe(self):
         ''' Wipes data from storage, removing everything. '''
@@ -132,65 +141,32 @@ class Storage(object):
         Loads device from Storage by device id.
         Input:
             - device id (as an list of integers or hex-string)
-        If found, returns an dictionary containing (at least):
-            - id (as a list of integers)
-            - eep_rorg (integer)
-            - eep_func (integer or None)
-            - eep_type (integer or None)
-            - transmitter_offset (integer or None)
-        If not found, returns None.
+        If found, returns Device
+        If not found, raises KeyError.
         '''
         if isinstance(device_id, list):
             device_id = enocean.utils.to_hex_string(device_id)
 
-        device = self.data.get('devices', {}).get(device_id, None)
-        if device is None:
-            self.logger.warning('No device found with ID "%s"' % (device_id))
-            return None
+        try:
+            return self.data.get('devices', {})[device_id]
+        except KeyError:
+            raise KeyError('No device found with ID "%s"' % (device_id))
 
-        device['device_id'] = enocean.utils.from_hex_string(device_id)
-        device['eep_rorg'] = enocean.utils.from_hex_string(device.get('eep_rorg', '0x00'))
-        device['eep_func'] = None if device.get('eep_func', None) is None else enocean.utils.from_hex_string(device['eep_func'])
-        device['eep_type'] = None if device.get('eep_type', None) is None else enocean.utils.from_hex_string(device['eep_type'])
-        device['transmitter_offset'] = None if device.get('transmitter_offset', None) is None else device['transmitter_offset']
-
-        return device
-
-    def save_device(self, device_id, eep_rorg, eep_func=None, eep_type=None, transmitter_offset=None):
+    def save_device(self, device):
         '''
         Saves device to Storage.
-        Required arguments are:
-            - device_id (as an list of integers or hex-string)
-            - eep_rorg (as an integer or hex-string)
-        Optional arguments are:
-            - eep_func (as an integer or hex-string)
-            - eep_type (as an integer or hex-string)
-            - transmitter_offset (as an integer)
+        If device is not a Device, raises ValueError.
         '''
-        # TODO: Possibly add additional storage as **kwargs?
-        if isinstance(device_id, list):
-            device_id = enocean.utils.to_hex_string(device_id)
-        if isinstance(eep_rorg, int):
-            eep_rorg = enocean.utils.to_hex_string(eep_rorg)
-        if isinstance(eep_func, int):
-            eep_func = enocean.utils.to_hex_string(eep_func)
-        if isinstance(eep_type, int):
-            eep_type = enocean.utils.to_hex_string(eep_type)
+        if not isinstance(device, Device):
+            raise ValueError('device must be an instance of enocean.storage.Device')
 
         if 'devices' not in self.data:
             self.data['devices'] = {}
-        if device_id not in self.data['devices']:
-            self.data['devices'][device_id] = {}
 
-        self.data['devices'][device_id] = {
-            'eep_rorg': eep_rorg,
-            'eep_func': eep_func,
-            'eep_type': eep_type,
-            'transmitter_offset': None if not isinstance(transmitter_offset, int) else transmitter_offset,
-        }
-        if isinstance(transmitter_offset, int):
-            self.add_to_used_offsets(transmitter_offset)
-        self.logger.info('Device with ID "%s" saved' % (device_id))
+        self.data['devices'][device.hex_id] = device
+        if isinstance(device.transmitter_offset, int):
+            self.add_to_used_offsets(device.transmitter_offset)
+        self.logger.info('Device with ID "%s" saved' % (device.hex_id))
         self.save()
 
     def remove_device(self, device_id):
@@ -198,11 +174,13 @@ class Storage(object):
         Removes device from Storage by device id.
         Input:
             - device id (as an list of integers or hex-string)
+        If not found, raises KeyError.
         '''
         if isinstance(device_id, list):
             device_id = enocean.utils.to_hex_string(device_id)
+
         try:
             del self.data['devices'][device_id]
             self.save()
         except KeyError:
-            self.logger.warning('No device found with ID "%s"' % (device_id))
+            raise KeyError('No device found with ID "%s"' % (device_id))
