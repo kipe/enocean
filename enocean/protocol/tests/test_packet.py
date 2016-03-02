@@ -184,6 +184,7 @@ def test_packet_equals():
 
     assert str(packet_1) == '0x%02X %s %s %s' % (packet_1.packet_type, [hex(o) for o in packet_1.data], [hex(o) for o in packet_1.optional], packet_1.parsed)
     assert str(packet_1) == str(packet_2)
+    assert str(packet_1) == packet_2.__unicode__()
     assert packet_1 == packet_2
 
 
