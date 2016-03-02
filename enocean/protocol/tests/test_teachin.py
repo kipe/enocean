@@ -3,7 +3,7 @@ from __future__ import print_function, unicode_literals, division, absolute_impo
 
 from enocean.communicators import Communicator
 from enocean.protocol.constants import RORG, DB6
-from enocean.decorators import timing
+from enocean.tests.decorators import timing
 
 
 @timing(rounds=100, limit=750)

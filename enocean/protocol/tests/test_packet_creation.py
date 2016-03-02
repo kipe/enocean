@@ -4,7 +4,7 @@ from nose.tools import raises
 
 from enocean.protocol.packet import Packet, RadioPacket
 from enocean.protocol.constants import PACKET, RORG
-from enocean.decorators import timing
+from enocean.tests.decorators import timing
 
 
 @timing(1000)
