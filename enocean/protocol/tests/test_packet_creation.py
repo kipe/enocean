@@ -262,6 +262,8 @@ def test_packets_with_destination():
     assert len(packet_serialized) == len(TEMPERATURE)
     assert list(packet_serialized) == list(TEMPERATURE)
     assert packet.learn is False
+    assert packet.sender_int == 25278276
+    assert packet.destination_int == 3735928559
 
     MAGNETIC_SWITCH = bytearray([
         0x55,
@@ -298,3 +300,26 @@ def test_vld():
     assert packet.parsed['IO']['value'] == 'All output channels supported by the device'
     assert packet.parsed['DV']['value'] == 'Switch to new output value'
     assert packet.parsed['OV']['value'] == 'Output value 100% or ON'
+
+
+def test_fails():
+    try:
+        Packet.create(PACKET.RESPONSE, 0xA5, 0x01, 0x01)
+        assert False
+    except ValueError:
+        assert True
+    try:
+        Packet.create(PACKET.RADIO, 0xA6, 0x01, 0x01)
+        assert False
+    except ValueError:
+        assert True
+    try:
+        Packet.create(PACKET.RADIO, 0xA5, 0x01, 0x01, destination='ASDASDASD')
+        assert False
+    except ValueError:
+        assert True
+    try:
+        Packet.create(PACKET.RADIO, 0xA5, 0x01, 0x01, sender='ASDASDASD')
+        assert False
+    except ValueError:
+        assert True
