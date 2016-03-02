@@ -22,6 +22,9 @@ class EEP(object):
             self.init_ok = True
             self.__load_xml()
         except IOError:
+            # Impossible to test with the current structure?
+            # To be honest, as the XML is included with the library,
+            # there should be no possibility of ever reaching this...
             self.logger.warn('Cannot load protocol file!')
             self.init_ok = False
 
@@ -166,18 +169,14 @@ class EEP(object):
 
         if eep_rorg == RORG.VLD:
             # For VLD; multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
-            # If this is the case, find data by the command id.
-            # Select command by user argument, and fall back to finding the command from EEP.
-            command = command or profile.find('command', recursive=False)
-            if command:
-                if not isinstance(command, int):
-                    command = self._get_enum(command, bitarray).values()
-                    # If command wasn't found, the message isn't supported...
-                    if not command:
-                        return None
-                    command = list(command)[0].get('raw_value')
-                # Command should be set at this point, if possible...
-                return profile.find('data', {'command': str(command)}, recursive=False)
+            eep_command = profile.find('command', recursive=False)
+            # If commands are not set in EEP, or command is None,
+            # get the first data as a "best guess".
+            if not eep_command or command is None:
+                return profile.find('data', recursive=False)
+
+            # If eep_command is defined, so should be data.command
+            return profile.find('data', {'command': str(command)}, recursive=False)
 
         # extract data description
         # the direction tag is optional
@@ -211,6 +210,7 @@ class EEP(object):
             # find the given property from EEP
             target = profile.find(shortcut=shortcut)
             if not target:
+                # TODO: Should we raise an error?
                 self.logger.warning('Cannot find data description for shortcut %s', shortcut)
                 continue
 

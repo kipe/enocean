@@ -290,7 +290,7 @@ def test_vld():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0x5A
     ])
-    packet = RadioPacket.create(rorg=RORG.VLD, rorg_func=0x01, rorg_type=0x01, command=1, CMD=1, DV=0, IO=0x1E, OV=0x64)
+    packet = RadioPacket.create(rorg=RORG.VLD, rorg_func=0x01, rorg_type=0x01, command=1, DV=0, IO=0x1E, OV=0x64)
     packet_serialized = packet.build()
 
     assert len(packet_serialized) == len(SWITCH)
