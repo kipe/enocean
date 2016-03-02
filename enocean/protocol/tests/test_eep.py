@@ -2,6 +2,7 @@
 from __future__ import print_function, unicode_literals, division, absolute_import
 
 from enocean.protocol.packet import Packet
+from enocean.protocol.eep import EEP
 from enocean.protocol.constants import RORG
 from enocean.decorators import timing
 
@@ -230,3 +231,38 @@ def test_vld():
 
     assert p.parsed['LC']['raw_value'] == 0
     assert p.parsed['LC']['value'] == 'Local control disabled / not supported'
+
+
+def test_fails():
+    status, buf, packet = Packet.parse_msg(bytearray([
+        0x55,
+        0x00, 0x07, 0x07, 0x01,
+        0x7A,
+        0xD5, 0x08, 0x01, 0x82, 0x5D, 0xAB, 0x00,
+        0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x36, 0x00,
+        0x53
+    ]))
+    eep = EEP()
+    # Mock initialization failure
+    eep.init_ok = False
+    assert eep.find_profile(packet._bit_data, 0xD5, 0x00, 0x01) is None
+    # TODO: Needs better test. A much better.
+    assert eep.set_values(profile=None, data=[True], status=[False, False], properties={'CV': False})
+    eep.init_ok = True
+    profile = eep.find_profile(packet._bit_data, 0xD5, 0x00, 0x01)
+    assert eep.set_values(profile, packet._bit_data, packet.status, {'ASD': 1})
+
+    assert eep.find_profile(packet._bit_data, 0xFF, 0x00, 0x01) is None
+    assert eep.find_profile(packet._bit_data, 0xD5, 0xFF, 0x01) is None
+    assert eep.find_profile(packet._bit_data, 0xD5, 0x00, 0xFF) is None
+
+    status, buf, packet = Packet.parse_msg(bytearray([
+        0x55,
+        0x00, 0x09, 0x07, 0x01,
+        0x56,
+        0xD2, 0x04, 0x00, 0x00, 0x01, 0x94, 0xE3, 0xB9, 0x00,
+        0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x40, 0x00,
+        0xBF
+    ]))
+    assert eep.find_profile(packet._bit_data, 0xD2, 0x01, 0x01) is not None
+    assert eep.find_profile(packet._bit_data, 0xD2, 0x01, 0x01, command=-1) is None
