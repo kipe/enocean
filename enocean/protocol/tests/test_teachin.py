@@ -8,7 +8,7 @@ from enocean.tests.decorators import timing
 
 @timing(rounds=100, limit=750)
 def test_ute_in():
-    communicator = Communicator()
+    communicator = Communicator(use_storage=False)
     communicator.base_id = [0xDE, 0xAD, 0xBE, 0xEF]
 
     communicator._buffer.extend(bytearray([
@@ -46,7 +46,7 @@ def test_ute_in():
 
 @timing(rounds=100, limit=750)
 def test_ute_in_without_teachin():
-    communicator = Communicator()
+    communicator = Communicator(use_storage=False)
     communicator.teach_in = False
     communicator.base_id = [0xDE, 0xAD, 0xBE, 0xEF]
 

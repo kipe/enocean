@@ -18,7 +18,7 @@ def test_buffer():
         0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x2D, 0x00,
         0x75
     ])
-    communicator = Communicator()
+    communicator = Communicator(use_storage=False)
     communicator._buffer.extend(data[0:5])
     communicator.parse()
     assert communicator.receive.qsize() == 0
@@ -31,7 +31,7 @@ def test_buffer():
 @timing(1000)
 def test_send():
     ''' Test sending packets to Communicator '''
-    communicator = Communicator()
+    communicator = Communicator(use_storage=False)
     assert communicator.send('AJSNDJASNDJANSD') is False
     assert communicator.transmit.qsize() == 0
     assert communicator._get_from_send_queue() is None
@@ -42,7 +42,7 @@ def test_send():
 
 def test_send_priority():
     ''' Test priorities when sending packages. '''
-    communicator = Communicator()
+    communicator = Communicator(use_storage=False)
     communicator.send(Packet(PACKET.COMMON_COMMAND, [0x04]), priority=4)
     communicator.send(Packet(PACKET.COMMON_COMMAND, [0x05]), priority=5)
     communicator.send(Packet(PACKET.COMMON_COMMAND, [0x02]), priority=2)
@@ -54,7 +54,7 @@ def test_send_priority():
         priority, packet = communicator.transmit.get()
         assert priority == i
         assert packet.data == [i]
-    com = Communicator()
+    com = Communicator(use_storage=False)
     assert com.send('AJSNDJASNDJANSD') is False
     assert com.transmit.qsize() == 0
     assert com._get_from_send_queue() is None
@@ -64,7 +64,7 @@ def test_send_priority():
 
 
 def test_stop():
-    com = Communicator()
+    com = Communicator(use_storage=False)
     com.stop()
     assert com._stop_flag.is_set()
 
@@ -82,14 +82,14 @@ def test_callback():
         0x75
     ])
 
-    com = Communicator(callback=callback)
+    com = Communicator(use_storage=False, callback=callback)
     com._buffer.extend(data)
     com.parse()
     assert com.receive.qsize() == 0
 
 
 def test_base_id():
-    com = Communicator()
+    com = Communicator(use_storage=False)
     assert com.base_id is None
 
     other_data = bytearray([
@@ -117,7 +117,7 @@ def test_base_id():
 
 
 def test_fails():
-    com = Communicator()
+    com = Communicator(use_storage=False)
     try:
         com._receive()
         assert False
@@ -132,7 +132,7 @@ def test_fails():
 
 
 def test_thread():
-    com = Communicator()
+    com = Communicator(use_storage=False)
     assert com.get_packet() is None
     # Stupid mock to get around Communicator._receive and Communicator._transmit raising an error.
     com._receive = lambda: ''
@@ -165,10 +165,9 @@ def test_storage():
     com.parse()
     assert len(com.storage.devices.keys()) == 1
 
-    com = Communicator()
-    com._buffer.extend(data)
-    com.parse()
     packet = com.get_packet()
+    assert packet is not None
+    assert isinstance(packet, RadioPacket)
     assert packet.learn
 
     com.storage.wipe()
