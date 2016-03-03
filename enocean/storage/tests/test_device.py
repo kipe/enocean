@@ -25,7 +25,7 @@ def test_device_creation():
     assert device.eep_rorg == 0xA5
     assert device.eep_func == 0x01
     assert device.eep_type == 0x01
-    assert device.__repr__() == device.__str__() == str(device) == device.__unicode__() == unicode(device) == '<Device DE:AD:BE:EF A5-01-01>'
+    assert device.__repr__() == device.__str__() == str(device) == device.__unicode__() == '<Device DE:AD:BE:EF A5-01-01>'
 
 
 def test_device_modifying():
