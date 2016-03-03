@@ -153,21 +153,59 @@ def test_storage():
         0x26
     ])
 
+    # Test without storage
     com = Communicator(use_storage=False)
     assert com.storage is None
     com._buffer.extend(data)
     com.parse()
+    assert com.get_packet() is not None
     assert com.storage is None
 
+    # Test saving devices
     com = Communicator(use_storage=True, storage_location='/tmp/enocean-tests.json')
+    # At first, the file should not contain any devices
     assert len(com.storage.devices.keys()) == 0
+
+    # Disable teach_in, and try to send the packet
+    com.teach_in = False
     com._buffer.extend(data)
     com.parse()
+    assert len(com.storage.devices.keys()) == 0
+    com.teach_in = True
+
+    # Test with the packet.learn disabled
+    packet = com.get_packet()
+    packet.data[4] |= (1 << 3)
+    com._buffer.extend(packet.build())
+    com.parse()
+    assert com.get_packet() is not None
+    assert len(com.storage.devices.keys()) == 0
+
+    # Add one device
+    com._buffer.extend(data)
+    com.parse()
+    assert com.get_packet() is not None
+    assert len(com.storage.devices.keys()) == 1
+    # Add the same device again, number of devices shouldn't change
+    com._buffer.extend(data)
+    com.parse()
+    assert com.get_packet() is not None
     assert len(com.storage.devices.keys()) == 1
 
+    # Try to save a device from a packet, which is not a RadioPacket
+    data_2 = bytearray([
+        0x55,
+        0x00, 0x05, 0x00, 0x02,
+        0xCE,
+        0x00, 0xFF, 0x87, 0xCA, 0x00,
+        0xA3
+    ])
+    com._buffer.extend(data_2)
+    com.parse()
     packet = com.get_packet()
-    assert packet is not None
-    assert isinstance(packet, RadioPacket)
-    assert packet.learn
+    com.store_device(packet)
+    assert len(com.storage.devices.keys()) == 1
+
+    assert com.get_packet(block=False) is None
 
     com.storage.wipe()
