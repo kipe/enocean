@@ -1,8 +1,9 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 import os
+import errno
 from enocean.storage import Storage, Device
-from enocean.decorators import timing
+from enocean.tests.decorators import timing
 
 PATH = '/tmp/enocean-tests.json'
 # Remove the file to be sure...
@@ -103,6 +104,12 @@ def test_devices_add_remove():
     assert s.next_offset == 0
     assert s.used_offsets == [1]
 
+    try:
+        s.used_offsets = 'ASD'
+        assert False
+    except ValueError:
+        assert True
+
     # Reload Storage, just to make sure save was successful.
     s.load()
 
@@ -123,9 +130,20 @@ def test_devices_add_remove():
         pass
 
     s.remove_device('DE:AD:BE:EF')
-
+    del s.data['devices']
+    s.save_device(device)
     # Reload Storage, just to make sure save was successful.
     s.load()
+
+    s.remove_device('DE:AD:BE:EF')
+    s.save_device(device)
+    # Reload Storage, just to make sure save was successful.
+    s.load()
+
+    s.save_device(device)
+    # Reload Storage, just to make sure save was successful.
+    s.load()
+    s.remove_device([0xDE, 0xAD, 0xBE, 0xEF])
     assert s.devices == {}
 
     try:
@@ -135,3 +153,27 @@ def test_devices_add_remove():
         assert True
 
     s.wipe()
+
+
+def test_random():
+    # FFS, if this kind of tests fail, and cause issues, shoot @kipe.
+    # @kipe wrote:
+    #   to be honest, I have no idea on how to do these kinds of tests, except in a very, very
+    #   very, very, safe environoment :S
+    #   and furthermore, if these kind of tests run in your environment, you're fucked anyways...
+
+    # Try a directory, we are absolutely not allowed to write.
+    s = Storage('/usr/var/lib/local/bin/asd')
+    try:
+        s.save()
+    except OSError as exception:
+        if exception == errno.EEXIST:
+            raise
+        pass
+
+    s.location = '/bin/sh'
+    try:
+        s.wipe()
+    except OSError as exception:
+        if exception == errno.EPERM:
+            pass

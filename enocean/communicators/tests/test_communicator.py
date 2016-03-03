@@ -141,3 +141,34 @@ def test_thread():
     com.start()
     com.base_id
     com.stop()
+
+
+def test_storage():
+    data = bytearray([
+        0x55,
+        0x00, 0x0A, 0x07, 0x01,
+        0xEB,
+        0xA5, 0x08, 0x28, 0x46, 0x80, 0x01, 0x8A, 0x7B, 0x30, 0x00,
+        0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x49, 0x00,
+        0x26
+    ])
+
+    com = Communicator(use_storage=False)
+    assert com.storage is None
+    com._buffer.extend(data)
+    com.parse()
+    assert com.storage is None
+
+    com = Communicator(use_storage=True, storage_location='/tmp/enocean-tests.json')
+    assert len(com.storage.devices.keys()) == 0
+    com._buffer.extend(data)
+    com.parse()
+    assert len(com.storage.devices.keys()) == 1
+
+    com = Communicator()
+    com._buffer.extend(data)
+    com.parse()
+    packet = com.get_packet()
+    assert packet.learn
+
+    com.storage.wipe()

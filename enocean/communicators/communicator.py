@@ -1,14 +1,15 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 import logging
-
+import os
 import threading
 try:
     import queue
 except ImportError:
     import Queue as queue
-from enocean.protocol.packet import Packet, UTETeachIn
+from enocean.protocol.packet import Packet, RadioPacket, UTETeachIn
 from enocean.protocol.constants import PACKET, PARSE_RESULT, RETURN_CODE
+from enocean.storage import Storage, Device
 
 
 class Communicator(threading.Thread):
@@ -18,7 +19,8 @@ class Communicator(threading.Thread):
     '''
     logger = logging.getLogger('enocean.communicators.Communicator')
 
-    def __init__(self, callback=None, teach_in=True):
+    # TODO: Stupid, ugly hack to disable storage during testing.
+    def __init__(self, callback=None, teach_in=True, use_storage=True if os.environ.get('ENOCEAN_TESTING', None) else False, storage_location=None):
         super(Communicator, self).__init__()
         # Create an event to stop the thread
         self._stop_flag = threading.Event()
@@ -34,6 +36,12 @@ class Communicator(threading.Thread):
         # Should new messages be learned automatically? Defaults to True.
         # TODO: Not sure if we should use CO_WR_LEARNMODE??
         self.teach_in = teach_in
+
+        # Initialize Storage
+        # TODO: Should really initialize with Storage-object, but not accept any new devices...
+        self.storage = None
+        if use_storage:
+            self.storage = Storage(storage_location)
 
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
@@ -114,11 +122,47 @@ class Communicator(threading.Thread):
                         self.send(packet.create_response_packet(self.base_id), priority=0)
                         packet.response_sent = True
 
+                self.store_device(packet)
+
+                # TODO: Prioritize packages, once receive is changed to PriorityQueue
                 if self.__callback is None:
                     self.receive.put(packet)
                 else:
                     self.__callback(packet)
                 self.logger.debug(packet)
+
+    def store_device(self, packet):
+        ''' Save device to storage, if all conditions are met. '''
+        if self.storage is None:
+            return
+        if self.teach_in is False:
+            return
+        if not isinstance(packet, RadioPacket):
+            return
+        if not packet.learn:
+            return
+
+        try:
+            device = self.storage.load_device(device_id=packet.sender)
+            # If device is found, update the data we're likely to get from the teach_in.
+            device.update({
+                'eep_rorg': packet.rorg,
+                'eep_func': packet.rorg_func,
+                'eep_type': packet.rorg_type,
+                'manufacturer_id': packet.rorg_manufacturer,
+            })
+            self.storage.save_device(device)
+        except KeyError:
+            # If device is not found, create a new device.
+            self.storage.save_device(
+                Device(
+                    id=packet.sender,
+                    eep_rorg=packet.rorg,
+                    eep_func=packet.rorg_func,
+                    eep_type=packet.rorg_type,
+                    manufacturer_id=packet.rorg_manufacturer
+                )
+            )
 
     @property
     def base_id(self):
