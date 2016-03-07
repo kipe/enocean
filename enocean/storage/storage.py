@@ -163,10 +163,12 @@ class Storage(object):
         if 'devices' not in self.data:
             self.data['devices'] = {}
 
+        if device.hex_id not in self.data['devices']:
+            self.logger.info('New device with ID "%s" saved' % (device.hex_id))
+
         self.data['devices'][device.hex_id] = device
         if isinstance(device.transmitter_offset, int):
             self.add_to_used_offsets(device.transmitter_offset)
-        self.logger.info('Device with ID "%s" saved' % (device.hex_id))
         self.save()
 
     def remove_device(self, device_id):

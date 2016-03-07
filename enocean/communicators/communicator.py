@@ -20,7 +20,7 @@ class Communicator(threading.Thread):
     logger = logging.getLogger('enocean.communicators.Communicator')
 
     # TODO: Stupid, ugly hack to disable storage during testing.
-    def __init__(self, callback=None, teach_in=True, use_storage=True if os.environ.get('ENOCEAN_TESTING', None) else False, storage_location=None):
+    def __init__(self, callback=None, teach_in=True, use_storage=True, storage_location=None):
         super(Communicator, self).__init__()
         # Create an event to stop the thread
         self._stop_flag = threading.Event()
@@ -122,7 +122,9 @@ class Communicator(threading.Thread):
                         self.send(packet.create_response_packet(self.base_id), priority=0)
                         packet.response_sent = True
 
-                self.store_device(packet)
+                device = self.store_device(packet)
+                if device.eep_func is not None and device.eep_type is not None:
+                    packet.parse(device.eep_func, device.eep_type)
 
                 # TODO: Prioritize packages, once receive is changed to PriorityQueue
                 if self.__callback is None:
@@ -151,18 +153,19 @@ class Communicator(threading.Thread):
                 'eep_type': packet.rorg_type,
                 'manufacturer_id': packet.rorg_manufacturer,
             })
-            self.storage.save_device(device)
         except KeyError:
             # If device is not found, create a new device.
-            self.storage.save_device(
-                Device(
-                    id=packet.sender,
-                    eep_rorg=packet.rorg,
-                    eep_func=packet.rorg_func,
-                    eep_type=packet.rorg_type,
-                    manufacturer_id=packet.rorg_manufacturer
-                )
+            device = Device(
+                id=packet.sender,
+                eep_rorg=packet.rorg,
+                eep_func=packet.rorg_func,
+                eep_type=packet.rorg_type,
+                manufacturer_id=packet.rorg_manufacturer
             )
+
+        # Save device
+        self.storage.save_device(device)
+        return device
 
     @property
     def base_id(self):
