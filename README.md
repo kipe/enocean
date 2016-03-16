@@ -1,6 +1,7 @@
 # Python EnOcean #
 
 [![Build Status](https://travis-ci.org/kipe/enocean.svg?branch=master)](https://travis-ci.org/kipe/enocean)
+[![Coverage Status](https://coveralls.io/repos/github/kipe/enocean/badge.svg?branch=master)](https://coveralls.io/github/kipe/enocean?branch=master)
 
 A Python library for reading and controlling [EnOcean](http://www.enocean.com/) devices.
 Part of [Forget Me Not](http://www.element14.com/community/community/design-challenges/forget-me-not)
