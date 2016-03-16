@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+from __future__ import print_function, unicode_literals, division, absolute_import
 import codecs
 from enocean.protocol.eep import EEP
 
@@ -53,7 +55,7 @@ with codecs.open('SUPPORTED_PROFILES.md', 'w', 'utf-8') as f_handle:
                                 scale_min = scale.find('min').text
                                 scale_max = scale.find('max').text
 
-                                values.append('%s-%s -> %s-%s %s' % (range_min, range_max, scale_min, scale_max, parent['unit']))
+                                values.append('%s-%s ↔ %s-%s %s' % (range_min, range_max, scale_min, scale_max, parent['unit']))
                         if not values:
                             f_handle.write(ROW_FORMAT.format(child['shortcut'], child['description'], child.name, ''))
                             continue

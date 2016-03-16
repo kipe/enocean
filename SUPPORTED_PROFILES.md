@@ -38,7 +38,7 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
-|TMP     |Temperature (linear)                              |value   |255-0 -> 0.000000-40.000000 C                                         |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 0.000000-40.000000 °C                                         |
 
 
 
@@ -46,9 +46,9 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
-|SVC     |Supply voltage (linear)                           |value   |0-255 -> 0.000000-5.100000 V                                          |
-|ILL2    |Illumination 2 (linear)                           |value   |0-255 -> 300.000000-30000.000000 lx                                   |
-|ILL1    |Illumination 1 (linear)                           |value   |0-255 -> 600.000000-60000.000000 lx                                   |
+|SVC     |Supply voltage (linear)                           |value   |0-255 ↔ 0.000000-5.100000 V                                           |
+|ILL2    |Illumination 2 (linear)                           |value   |0-255 ↔ 300.000000-30000.000000 lx                                    |
+|ILL1    |Illumination 1 (linear)                           |value   |0-255 ↔ 600.000000-60000.000000 lx                                    |
 |RS      |Range select                                      |enum    |0 - Range acc. to DB_1 (ILL1)                                         |
 |        |                                                  |        |1 - Range acc. to DB_2 (ILL2)                                         |
 
@@ -58,8 +58,8 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
-|SP      |Set Point (linear)                                |value   |0-255 -> -100-100 %                                                   |
-|TMP     |Temperature (linear)                              |value   |255-0 -> 0-40 C                                                       |
+|SP      |Set Point (linear)                                |value   |0-255 ↔ -100-100 %                                                    |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 0-40 °C                                                       |
 
 
 
@@ -67,7 +67,7 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
-|CVAR    |Actual value of controller                        |value   |0-255 -> 0-100 %                                                      |
+|CVAR    |Actual value of controller                        |value   |0-255 ↔ 0-100 %                                                       |
 |FAN     |Actual value of fan                               |enum    |0 - State 0 Manual                                                    |
 |        |                                                  |        |1 - State 1 Manual                                                    |
 |        |                                                  |        |2 - State 2 Manual                                                    |
@@ -77,7 +77,7 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |18 - State 2 Automatic                                                |
 |        |                                                  |        |19 - State 3 Automatic                                                |
 |        |                                                  |        |255 - Not Available                                                   |
-|ASP     |Actual Setpoint                                   |value   |0-255 -> 0-51.2 C                                                     |
+|ASP     |Actual Setpoint                                   |value   |0-255 ↔ 0-51.2 C                                                      |
 |ALR     |Alarm                                             |enum    |0 - No alarm                                                          |
 |        |                                                  |        |1 - Alarm                                                             |
 |CTM     |Controller mode                                   |enum    |1 - Heating                                                           |
@@ -99,7 +99,7 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 ###### direction: 1
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
-|CV      |Current Value                                     |value   |0-100 -> 0-100 %                                                      |
+|CV      |Current Value                                     |value   |0-100 ↔ 0-100 %                                                       |
 |SO      |Service On                                        |enum    |0 - off                                                               |
 |        |                                                  |        |1 - on                                                                |
 |ENIE    |Energy input enabled                              |enum    |0 - false                                                             |
@@ -116,13 +116,13 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |1 - true                                                              |
 |ACO     |Actuator obstructed                               |enum    |0 - false                                                             |
 |        |                                                  |        |1 - true                                                              |
-|TMP     |Temperature (linear)                              |value   |0-255 -> 0-40 C                                                       |
+|TMP     |Temperature (linear)                              |value   |0-255 ↔ 0-40 °C                                                       |
 
 ###### direction: 2
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
-|SP      |Valve Position                                    |value   |0-100 -> 0-100 %                                                      |
-|TMP     |Temperature from RCU                              |value   |0-255 -> 0-40 C                                                       |
+|SP      |Valve Position                                    |value   |0-100 ↔ 0-100 %                                                       |
+|TMP     |Temperature from RCU                              |value   |0-255 ↔ 0-40 °C                                                       |
 |RIN     |Run init sequence                                 |enum    |0 - false                                                             |
 |        |                                                  |        |1 - true                                                              |
 |LFS     |Lift set                                          |enum    |0 - false                                                             |

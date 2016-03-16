@@ -46,7 +46,7 @@
     <profiles func="0x02" description="Temperature Sensors">
       <profile type="0x05" description="Temperature Sensor Range 0°C to +40°C">
         <data>
-          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="C">
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
             <range>
               <min>255</min>
               <max>0</max>
@@ -112,7 +112,7 @@
               <max>100</max>
             </scale>
           </value>
-          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="C">
+          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="°C">
             <range>
               <min>255</min>
               <max>0</max>
@@ -230,7 +230,7 @@
             <item description="false" value="0" />
             <item description="true" value="1" />
           </enum>
-          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="C">
+          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="°C">
             <range>
               <min>0</min>
               <max>255</max>
@@ -252,7 +252,7 @@
               <max>100</max>
             </scale>
           </value>
-          <value shortcut="TMP" description="Temperature from RCU" offset="8" size="8" unit="C">
+          <value shortcut="TMP" description="Temperature from RCU" offset="8" size="8" unit="°C">
             <range>
               <min>0</min>
               <max>255</max>
