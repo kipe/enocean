@@ -12,17 +12,11 @@ install:
   - pip install pylint coverage coveralls
   - pip install -e .
 script:
-  - nosetests -s -q
-env:
-  - WITH_TIMINGS=0
-  - WITH_TIMINGS=1
+  - nosetests -s -q --with-coverage --cover-package=enocean
 sudo: false
 matrix:
   fast_finish: true
-  allow_failures:
-    - env: WITH_TIMINGS=1
 
 after_success:
   - pylint enocean -d line-too-long
-  # - nosetests -s -q --with-coverage --cover-package=enocean
   - coveralls
