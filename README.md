@@ -4,12 +4,11 @@
 [![Coverage Status](https://coveralls.io/repos/github/kipe/enocean/badge.svg?branch=master)](https://coveralls.io/github/kipe/enocean?branch=master)
 
 A Python library for reading and controlling [EnOcean](http://www.enocean.com/) devices.
-Part of [Forget Me Not](http://www.element14.com/community/community/design-challenges/forget-me-not)
+
+Started as a part of [Forget Me Not](http://www.element14.com/community/community/design-challenges/forget-me-not)
 design challenge @ [element14](http://www.element14.com/).
 
-**Still a work-in-progress, so API might (and most probably will) change, as I move onto really using the library myself.**
-
-## Install on Raspberry Pi ##
+## Install ##
 
 If not installed already, install [pip](https://pypi.python.org/pypi/pip) by running
 
