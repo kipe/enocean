@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 import logging
-import os
 import threading
 try:
     import queue
@@ -121,9 +120,10 @@ class Communicator(threading.Thread):
                         self.logger.info('Sending response to UTE teach-in.')
                         self.send(packet.create_response_packet(self.base_id), priority=0)
                         packet.response_sent = True
+                        device = self.store_device(packet)
 
                 # If this is a RadioPacket, try to find a stored device
-                if isinstance(packet, RadioPacket):
+                elif isinstance(packet, RadioPacket):
                     device = self.store_device(packet)
                     # If device with EEP information is found, use it to parse the message.
                     if device is not None and device.eep_func is not None and device.eep_type is not None:
@@ -165,12 +165,12 @@ class Communicator(threading.Thread):
                 manufacturer_id=packet.rorg_manufacturer
             )
         else:
-            device.update({
-                'eep_rorg': packet.rorg,
-                'eep_func': packet.rorg_func,
-                'eep_type': packet.rorg_type,
-                'manufacturer_id': packet.rorg_manufacturer,
-            })
+            device.update(
+                eep_rorg=packet.rorg,
+                eep_func=packet.rorg_func,
+                eep_type=packet.rorg_type,
+                manufacturer_id=packet.rorg_manufacturer
+            )
         # Save device
         self.storage.save_device(device)
         return device

@@ -56,7 +56,7 @@ class Device(object):
                 continue
             # Again, ugly, but allows saving arbitrary data to the storage.
             # Not sure if we want that though?
-            self.__dict__.update({key: value})
+            self.__dict__[key] = value
 
     def as_dict(self):
         return self.__dict__
