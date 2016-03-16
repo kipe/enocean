@@ -84,8 +84,8 @@ class Storage(object):
         if not os.path.exists(self.location):
             return self.data
 
-        with open(self.location, 'r') as f:
-            self.data.update(**json.loads(f.read()))
+        with open(self.location, 'r') as file_handle:
+            self.data.update(**json.loads(file_handle.read()))
             self.data['devices'] = {
                 device_id: Device(**device_data)
                 for device_id, device_data in self.data.get('devices', {}).items()
@@ -114,8 +114,8 @@ class Storage(object):
                 if exception.errno != errno.EEXIST:
                     raise
 
-        with open(self.location, 'w') as f:
-            f.write(json.dumps(self.data, cls=EnOceanEncoder))
+        with open(self.location, 'w') as file_handle:
+            file_handle.write(json.dumps(self.data, cls=EnOceanEncoder))
 
     def wipe(self):
         ''' Wipes data from storage, removing everything. '''
