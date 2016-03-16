@@ -44,6 +44,62 @@
   </telegram>
   <telegram rorg="0xA5" type="4BS" description="4BS Telegram">
     <profiles func="0x02" description="Temperature Sensors">
+      <profile type="0x01" description="Temperature Sensor Range -40°C to 0°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-40.000000</min>
+              <max>0.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x02" description="Temperature Sensor Range -30°C to +10°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-30.000000</min>
+              <max>10.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x03" description="Temperature Sensor Range -20°C to +20°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-20.000000</min>
+              <max>20.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x04" description="Temperature Sensor Range -10°C to +30°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-10.000000</min>
+              <max>30.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
       <profile type="0x05" description="Temperature Sensor Range 0°C to +40°C">
         <data>
           <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
@@ -54,6 +110,286 @@
             <scale>
               <min>0.000000</min>
               <max>40.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x06" description="Temperature Sensor Range +10°C to +50°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>10.000000</min>
+              <max>50.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x07" description="Temperature Sensor Range +20°C to +60°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>20.000000</min>
+              <max>60.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x08" description="Temperature Sensor Range +30°C to +70°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>30.000000</min>
+              <max>70.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x09" description="Temperature Sensor Range +40°C to +80°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>40.000000</min>
+              <max>80.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x0A" description="Temperature Sensor Range +50°C to +90°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>50.000000</min>
+              <max>90.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x0B" description="Temperature Sensor Range +60°C to +100°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>60.000000</min>
+              <max>100.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x10" description="Temperature Sensor Range -60°C to +20°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-60.000000</min>
+              <max>20.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x11" description="Temperature Sensor Range -50°C to +30°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-50.000000</min>
+              <max>30.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x12" description="Temperature Sensor Range -40°C to +40°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-40.000000</min>
+              <max>40.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x13" description="Temperature Sensor Range -30°C to +50°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-30.000000</min>
+              <max>50.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x14" description="Temperature Sensor Range -20°C to +60°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-20.000000</min>
+              <max>60.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x15" description="Temperature Sensor Range -10°C to +70°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-10.000000</min>
+              <max>70.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x16" description="Temperature Sensor Range 0°C to +80°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>0.000000</min>
+              <max>80.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x17" description="Temperature Sensor Range +10°C to +90°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>10.000000</min>
+              <max>90.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x18" description="Temperature Sensor Range +20°C to +100°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>20.000000</min>
+              <max>100.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x19" description="Temperature Sensor Range +30°C to +110°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>30.000000</min>
+              <max>110.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x1A" description="Temperature Sensor Range +40°C to +120°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>40.000000</min>
+              <max>120.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x1B" description="Temperature Sensor Range +50°C to +130°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>50.000000</min>
+              <max>130.000000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x20" description="10 Bit Temperature Sensor Range -10°C to +41.2°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="14" size="10" unit="°C">
+            <range>
+              <min>1023</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-10.000000</min>
+              <max>41.200000</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile type="0x30" description="10 Bit Temperature Sensor Range -40°C to +62.3°C">
+        <data>
+          <value description="Temperature (linear)" shortcut="TMP" offset="14" size="10" unit="°C">
+            <range>
+              <min>1023</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>-40.000000</min>
+              <max>62.300000</max>
             </scale>
           </value>
         </data>
