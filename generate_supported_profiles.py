@@ -49,11 +49,11 @@ with codecs.open('SUPPORTED_PROFILES.md', 'w', 'utf-8') as f_handle:
                             elif item.name == 'range':
                                 parent = item.parent
 
-                                range_min = item.find('min').text
-                                range_max = item.find('max').text
+                                range_min = float(item.find('min').text)
+                                range_max = float(item.find('max').text)
                                 scale = parent.find('scale')
-                                scale_min = scale.find('min').text
-                                scale_max = scale.find('max').text
+                                scale_min = float(scale.find('min').text)
+                                scale_max = float(scale.find('max').text)
 
                                 values.append('%s-%s ↔ %s-%s %s' % (range_min, range_max, scale_min, scale_max, parent['unit']))
                         if not values:
