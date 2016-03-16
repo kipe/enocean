@@ -9,7 +9,7 @@ python:
   - "pypy"
   - "pypy3"
 install:
-  - pip install pylint coverage
+  - pip install pylint coverage coveralls
   - pip install -e .
 script:
   - nosetests -s -q
@@ -24,4 +24,5 @@ matrix:
 
 after_success:
   - pylint enocean -d line-too-long
-  - nosetests -s -q --with-coverage --cover-package=enocean
+  # - nosetests -s -q --with-coverage --cover-package=enocean
+  - coveralls
