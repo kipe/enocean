@@ -164,7 +164,7 @@ class Storage(object):
             self.data['devices'] = {}
 
         if device.hex_id not in self.data['devices']:
-            self.logger.info('New device with ID "%s" saved' % (device.hex_id))
+            self.logger.info('New device with ID "%s" found.' % (device.hex_id))
 
         self.data['devices'][device.hex_id] = device
         if isinstance(device.transmitter_offset, int):

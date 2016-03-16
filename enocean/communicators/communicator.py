@@ -122,9 +122,12 @@ class Communicator(threading.Thread):
                         self.send(packet.create_response_packet(self.base_id), priority=0)
                         packet.response_sent = True
 
-                device = self.store_device(packet)
-                if device.eep_func is not None and device.eep_type is not None:
-                    packet.parse(device.eep_func, device.eep_type)
+                # If this is a RadioPacket, try to find a stored device
+                if isinstance(packet, RadioPacket):
+                    device = self.store_device(packet)
+                    # If device with EEP information is found, use it to parse the message.
+                    if device is not None and device.eep_func is not None and device.eep_type is not None:
+                        packet.parse_eep(device.eep_func, device.eep_type)
 
                 # TODO: Prioritize packages, once receive is changed to PriorityQueue
                 if self.__callback is None:
@@ -137,23 +140,22 @@ class Communicator(threading.Thread):
         ''' Save device to storage, if all conditions are met. '''
         if self.storage is None:
             return
-        if self.teach_in is False:
-            return
         if not isinstance(packet, RadioPacket):
             return
-        if not packet.learn:
-            return
 
+        # Try to load the device from Storage
         try:
             device = self.storage.load_device(device_id=packet.sender)
-            # If device is found, update the data we're likely to get from the teach_in.
-            device.update({
-                'eep_rorg': packet.rorg,
-                'eep_func': packet.rorg_func,
-                'eep_type': packet.rorg_type,
-                'manufacturer_id': packet.rorg_manufacturer,
-            })
         except KeyError:
+            device = None
+
+        # If Communicator.teach_in or Packet.learn is not set, return the device un-changed
+        if self.teach_in is False:
+            return device
+        if not packet.learn:
+            return device
+
+        if device is None:
             # If device is not found, create a new device.
             device = Device(
                 id=packet.sender,
@@ -162,7 +164,13 @@ class Communicator(threading.Thread):
                 eep_type=packet.rorg_type,
                 manufacturer_id=packet.rorg_manufacturer
             )
-
+        else:
+            device.update({
+                'eep_rorg': packet.rorg,
+                'eep_func': packet.rorg_func,
+                'eep_type': packet.rorg_type,
+                'manufacturer_id': packet.rorg_manufacturer,
+            })
         # Save device
         self.storage.save_device(device)
         return device
