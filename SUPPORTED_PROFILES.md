@@ -34,11 +34,179 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 ### 4BS Telegram (0xA5)
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x01 - Temperature Sensor Range -40°C to 0°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ -40.000000-0.000000 °C                                        |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x02 - Temperature Sensor Range -30°C to +10°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ -30.000000-10.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x03 - Temperature Sensor Range -20°C to +20°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ -20.000000-20.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x04 - Temperature Sensor Range -10°C to +30°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ -10.000000-30.000000 °C                                       |
+
+
 ##### RORG 0xA5 - FUNC 0x02 - TYPE 0x05 - Temperature Sensor Range 0°C to +40°C
 
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
 |TMP     |Temperature (linear)                              |value   |255-0 ↔ 0.000000-40.000000 °C                                         |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x06 - Temperature Sensor Range +10°C to +50°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 10.000000-50.000000 °C                                        |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x07 - Temperature Sensor Range +20°C to +60°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 20.000000-60.000000 °C                                        |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x08 - Temperature Sensor Range +30°C to +70°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 30.000000-70.000000 °C                                        |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x09 - Temperature Sensor Range +40°C to +80°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 40.000000-80.000000 °C                                        |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x0A - Temperature Sensor Range +50°C to +90°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 50.000000-90.000000 °C                                        |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x0B - Temperature Sensor Range +60°C to +100°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 60.000000-100.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x10 - Temperature Sensor Range -60°C to +20°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ -60.000000-20.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x11 - Temperature Sensor Range -50°C to +30°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ -50.000000-30.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x12 - Temperature Sensor Range -40°C to +40°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ -40.000000-40.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x13 - Temperature Sensor Range -30°C to +50°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ -30.000000-50.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x14 - Temperature Sensor Range -20°C to +60°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ -20.000000-60.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x15 - Temperature Sensor Range -10°C to +70°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ -10.000000-70.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x16 - Temperature Sensor Range 0°C to +80°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 0.000000-80.000000 °C                                         |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x17 - Temperature Sensor Range +10°C to +90°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 10.000000-90.000000 °C                                        |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x18 - Temperature Sensor Range +20°C to +100°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 20.000000-100.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x19 - Temperature Sensor Range +30°C to +110°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 30.000000-110.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x1A - Temperature Sensor Range +40°C to +120°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 40.000000-120.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x1B - Temperature Sensor Range +50°C to +130°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |255-0 ↔ 50.000000-130.000000 °C                                       |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x20 - 10 Bit Temperature Sensor Range -10°C to +41.2°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |1023-0 ↔ -10.000000-41.200000 °C                                      |
+
+
+##### RORG 0xA5 - FUNC 0x02 - TYPE 0x30 - 10 Bit Temperature Sensor Range -40°C to +62.3°C
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |1023-0 ↔ -40.000000-62.300000 °C                                      |
 
 
 
