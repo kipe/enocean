@@ -155,18 +155,24 @@ class Communicator(threading.Thread):
         if not packet.learn:
             return device
 
+        try:
+            # Try to get the rorg_of_eep, as it's what we get from UTE teach-in
+            rorg = packet.rorg_of_eep
+        except AttributeError:
+            rorg = packet.rorg
+
         if device is None:
             # If device is not found, create a new device.
             device = Device(
                 id=packet.sender,
-                eep_rorg=packet.rorg,
+                eep_rorg=rorg,
                 eep_func=packet.rorg_func,
                 eep_type=packet.rorg_type,
                 manufacturer_id=packet.rorg_manufacturer
             )
         else:
             device.update(
-                eep_rorg=packet.rorg,
+                eep_rorg=rorg,
                 eep_func=packet.rorg_func,
                 eep_type=packet.rorg_type,
                 manufacturer_id=packet.rorg_manufacturer
