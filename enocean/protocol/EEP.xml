@@ -350,7 +350,7 @@
           <enum description="Output value" shortcut="OV" offset="17" size="7">
             <item description="Output value 0% or OFF" value="0" />
             <rangeitem description="Output value {value}% or ON" start="1" end="100" />
-            <item description="Not used" start="101" end="126" />
+            <rangeitem description="Not used" start="101" end="126" />
             <item description="output value not valid / not set" value="127" />
           </enum>
         </data>
@@ -373,7 +373,7 @@
           <enum description="Output value" shortcut="OV" offset="17" size="7">
             <item description="Output value 0% or OFF" value="0" />
             <rangeitem description="Output value {value}% or ON" start="1" end="100" />
-            <item description="Not used" start="101" end="126" />
+            <rangeitem description="Not used" start="101" end="126" />
             <item description="output value not valid / not set" value="127" />
           </enum>
         </data>
