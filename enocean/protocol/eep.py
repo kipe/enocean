@@ -162,7 +162,7 @@ class EEP(object):
             return None
 
         if rorg_type not in self.telegrams[eep_rorg][rorg_func].keys():
-            self.logger.warn('Cannot find func in EEP!')
+            self.logger.warn('Cannot find type in EEP!')
             return None
 
         profile = self.telegrams[eep_rorg][rorg_func][rorg_type]
