@@ -633,6 +633,42 @@
         </data>
       </profile>
     </profiles>
+    <profiles func="0x12" description="Atomated Meter Reading (AMR)">
+      <profile type="0x01" description="Electricity">
+        <data>
+          <value shortcut="MR" description="current value in W or cumulative value in kWh" offset="0" size="24" unit="">
+            <range>
+              <min>0</min>
+              <max>16777215</max>
+            </range>
+            <scale>
+              <min>0.000000</min>
+              <max>16777215</max>
+            </scale>
+          </value>
+          <value shortcut="TI" description="Tariff info" offset="24" size="4" unit="">
+            <range>
+              <min>0</min>
+              <max>15</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>15</max>
+            </scale>
+          </value>
+          <enum shortcut="DT" description="Current value or cumulative value" offset="29" size="1">
+            <item description="kWh" value="0" />
+            <item description="W" value="1" />
+          </enum>
+          <enum shortcut="DIV" description="Divisor for value" offset="30" size="2">
+            <item description="x/1" value="0" />
+            <item description="x/10" value="1" />
+            <item description="x/100" value="2" />
+            <item description="x/1000" value="3" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
   </telegram>
   <telegram rorg="0xD2" type="VLD" description="VLD Telegram">
     <profiles func="0x01" description="Electronic switches and dimmers with Energy Measurement and Local Control">
