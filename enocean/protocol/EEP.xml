@@ -29,6 +29,19 @@
         </data>
       </profile>
     </profiles>
+    <profiles func="0x05" description="Detectors">
+      <profile type="0x01" description="Liquid Leakage Sensor (mechanic harvester)">
+        <data>
+          <enum description="Water Sensor" shortcut="WAS" offset="0" size="8">
+            <rangeitem description="not specified" start="0" end="16" />
+            <item description="Water detected" value="17" />
+            <rangeitem description="not specified" start="18" end="255" />
+          </enum>
+          <status description="T21" shortcut="T21" offset="2" size="1" />
+          <status description="NU" shortcut="NU" offset="3" size="1" />
+        </data>
+      </profile>
+    </profiles>
   </telegram>
   <telegram rorg="0xD5" type="1BS" description="1BS Telegram">
     <profiles func="0x00" description="Contacts and Switches">
