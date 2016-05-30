@@ -22,6 +22,6 @@ After this, it's just a matter of running `enocean_example.py` and pressing the
 learn button on magnetic contact or temperature switch or pressing the rocker switch.
 
 You should be displayed with a log of the presses, as well as parsed values
-(assuming the sensors are the ones provided in the [EnOcean Sensor Kit](http://uk.farnell.com/raspberypi-enocean-sensor-kit)).
+(assuming the sensors are the ones provided in the [EnOcean Starter Kit](https://www.enocean.com/en/enocean_modules/esk-300)).
 
 The example script can be stopped by pressing `CTRL+C`
