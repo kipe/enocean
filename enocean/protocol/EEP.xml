@@ -42,6 +42,20 @@
         </data>
       </profile>
     </profiles>
+    <profiles func="0x10" description="Mechanical Handle">
+      <profile type="0x00" description="Window Handle">
+        <data>
+          <enum description="Window handle" shortcut="WIN" offset="2" size="2">
+            <item description="Moved from up to vertical" value="0" />
+            <item description="Moved from vertical to up" value="1" />
+            <item description="Moved from down to vertical" value="2" />
+            <item description="Moved from vertical to down" value="3" />
+          </enum>
+          <status description="T21" shortcut="T21" offset="2" size="1" />
+          <status description="NU" shortcut="NU" offset="3" size="1" />
+        </data>
+      </profile>
+    </profiles>
   </telegram>
   <telegram rorg="0xD5" type="1BS" description="1BS Telegram">
     <profiles func="0x00" description="Contacts and Switches">
