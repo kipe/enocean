@@ -6,6 +6,7 @@ share
 lib-python
 lib_pypy
 site-packages
+venv
 *.pyc
 
 *.egg-info
