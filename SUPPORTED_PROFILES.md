@@ -23,6 +23,18 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 
+##### RORG 0xF6 - FUNC 0x05 - TYPE 0x01 - Liquid Leakage Sensor (mechanic harvester)
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|WAS     |Water Sensor                                      |enum    |0-16 - not specified                                                  |
+|        |                                                  |        |17 - Water detected                                                   |
+|        |                                                  |        |18-255 - not specified                                                |
+|T21     |T21                                               |status  |                                                                      |
+|NU      |NU                                                |status  |                                                                      |
+
+
+
 ### 1BS Telegram (0xD5)
 ##### RORG 0xD5 - FUNC 0x00 - TYPE 0x01 - Single Input Contact
 
@@ -307,6 +319,21 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |1 - true                                                              |
 |RCU     |Select function                                   |enum    |0 - RCU                                                               |
 |        |                                                  |        |1 - service on                                                        |
+
+
+
+##### RORG 0xA5 - FUNC 0x12 - TYPE 0x01 - Electricity
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|MR      |current value in W or cumulative value in kWh     |value   |0.0-16777215.0 ↔ 0.0-16777215.0                                       |
+|TI      |Tariff info                                       |value   |0.0-15.0 ↔ 0.0-15.0                                                   |
+|DT      |Current value or cumulative value                 |enum    |0 - kWh                                                               |
+|        |                                                  |        |1 - W                                                                 |
+|DIV     |Divisor for value                                 |enum    |0 - x/1                                                               |
+|        |                                                  |        |1 - x/10                                                              |
+|        |                                                  |        |2 - x/100                                                             |
+|        |                                                  |        |3 - x/1000                                                            |
 
 
 
