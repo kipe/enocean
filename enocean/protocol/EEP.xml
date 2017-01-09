@@ -471,8 +471,8 @@
               <max>255</max>
             </range>
             <scale>
-              <min>-100</min>
-              <max>100</max>
+              <min>0</min>
+              <max>255</max>
             </scale>
           </value>
           <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="°C">
