@@ -740,6 +740,42 @@
         </data>
       </profile>
     </profiles>
+    <profiles func="0x30" description="Digital Input">
+      <profile type="0x03" description="Digital Inputs, Wake and Temperature">
+        <data>
+          <value shortcut="TMP" description="Temperature (linear)" offset="8" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>40</max>
+            </scale>
+          </value>
+          <enum shortcut="WA0" description="Value of wake signal" offset="19" size="1">
+            <item description="Low" value="0" />
+            <item description="High" value="1" />
+          </enum>
+          <enum shortcut="DI3" description="Digital Input 3" offset="20" size="1">
+            <item description="Low" value="0" />
+            <item description="High" value="1" />
+          </enum>
+          <enum shortcut="DI2" description="Digital Input 2" offset="21" size="1">
+            <item description="Low" value="0" />
+            <item description="High" value="1" />
+          </enum>
+          <enum shortcut="DI1" description="Digital Input 1" offset="22" size="1">
+            <item description="Low" value="0" />
+            <item description="High" value="1" />
+          </enum>
+          <enum shortcut="DI0" description="Digital Input 0" offset="23" size="1">
+            <item description="Low" value="0" />
+            <item description="High" value="1" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
   </telegram>
   <telegram rorg="0xD2" type="VLD" description="VLD Telegram">
     <profiles func="0x01" description="Electronic switches and dimmers with Energy Measurement and Local Control">
