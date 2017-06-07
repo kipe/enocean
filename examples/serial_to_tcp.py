@@ -3,6 +3,7 @@
 from enocean.consolelogger import init_logging
 from enocean.communicators.serialcommunicator import SerialCommunicator
 from enocean.communicators.utils import send_to_tcp_socket
+# from enocean.communicators.utils import send_to_udp_socket # When you want to use UDP
 import sys
 import traceback
 
@@ -19,6 +20,7 @@ while communicator.is_alive():
         # Loop to empty the queue...
         packet = communicator.receive.get(block=True, timeout=1)
         send_to_tcp_socket('localhost', 9637, packet)
+        # send_to_udp_socket('localhost', 9637, packet) # sending with UDP
     except queue.Empty:
         continue
     except KeyboardInterrupt:
