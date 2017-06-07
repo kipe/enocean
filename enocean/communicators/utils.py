@@ -8,3 +8,7 @@ def send_to_tcp_socket(host, port, packet):
     sock.connect((host, port))
     sock.send(str(bytearray(packet.build())))
     sock.close()
+
+def send_to_udp_socket(host, port, packet):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.sendto(str(bytearray(packet.build())), (host, port))
