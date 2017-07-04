@@ -531,6 +531,44 @@
           </value>
         </data>
       </profile>
+      <profile description="Temperature and Humidity Sensor and Set Point" type="0x12">
+        <data>
+          <value shortcut="SP" description="Set Point (linear)" offset="0" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>255</max>
+            </scale>
+          </value>
+          <value shortcut="HUM" description="Rel. Humidity (linear)" offset="8" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>250</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>100</max>
+            </scale>
+          </value>
+          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>40</max>
+            </scale>
+          </value>
+          <enum description="LRN Bit" shortcut="LRNB" offset="28" size="1">
+            <item description="Teach-in telegram" value="0" />
+            <item description="Data telegram" value="1" />
+          </enum>
+        </data>
+      </profile>
     </profiles>
     <profiles description="Controller Status" func="0x11">
       <profile description="Temperature Controller Output" type="0x02">
