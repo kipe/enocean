@@ -834,6 +834,54 @@
         </data>
       </profile>
     </profiles>
+    <profiles func="0x38" description="Central Command">
+      <profile type="0x08" description="Gateway">
+        <command description="Command ID" shortcut="CMD" offset="0" size="8">
+          <item description="Dimming" value="2" />
+        </command>
+        <data command="2">
+          <enum shortcut="CMD" description="Command ID" offset="0" size="8">
+            <rangeitem description="Command ID {value}" start="0" end="13" />
+          </enum>
+          <value shortcut="EDIM" description="Dimming value" offset="8" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>255</max>
+            </scale>
+          </value>
+          <value shortcut="RMP" description="Ramping time" offset="16" size="8" unit="s">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>255</max>
+            </scale>
+          </value>
+          <enum description="LRN Bit" shortcut="LRNB" offset="28" size="1">
+            <item description="Teach-in Telegram" value="0" />
+            <item description="Data Telegram" value="1" />
+          </enum>
+          <enum description="Dimming Range" shortcut="EDIMR" offset="29" size="1">
+            <item description="Absolute value" value="0" />
+            <item description="Relative value" value="1" />
+          </enum>
+          <enum description="Store final value" shortcut="STR" offset="30" size="1">
+            <item description="No" value="0" />
+            <item description="Yes" value="1" />
+          </enum>
+          <enum description="Switching command" shortcut="SW" offset="31" size="1">
+            <item description="Off" value="0" />
+            <item description="On" value="1" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
   </telegram>
   <telegram rorg="0xD2" type="VLD" description="VLD Telegram">
     <profiles func="0x01" description="Electronic switches and dimmers with Energy Measurement and Local Control">
