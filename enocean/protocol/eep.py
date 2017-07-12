@@ -167,12 +167,12 @@ class EEP(object):
 
         profile = self.telegrams[eep_rorg][rorg_func][rorg_type]
 
-        if eep_rorg == RORG.VLD:
-            # For VLD; multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
+        if command:
+            # multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
             eep_command = profile.find('command', recursive=False)
             # If commands are not set in EEP, or command is None,
             # get the first data as a "best guess".
-            if not eep_command or command is None:
+            if not eep_command:
                 return profile.find('data', recursive=False)
 
             # If eep_command is defined, so should be data.command
