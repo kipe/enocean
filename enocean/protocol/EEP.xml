@@ -533,7 +533,7 @@
       </profile>
       <profile description="Temperature and Humidity Sensor and Set Point" type="0x12">
         <data>
-          <value shortcut="SP" description="Set Point (linear)" offset="0" size="8" unit="%">
+          <value shortcut="SP" description="Set Point (linear)" offset="0" size="8" unit="">
             <range>
               <min>0</min>
               <max>255</max>
@@ -555,8 +555,8 @@
           </value>
           <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="°C">
             <range>
-              <min>255</min>
-              <max>0</max>
+              <min>0</min>
+              <max>250</max>
             </range>
             <scale>
               <min>0</min>
