@@ -35,6 +35,31 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 
+##### RORG 0xF6 - FUNC 0x05 - TYPE 0x01 - Liquid Leakage Sensor (mechanic harvester)
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|WAS     |Water Sensor                                      |enum    |0-16 - not specified                                                  |
+|        |                                                  |        |17 - Water detected                                                   |
+|        |                                                  |        |18-255 - not specified                                                |
+|T21     |T21                                               |status  |                                                                      |
+|NU      |NU                                                |status  |                                                                      |
+
+
+
+##### RORG 0xF6 - FUNC 0x10 - TYPE 0x00 - Window Handle
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|WIN     |Window handle                                     |enum    |0 - Moved from up to vertical                                         |
+|        |                                                  |        |1 - Moved from vertical to up                                         |
+|        |                                                  |        |2 - Moved from down to vertical                                       |
+|        |                                                  |        |3 - Moved from vertical to down                                       |
+|T21     |T21                                               |status  |                                                                      |
+|NU      |NU                                                |status  |                                                                      |
+
+
+
 ### 1BS Telegram (0xD5)
 ##### RORG 0xD5 - FUNC 0x00 - TYPE 0x01 - Single Input Contact
 
@@ -222,6 +247,17 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 
+##### RORG 0xA5 - FUNC 0x04 - TYPE 0x01 - Range 0°C to +40°C and 0% to 100%
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|HUM     |Rel. Humidity (linear)                            |value   |0.0-250.0 ↔ 0.0-100.0 %                                               |
+|TMP     |Temperature (linear)                              |value   |0.0-250.0 ↔ 0.0-40.0 °C                                               |
+|TSN     |Availability of the Temperature Sensor            |enum    |0 - not available                                                     |
+|        |                                                  |        |1 - available                                                         |
+
+
+
 ##### RORG 0xA5 - FUNC 0x06 - TYPE 0x01 - Range 300lx to 60.000lx
 
 |shortcut|description                                       |type    |values                                                                |
@@ -238,7 +274,7 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
-|SP      |Set Point (linear)                                |value   |0.0-255.0 ↔ -100.0-100.0 %                                            |
+|SP      |Set Point (linear)                                |value   |0.0-255.0 ↔ 0.0-255.0 %                                               |
 |TMP     |Temperature (linear)                              |value   |255.0-0.0 ↔ 0.0-40.0 °C                                               |
 
 
@@ -319,6 +355,21 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |1 - true                                                              |
 |RCU     |Select function                                   |enum    |0 - RCU                                                               |
 |        |                                                  |        |1 - service on                                                        |
+
+
+
+##### RORG 0xA5 - FUNC 0x12 - TYPE 0x01 - Electricity
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|MR      |current value in W or cumulative value in kWh     |value   |0.0-16777215.0 ↔ 0.0-16777215.0                                       |
+|TI      |Tariff info                                       |value   |0.0-15.0 ↔ 0.0-15.0                                                   |
+|DT      |Current value or cumulative value                 |enum    |0 - kWh                                                               |
+|        |                                                  |        |1 - W                                                                 |
+|DIV     |Divisor for value                                 |enum    |0 - x/1                                                               |
+|        |                                                  |        |1 - x/10                                                              |
+|        |                                                  |        |2 - x/100                                                             |
+|        |                                                  |        |3 - x/1000                                                            |
 
 
 
