@@ -1,11 +1,21 @@
 language: python
 python:
-  - "2.6"
   - "2.7"
-  - "3.2"
   - "3.3"
   - "3.4"
+  - "3.5"
+  - "nightly"
+  - "pypy"
+  - "pypy3"
 install:
+  - pip install pylint coverage coveralls
   - pip install -e .
 script:
-  - nosetests
+  - nosetests -s -q --with-coverage --cover-package=enocean
+sudo: false
+matrix:
+  fast_finish: true
+
+after_success:
+  - pylint enocean -d line-too-long
+  - coveralls

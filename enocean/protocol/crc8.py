@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
-from __future__ import print_function, unicode_literals, division
+from __future__ import print_function, unicode_literals, division, absolute_import
 
 # https://gist.github.com/hypebeast/3833758
-crcTable = (
+CRC_TABLE = (
     0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15, 0x38,
     0x3f, 0x36, 0x31, 0x24, 0x23, 0x2a, 0x2d, 0x70, 0x77,
     0x7e, 0x79, 0x6c, 0x6b, 0x62, 0x65, 0x48, 0x4f, 0x46,
@@ -35,7 +35,7 @@ crcTable = (
 
 
 def calc(msg):
-    runningCRC = 0
-    for c in msg:
-        runningCRC = crcTable[runningCRC & 0xFF ^ c & 0xFF]
-    return runningCRC
+    checksum = 0
+    for byte in msg:
+        checksum = CRC_TABLE[checksum & 0xFF ^ byte & 0xFF]
+    return checksum

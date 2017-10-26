@@ -3,9 +3,15 @@ include
 lib
 local
 share
+lib-python
+lib_pypy
+site-packages
+venv
 *.pyc
 
+*.egg-info
 build
 man
 MANIFEST
 dist
+pip-selfcheck.json

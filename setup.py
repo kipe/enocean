@@ -1,9 +1,12 @@
 #!/usr/bin/env python
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 setup(
     name='enocean',
-    version='0.20',
+    version='0.40',
     description='EnOcean serial protocol implementation',
     author='Kimmo Huoman',
     author_email='kipenroskaposti@gmail.com',
@@ -17,10 +20,10 @@ setup(
         'examples/enocean_example.py',
     ],
     package_data={
-        '': ['EEP_2.6.1.xml']
+        '': ['EEP.xml']
     },
     install_requires=[
-        'enum34>=1.0',
-        'pyserial>=2.7',
+        'enum-compat>=0.0.2',
+        'pyserial>=3.0',
         'beautifulsoup4>=4.3.2',
     ])
