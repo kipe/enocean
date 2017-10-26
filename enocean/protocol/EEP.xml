@@ -735,6 +735,14 @@
               <max>40</max>
             </scale>
           </value>
+          <enum description="LRN Bit" shortcut="LRNB" offset="28" size="1">
+            <item description="Teach-in telegram" value="0" />
+            <item description="Data telegram" value="1" />
+          </enum>
+          <enum description="Self-controlled mode" shortcut="SCM" offset="29" size="1">
+            <item description="off" value="0" />
+            <item description="on" value="1" />
+          </enum>
         </data>
         <data direction="2">
           <value shortcut="SP" description="Valve Position" offset="0" size="8" unit="%">
