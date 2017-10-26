@@ -160,7 +160,8 @@ def test_eep_direction():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0x43
     ]))
-    assert packet.parse_eep(0x20, 0x01, 1) == ['CV', 'SO', 'ENIE', 'ES', 'BCAP', 'CCO', 'FTS', 'DWO', 'ACO', 'TMP']
+    assert packet.parse_eep(0x20, 0x01, 1) == ['CV', 'SO', 'ENIE', 'ES', 'BCAP', 'CCO', 'FTS', 'DWO', 'ACO', 'TMP',
+                                               'LRNB', 'SCM']
     assert packet.parsed['CV']['value'] == 50
     assert packet.parse_eep(0x20, 0x01, 2) == ['SP', 'TMP', 'RIN', 'LFS', 'VO', 'VC', 'SB', 'SPS', 'SPN', 'RCU']
     assert packet.parsed['SP']['value'] == 50
