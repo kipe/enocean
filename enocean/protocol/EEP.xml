@@ -492,6 +492,16 @@
         </data>
       </profile>
     </profiles>
+    <profiles func="0x07" description="Occupancy Sensors">
+      <profile type="0x01" description="Occupancy with Supply voltage monitor">
+        <data>
+	  <enum description="PIR Status" shortcut="PIR" offset="16" size="1">
+            <item description="off" value="0" />
+            <item description="on" value="1" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
     <profiles func="0x08" description="Light, Temperature and Occupancy Sensor">
       <profile description="Range 0lx to 510lx, 0°C to +51°C and Occupancy Button" type="0x01">
         <data>
