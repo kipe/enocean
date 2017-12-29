@@ -613,10 +613,6 @@
               <max>40</max>
             </scale>
           </value>
-          <enum description="LRN Bit" shortcut="LRNB" offset="28" size="1">
-            <item description="Teach-in telegram" value="0" />
-            <item description="Data telegram" value="1" />
-          </enum>
         </data>
       </profile>
     </profiles>
@@ -904,10 +900,6 @@
               <max>6553.5</max>
             </scale>
           </value>
-          <enum description="LRN Bit" shortcut="LRNB" offset="28" size="1">
-            <item description="Teach-in Telegram" value="0" />
-            <item description="Data Telegram" value="1" />
-          </enum>
           <enum description="LOCK/UNLOCK" shortcut="LCK" offset="29" size="1">
             <item description="Unlock" value="0" />
             <item description="Lock" value="1" />
@@ -945,10 +937,6 @@
               <max>255</max>
             </scale>
           </value>
-          <enum description="LRN Bit" shortcut="LRNB" offset="28" size="1">
-            <item description="Teach-in Telegram" value="0" />
-            <item description="Data Telegram" value="1" />
-          </enum>
           <enum description="Dimming Range" shortcut="EDIMR" offset="29" size="1">
             <item description="Absolute value" value="0" />
             <item description="Relative value" value="1" />
