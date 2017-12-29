@@ -6,7 +6,7 @@ except ImportError:
 
 setup(
     name='enocean',
-    version='0.41',
+    version='0.41.0',
     description='EnOcean serial protocol implementation',
     author='Kimmo Huoman',
     author_email='kipenroskaposti@gmail.com',
