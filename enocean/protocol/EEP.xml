@@ -492,7 +492,7 @@
         </data>
       </profile>
     </profiles>
-    <profiles func="0x07" description="Occupancy Sensors">
+    <profiles func="0x07" description="Occupancy Sensor">
       <profile type="0x01" description="Occupancy with Supply voltage monitor">
         <data>
 	  <enum description="PIR Status" shortcut="PIR" offset="16" size="1">
