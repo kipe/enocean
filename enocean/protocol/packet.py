@@ -204,7 +204,7 @@ class Packet(object):
         if not isinstance(sender, list) or len(sender) != 4:
             raise ValueError('Sender must a list containing 4 (numeric) values.')
 
-        packet = Packet(packet_type)
+        packet = Packet(packet_type, data=[], optional=[])
         packet.rorg = rorg
         packet.data = [packet.rorg]
         # Select EEP at this point, so we know how many bits we're dealing with (for VLD).
