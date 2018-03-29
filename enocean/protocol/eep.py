@@ -17,7 +17,7 @@ class EEP(object):
         self.telegrams = {}
 
         try:
-            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml'), 'r') as xml_file:
+            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml'), 'r', encoding='UTF-8') as xml_file:
                 self.soup = BeautifulSoup(xml_file.read(), "html.parser")
             self.init_ok = True
             self.__load_xml()
