@@ -39,3 +39,10 @@ def calc(msg):
     for byte in msg:
         checksum = CRC_TABLE[checksum & 0xFF ^ byte & 0xFF]
     return checksum
+
+def calc_ESP2(msg):
+    checksum=0
+    for byte in msg:
+        checksum += byte
+        checksum &= 0xFF
+    return checksum
