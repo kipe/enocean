@@ -15,3 +15,5 @@ man
 MANIFEST
 dist
 pip-selfcheck.json
+
+.vscode/
