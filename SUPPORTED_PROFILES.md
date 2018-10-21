@@ -35,18 +35,6 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 
-##### RORG 0xF6 - FUNC 0x05 - TYPE 0x01 - Liquid Leakage Sensor (mechanic harvester)
-
-|shortcut|description                                       |type    |values                                                                |
-|--------|--------------------------------------------------|--------|----                                                                  |
-|WAS     |Water Sensor                                      |enum    |0-16 - not specified                                                  |
-|        |                                                  |        |17 - Water detected                                                   |
-|        |                                                  |        |18-255 - not specified                                                |
-|T21     |T21                                               |status  |                                                                      |
-|NU      |NU                                                |status  |                                                                      |
-
-
-
 ##### RORG 0xF6 - FUNC 0x10 - TYPE 0x00 - Window Handle
 
 |shortcut|description                                       |type    |values                                                                |
@@ -270,12 +258,45 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 
+##### RORG 0xA5 - FUNC 0x07 - TYPE 0x01 - Occupancy with Supply voltage monitor
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SVC     |Supply voltage (OPTIONAL)                         |value   |0.0-250.0 ↔ 0.0-5.0 V                                                 |
+|PIR     |PIR Status                                        |enum    |0 - off                                                               |
+|        |                                                  |        |1 - on                                                                |
+
+
+
+##### RORG 0xA5 - FUNC 0x08 - TYPE 0x01 - Range 0lx to 510lx, 0°C to +51°C and Occupancy Button
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SVC     |Supply voltage (linear)                           |value   |0.0-255.0 ↔ 0.0-5.1 V                                                 |
+|ILL     |Illumination (linear)                             |value   |0.0-255.0 ↔ 0.0-510.0 lx                                              |
+|TMP     |Temperature (linear)                              |value   |0.0-255.0 ↔ 0.0-51.0 °C                                               |
+|PIRS    |PIR Status                                        |enum    |0 - PIR on                                                            |
+|        |                                                  |        |1 - PIR off                                                           |
+|OCC     |Occupancy Button                                  |enum    |0 - Button pressed                                                    |
+|        |                                                  |        |1 - Button released                                                   |
+
+
+
 ##### RORG 0xA5 - FUNC 0x10 - TYPE 0x03 - Temperature Sensor and Set Point
 
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
 |SP      |Set Point (linear)                                |value   |0.0-255.0 ↔ 0.0-255.0 %                                               |
 |TMP     |Temperature (linear)                              |value   |255.0-0.0 ↔ 0.0-40.0 °C                                               |
+
+
+##### RORG 0xA5 - FUNC 0x10 - TYPE 0x12 - Temperature and Humidity Sensor and Set Point
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SP      |Set Point (linear)                                |value   |0.0-255.0 ↔ 0.0-255.0                                                 |
+|HUM     |Rel. Humidity (linear)                            |value   |0.0-250.0 ↔ 0.0-100.0 %                                               |
+|TMP     |Temperature (linear)                              |value   |0.0-250.0 ↔ 0.0-40.0 °C                                               |
 
 
 
@@ -307,6 +328,16 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |1 - Unoccupied                                                        |
 |        |                                                  |        |2 - StandBy                                                           |
 |        |                                                  |        |3 - Frost                                                             |
+
+
+
+##### RORG 0xA5 - FUNC 0x14 - TYPE 0x01 - Single Input Contact (Window/Door), Supply voltage monitor
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SVC     |Supply voltage / super cap. (linear); 251 - 255 reserved for error code|value   |0.0-250.0 ↔ 0.0-5.0 V                                                 |
+|CT      |Contact                                           |enum    |1 - open                                                              |
+|        |                                                  |        |0 - closed                                                            |
 
 
 
@@ -373,18 +404,50 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 
-##### RORG 0xA5 - FUNC 0x12 - TYPE 0x01 - Electricity
+##### RORG 0xA5 - FUNC 0x30 - TYPE 0x03 - Digital Inputs, Wake and Temperature
 
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
-|MR      |current value in W or cumulative value in kWh     |value   |0.0-16777215.0 ↔ 0.0-16777215.0                                       |
-|TI      |Tariff info                                       |value   |0.0-15.0 ↔ 0.0-15.0                                                   |
-|DT      |Current value or cumulative value                 |enum    |0 - kWh                                                               |
-|        |                                                  |        |1 - W                                                                 |
-|DIV     |Divisor for value                                 |enum    |0 - x/1                                                               |
-|        |                                                  |        |1 - x/10                                                              |
-|        |                                                  |        |2 - x/100                                                             |
-|        |                                                  |        |3 - x/1000                                                            |
+|TMP     |Temperature (linear)                              |value   |255.0-0.0 ↔ 0.0-40.0 °C                                               |
+|WA0     |Value of wake signal                              |enum    |0 - Low                                                               |
+|        |                                                  |        |1 - High                                                              |
+|DI3     |Digital Input 3                                   |enum    |0 - Low                                                               |
+|        |                                                  |        |1 - High                                                              |
+|DI2     |Digital Input 2                                   |enum    |0 - Low                                                               |
+|        |                                                  |        |1 - High                                                              |
+|DI1     |Digital Input 1                                   |enum    |0 - Low                                                               |
+|        |                                                  |        |1 - High                                                              |
+|DI0     |Digital Input 0                                   |enum    |0 - Low                                                               |
+|        |                                                  |        |1 - High                                                              |
+
+
+
+##### RORG 0xA5 - FUNC 0x38 - TYPE 0x08 - Gateway
+
+###### command: 1
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|COM     |Command ID                                        |enum    |0-13 - Command ID {value}                                             |
+|TIM     |Time in 1/10 seconds. 0 = no time specifed        |value   |1.0-65535.0 ↔ 0.1-6553.5 s                                            |
+|LCK     |Lock for duration time if time >0, unlimited time of no time specified. Locking may be cleared with "unlock". During lock phase no other commands will be accepted or executed|enum    |0 - Unlock                                                            |
+|        |                                                  |        |1 - Lock                                                              |
+|DEL     |Delay or duration (if Time > 0); 0 = Duration (Execute switching command immediately and switch back after duration) 1 = Delay (Execute switching command after delay)|enum    |0 - Duration                                                          |
+|        |                                                  |        |1 - Delay                                                             |
+|SW      |Switching command ON/OFF                          |enum    |0 - Off                                                               |
+|        |                                                  |        |1 - On                                                                |
+
+###### command: 2
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|COM     |Command ID                                        |enum    |0-13 - Command ID {value}                                             |
+|EDIM    |Dimming value (absolute [0...255] or relative [0...100])|value   |0.0-255.0 ↔ 0.0-255.0 %                                               |
+|RMP     |Ramping time in seconds, 0 = no ramping, 1...255 = seconds to 100%|value   |0.0-255.0 ↔ 0.0-255.0 s                                               |
+|EDIMR   |Dimming Range                                     |enum    |0 - Absolute value                                                    |
+|        |                                                  |        |1 - Relative value                                                    |
+|STR     |Store final value                                 |enum    |0 - No                                                                |
+|        |                                                  |        |1 - Yes                                                               |
+|SW      |Switching command                                 |enum    |0 - Off                                                               |
+|        |                                                  |        |1 - On                                                                |
 
 
 
@@ -431,6 +494,66 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |1-100 - Output value {value}% or ON                                   |
 |        |                                                  |        |101-126 - Not used                                                    |
 |        |                                                  |        |127 - output value not valid / not set                                |
+
+
+
+##### RORG 0xD2 - FUNC 0x05 - TYPE 0x00 - Type 0x00
+
+###### command: 1
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|POS     |Vertical position                                 |enum    |0-100 - Output position {value}%                                      |
+|        |                                                  |        |127 - Do not change                                                   |
+|ANG     |Rotation angle                                    |enum    |0-100 - Output angle {value}%                                         |
+|        |                                                  |        |127 - Do not change                                                   |
+|REPO    |Repositioning                                     |enum    |0 - Go directly to POS/ANG                                            |
+|        |                                                  |        |1 - Go up (0%), then to POS/ANG                                       |
+|        |                                                  |        |2 - Go down (100%), then to POS/ANG                                   |
+|        |                                                  |        |3 - Reserved                                                          |
+|LOCK    |Locking modes                                     |enum    |0 - Do not change                                                     |
+|        |                                                  |        |1 - Set blockage mode                                                 |
+|        |                                                  |        |2 - Set alarm mode                                                    |
+|        |                                                  |        |3 - Reserved                                                          |
+|        |                                                  |        |4 - Reserved                                                          |
+|        |                                                  |        |5 - Reserved                                                          |
+|        |                                                  |        |6 - Reserved                                                          |
+|        |                                                  |        |7 - Deblockage                                                        |
+|CHN     |Channel                                           |enum    |0 - Channel 1                                                         |
+|CMD     |Command Id                                        |enum    |0-5 - Command ID {value}                                              |
+
+###### command: 2
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|CHN     |Channel                                           |enum    |0 - Channel 1                                                         |
+|CMD     |Command Id                                        |enum    |0-5 - Command ID {value}                                              |
+
+###### command: 3
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|CHN     |Channel                                           |enum    |0 - Channel 1                                                         |
+|CMD     |Command Id                                        |enum    |0-5 - Command ID {value}                                              |
+
+###### command: 4
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|POS     |Vertical position                                 |enum    |0-100 - Output position {value}%                                      |
+|        |                                                  |        |127 - Do not change                                                   |
+|ANG     |Rotation angle                                    |enum    |0-100 - Output angle {value}%                                         |
+|        |                                                  |        |127 - Do not change                                                   |
+|REPO    |Repositioning                                     |enum    |0 - Go directly to POS/ANG                                            |
+|        |                                                  |        |1 - Go up (0%), then to POS/ANG                                       |
+|        |                                                  |        |2 - Go down (100%), then to POS/ANG                                   |
+|        |                                                  |        |3 - Reserved                                                          |
+|LOCK    |Locking modes                                     |enum    |0 - Do not change                                                     |
+|        |                                                  |        |1 - Set blockage mode                                                 |
+|        |                                                  |        |2 - Set alarm mode                                                    |
+|        |                                                  |        |3 - Reserved                                                          |
+|        |                                                  |        |4 - Reserved                                                          |
+|        |                                                  |        |5 - Reserved                                                          |
+|        |                                                  |        |6 - Reserved                                                          |
+|        |                                                  |        |7 - Deblockage                                                        |
+|CHN     |Channel                                           |enum    |0 - Channel 1                                                         |
+|CMD     |Command Id                                        |enum    |0-5 - Command ID {value}                                              |
 
 
 
