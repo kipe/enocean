@@ -1035,5 +1035,96 @@
         </data>
       </profile>
     </profiles>
+    <profiles func="0x05" description="Blinds Control for Position and Angle">
+			<profile type="0x00" description="Type 0x00">
+				<command description="command indentifier" shortcut="CMD" offset="28" size="4">
+					<item description="Go to Position and Angle" value="1" />
+					<item description="Stop" value="2" />
+					<item description="Query Position and Angle" value="3" />
+					<item description="Reply Position and Angle" value="4" />
+					<item description="Set parameters" value="5" />
+				</command>
+				<data command="1" bits="4">
+					<enum description="Vertical position" shortcut="POS" offset="1" size="7">
+						<rangeitem description="Output position {value}%" start="0" end="100" />
+						<item description="Do not change" value="127" />
+					</enum>
+					<enum description="Rotation angle" shortcut="ANG" offset="9" size="7">
+						<rangeitem description="Output angle {value}%" start="0" end="100" />
+						<item description="Do not change" value="127" />
+					</enum>
+					<enum description="Repositioning" shortcut="REPO" offset="17" size="3">
+						<item description="Go directly to POS/ANG" value="0" />
+						<item description="Go up (0%), then to POS/ANG" value="1" />
+						<item description="Go down (100%), then to POS/ANG" value="2" />
+						<item description="Reserved" value="3" />
+					</enum>
+					<enum description="Locking modes" shortcut="LOCK" offset="21" size="3">
+						<item description="Do not change" value="0" />
+						<item description="Set blockage mode" value="1" />
+						<item description="Set alarm mode" value="2" />
+						<item description="Reserved" value="3" />
+						<item description="Reserved" value="4" />
+						<item description="Reserved" value="5" />
+						<item description="Reserved" value="6" />
+						<item description="Deblockage" value="7" />
+					</enum>
+					<enum description="Channel" shortcut="CHN" offset="24" size="4">
+						<item description="Channel 1" value="0" />
+					</enum>
+					<enum description="Command Id" shortcut="CMD" offset="28" size="4">
+             <rangeitem description="Command ID {value}" start="0" end="5" />
+					</enum>
+				</data>
+				<data command="2" bits="1">
+					<enum description="Channel" shortcut="CHN" offset="0" size="4">
+						<item description="Channel 1" value="0" />
+					</enum>
+					<enum description="Command Id" shortcut="CMD" offset="4" size="4">
+						<rangeitem description="Command ID {value}" start="0" end="5" />
+					</enum>
+				</data>
+				<data command="3" bits="1">
+					<enum description="Channel" shortcut="CHN" offset="0" size="4">
+						<item description="Channel 1" value="0" />
+					</enum>
+					<enum description="Command Id" shortcut="CMD" offset="4" size="4">
+						<rangeitem description="Command ID {value}" start="0" end="5" />
+					</enum>
+				</data>
+				<data command="4" bits="4">
+					<enum description="Vertical position" shortcut="POS" offset="1" size="7">
+						<rangeitem description="Output position {value}%" start="0" end="100" />
+						<item description="Do not change" value="127" />
+					</enum>
+					<enum description="Rotation angle" shortcut="ANG" offset="9" size="7">
+						<rangeitem description="Output angle {value}%" start="0" end="100" />
+						<item description="Do not change" value="127" />
+					</enum>
+					<enum description="Repositioning" shortcut="REPO" offset="17" size="3">
+						<item description="Go directly to POS/ANG" value="0" />
+						<item description="Go up (0%), then to POS/ANG" value="1" />
+						<item description="Go down (100%), then to POS/ANG" value="2" />
+						<item description="Reserved" value="3" />
+					</enum>
+					<enum description="Locking modes" shortcut="LOCK" offset="21" size="3">
+						<item description="Do not change" value="0" />
+						<item description="Set blockage mode" value="1" />
+						<item description="Set alarm mode" value="2" />
+						<item description="Reserved" value="3" />
+						<item description="Reserved" value="4" />
+						<item description="Reserved" value="5" />
+						<item description="Reserved" value="6" />
+						<item description="Deblockage" value="7" />
+					</enum>
+					<enum description="Channel" shortcut="CHN" offset="24" size="4">
+						<item description="Channel 1" value="0" />
+					</enum>
+					<enum description="Command Id" shortcut="CMD" offset="28" size="4">
+						<rangeitem description="Command ID {value}" start="0" end="5" />
+					</enum>
+				</data>
+			</profile>
+		</profiles>
   </telegram>
 </telegrams>
