@@ -2,6 +2,7 @@
 from __future__ import print_function, unicode_literals, division, absolute_import
 import os
 import logging
+from sys import version_info
 from collections import OrderedDict
 from bs4 import BeautifulSoup
 
@@ -17,8 +18,12 @@ class EEP(object):
         self.telegrams = {}
 
         try:
-            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml'), 'r') as xml_file:
-                self.soup = BeautifulSoup(xml_file.read(), "html.parser")
+            if version_info[0] > 2:
+                with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml'), 'r', encoding='UTF-8') as xml_file:
+                    self.soup = BeautifulSoup(xml_file.read(), "html.parser")
+            else:
+                with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml'), 'r') as xml_file:
+                    self.soup = BeautifulSoup(xml_file.read(), "html.parser")
             self.init_ok = True
             self.__load_xml()
         except IOError:
