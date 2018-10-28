@@ -36,7 +36,11 @@ while communicator.is_alive():
     try:
         # Loop to empty the queue...
         packet = communicator.receive.get(block=True, timeout=1)
-
+        if packet.packet_type == PACKET.RADIO and packet.rorg == RORG.VLD:
+            packet.select_eep(0x05, 0x00)
+            packet.parse_eep()
+            for k in packet.parsed:
+                print('%s: %s' % (k, packet.parsed[k]))
         if packet.packet_type == PACKET.RADIO and packet.rorg == RORG.BS4:
             # parse packet with given FUNC and TYPE
             for k in packet.parse_eep(0x02, 0x05):
