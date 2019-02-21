@@ -451,6 +451,34 @@
           </enum>
         </data>
       </profile>
+      <profile type="0x03" description="Range -20°C  to +60°C 10bit-measurement  and 0% to 100%">
+        <data>
+          <value description="Rel. Humidity (linear)" shortcut="HUM" offset="0" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>100</max>
+            </scale>
+          </value>
+          <value description="Temperature (linear)" shortcut="TMP" offset="14" size="10" unit="°C">
+            <range>
+              <min>0</min>
+              <max>1023</max>
+            </range>
+            <scale>
+              <min>-20</min>
+              <max>+60</max>
+            </scale>
+          </value>
+          <enum description="Telegram Type" shortcut="TTP" offset="31" size="1">
+            <item description="Heartbeat" value="0" />
+            <item description="Event triggered" value="1" />
+          </enum>
+        </data>
+      </profile>
     </profiles>
     <profiles func="0x06" description="Light Sensor">
       <profile type="0x01" description="Range 300lx to 60.000lx">
