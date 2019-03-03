@@ -7,7 +7,7 @@ try:
     import queue
 except ImportError:
     import Queue as queue
-from enocean.protocol.packet import Packet, UTETeachIn
+from enocean.protocol.packet import Packet, UTETeachInPacket
 from enocean.protocol.constants import PACKET, PARSE_RESULT, RETURN_CODE
 
 
@@ -68,8 +68,8 @@ class Communicator(threading.Thread):
             # If message is OK, add it to receive queue or send to the callback method
             if status == PARSE_RESULT.OK and packet:
 
-                if isinstance(packet, UTETeachIn) and self.teach_in:
-                    response_packet = packet.create_response_packet(self.base_id))
+                if isinstance(packet, UTETeachInPacket) and self.teach_in:
+                    response_packet = packet.create_response_packet(self.base_id)
 
                     self.logger.info('Sending response to UTE teach-in.')
                     self.send(response_packet)

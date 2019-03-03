@@ -144,7 +144,7 @@ class Packet(object):
         if packet_type == PACKET.RADIO:
             # Need to handle UTE Teach-in here, as it's a separate packet type...
             if data[0] == RORG.UTE:
-                packet = UTETeachIn(packet_type, data, opt_data)
+                packet = UTETeachInPacket(packet_type, data, opt_data)
             else:
                 packet = RadioPacket(packet_type, data, opt_data)
         elif packet_type == PACKET.RESPONSE:
@@ -342,7 +342,7 @@ class RadioPacket(Packet):
         return super(RadioPacket, self).parse()
 
 
-class UTETeachIn(RadioPacket):
+class UTETeachInPacket(RadioPacket):
     # Request types
     TEACH_IN = 0b00
     DELETE = 0b01
@@ -376,7 +376,7 @@ class UTETeachIn(RadioPacket):
         return self.request_type == self.DELETE
 
     def parse(self):
-        super(UTETeachIn, self).parse()
+        super(UTETeachInPacket, self).parse()
         self.unidirectional = not self._bit_data[DB6.BIT_7]
         self.response_expected = not self._bit_data[DB6.BIT_6]
         self.request_type = enocean.utils.from_bitarray(self._bit_data[DB6.BIT_5:DB6.BIT_3])
