@@ -141,7 +141,7 @@ class Packet(object):
             return PARSE_RESULT.CRC_MISMATCH, buf, None
 
         # If we got this far, everything went ok (?)
-        if packet_type == PACKET.RADIO:
+        if packet_type == PACKET.RADIO_ERP1:
             # Need to handle UTE Teach-in here, as it's a separate packet type...
             if data[0] == RORG.UTE:
                 packet = UTETeachIn(packet_type, data, opt_data, communicator=communicator)
@@ -171,7 +171,7 @@ class Packet(object):
         Additional arguments (**kwargs) are used for setting the values.
 
         Currently only supports:
-            - PACKET.RADIO
+            - PACKET.RADIO_ERP1
             - RORGs RPS, BS1, BS4, VLD.
 
         TODO:
@@ -180,8 +180,8 @@ class Packet(object):
               Might be useful for acting as a repeater?
         '''
 
-        if packet_type != PACKET.RADIO:
-            # At least for now, only support PACKET.RADIO.
+        if packet_type != PACKET.RADIO_ERP1:
+            # At least for now, only support PACKET.RADIO_ERP1.
             raise ValueError('Packet type not supported by this function.')
 
         if rorg not in [RORG.RPS, RORG.BS1, RORG.BS4, RORG.VLD]:
@@ -302,7 +302,7 @@ class RadioPacket(Packet):
     @staticmethod
     def create(rorg, rorg_func, rorg_type, direction=None, command=None,
                destination=None, sender=None, learn=False, **kwargs):
-        return Packet.create(PACKET.RADIO, rorg, rorg_func, rorg_type, direction, command, destination, sender, learn, **kwargs)
+        return Packet.create(PACKET.RADIO_ERP1, rorg, rorg_func, rorg_type, direction, command, destination, sender, learn, **kwargs)
 
     @property
     def sender_int(self):
@@ -411,7 +411,7 @@ class UTETeachIn(RadioPacket):
         # Always use 0x03 to indicate sending, attach sender ID, dBm, and security level
         optional = [0x03] + self.sender + [0xFF, 0x00]
 
-        return RadioPacket(PACKET.RADIO, data=data, optional=optional)
+        return RadioPacket(PACKET.RADIO_ERP1, data=data, optional=optional)
 
     def send_response(self, response=TEACHIN_ACCEPTED):
         if self.__communicator is None:
