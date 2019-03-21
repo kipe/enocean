@@ -12,7 +12,7 @@ import time
 import traceback
 import enocean.utils
 from enocean.communicators import SerialCommunicator
-from enocean.protocol.packet import RadioPacket, UTETeachIn
+from enocean.protocol.packet import RadioPacket, UTETeachInPacket
 from enocean.protocol.constants import RORG
 
 try:
@@ -60,7 +60,7 @@ while communicator.is_alive():
     try:
         # Loop to empty the queue...
         packet = communicator.receive.get(block=True, timeout=1)
-        if isinstance(packet, UTETeachIn):
+        if isinstance(packet, UTETeachInPacket):
             print('New device learned! The ID is %s.' % (packet.sender_hex))
             devices_learned.append(packet.sender)
     except queue.Empty:

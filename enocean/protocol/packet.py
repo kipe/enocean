@@ -94,7 +94,7 @@ class Packet(object):
         self.status = enocean.utils.from_bitarray(value)
 
     @staticmethod
-    def parse_msg(buf, communicator=None):
+    def parse_msg(buf):
         '''
         Parses message from buffer.
         returns:
@@ -146,11 +146,7 @@ class Packet(object):
         if packet_type == PACKET.RADIO_ERP1:
             # Need to handle UTE Teach-in here, as it's a separate packet type...
             if data[0] == RORG.UTE:
-                packet = UTETeachIn(packet_type, data, opt_data, communicator=communicator)
-                # Send a response automatically, works only if
-                # - communicator is set
-                # - communicator.teach_in == True
-                packet.send_response()
+                packet = UTETeachInPacket(packet_type, data, opt_data)
             else:
                 packet = RadioPacket(packet_type, data, opt_data)
         elif packet_type == PACKET.RESPONSE:
@@ -348,7 +344,7 @@ class RadioPacket(Packet):
         return super(RadioPacket, self).parse()
 
 
-class UTETeachIn(RadioPacket):
+class UTETeachInPacket(RadioPacket):
     # Request types
     TEACH_IN = 0b00
     DELETE = 0b01
@@ -369,10 +365,6 @@ class UTETeachIn(RadioPacket):
 
     contains_eep = True
 
-    def __init__(self, packet_type, data=None, optional=None, communicator=None):
-        self.__communicator = communicator
-        super(UTETeachIn, self).__init__(packet_type=packet_type, data=data, optional=optional)
-
     @property
     def bidirectional(self):
         return not self.unidirectional
@@ -386,7 +378,7 @@ class UTETeachIn(RadioPacket):
         return self.request_type == self.DELETE
 
     def parse(self):
-        super(UTETeachIn, self).parse()
+        super(UTETeachInPacket, self).parse()
         self.unidirectional = not self._bit_data[DB6.BIT_7]
         self.response_expected = not self._bit_data[DB6.BIT_6]
         self.request_type = enocean.utils.from_bitarray(self._bit_data[DB6.BIT_5:DB6.BIT_3])
@@ -399,7 +391,7 @@ class UTETeachIn(RadioPacket):
             self.learn = True
         return self.parsed
 
-    def _create_response_packet(self, sender_id, response=TEACHIN_ACCEPTED):
+    def create_response_packet(self, sender_id, response=TEACHIN_ACCEPTED):
         # Create data:
         # - Respond with same RORG (UTE Teach-in)
         # - Always use bidirectional communication, set response code, set command identifier.
@@ -414,17 +406,6 @@ class UTETeachIn(RadioPacket):
         optional = [0x03] + self.sender + [0xFF, 0x00]
 
         return RadioPacket(PACKET.RADIO_ERP1, data=data, optional=optional)
-
-    def send_response(self, response=TEACHIN_ACCEPTED):
-        if self.__communicator is None:
-            self.logger.error('Communicator not set, cannot send UTE teach-in response.')
-            return
-        if not self.__communicator.teach_in:
-            self.logger.info('Communicator not set to teach-in mode, not sending UTE teach-in response.')
-            return
-        self.logger.info('Sending response to UTE teach-in.')
-        self.__communicator.send(
-            self._create_response_packet(self.__communicator.base_id))
 
 
 class ResponsePacket(Packet):

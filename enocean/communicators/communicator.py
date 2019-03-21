@@ -8,7 +8,7 @@ try:
     import queue
 except ImportError:
     import Queue as queue
-from enocean.protocol.packet import Packet
+from enocean.protocol.packet import Packet, UTETeachInPacket
 from enocean.protocol.constants import PACKET, PARSE_RESULT, RETURN_CODE
 
 
@@ -61,7 +61,7 @@ class Communicator(threading.Thread):
         ''' Parses messages and puts them to receive queue '''
         # Loop while we get new messages
         while True:
-            status, self._buffer, packet = Packet.parse_msg(self._buffer, communicator=self)
+            status, self._buffer, packet = Packet.parse_msg(self._buffer)
             # If message is incomplete -> break the loop
             if status == PARSE_RESULT.INCOMPLETE:
                 return status
@@ -69,6 +69,12 @@ class Communicator(threading.Thread):
             # If message is OK, add it to receive queue or send to the callback method
             if status == PARSE_RESULT.OK and packet:
                 packet.received = datetime.datetime.now()
+
+                if isinstance(packet, UTETeachInPacket) and self.teach_in:
+                    response_packet = packet.create_response_packet(self.base_id)
+                    self.logger.info('Sending response to UTE teach-in.')
+                    self.send(response_packet)
+
                 if self.__callback is None:
                     self.receive.put(packet)
                 else:
