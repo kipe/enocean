@@ -26,6 +26,8 @@ class Packet(object):
         self.rorg_type = None
         self.rorg_manufacturer = None
 
+        self.received = None
+
         if not isinstance(data, list) or data is None:
             self.logger.warning('Replacing Packet.data with default value.')
             self.data = []
