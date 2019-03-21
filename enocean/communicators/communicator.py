@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 import logging
+import datetime
 
 import threading
 try:
@@ -67,6 +68,7 @@ class Communicator(threading.Thread):
 
             # If message is OK, add it to receive queue or send to the callback method
             if status == PARSE_RESULT.OK and packet:
+                packet.received = datetime.datetime.now()
                 if self.__callback is None:
                     self.receive.put(packet)
                 else:
