@@ -18,6 +18,9 @@ class PACKET(IntEnum):
     SMART_ACK_COMMAND = 0x06
     REMOTE_MAN_COMMAND = 0x07
     RADIO_MESSAGE = 0x09
+    # RADIO_ADVANCED == RADIO_ERP2
+    # Kept for backwards compatibility reasons
+    RADIO_ADVANCED = 0x0A
     RADIO_ERP2 = 0x0A
     RADIO_802_15_4 = 0x10
     COMMAND_2_4 = 0x11
