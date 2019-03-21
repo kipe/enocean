@@ -11,7 +11,7 @@ def test_packet_examples():
     ''' Tests examples found at EnOceanSerialProtocol3.pdf / 74 '''
     telegram_examples = {
         # Radio VLD
-        PACKET.RADIO: {
+        PACKET.RADIO_ERP1: {
             'msg': bytearray([
                 0x55,
                 0x00, 0x0F, 0x07, 0x01,

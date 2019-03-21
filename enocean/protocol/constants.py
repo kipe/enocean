@@ -6,7 +6,11 @@ from enum import IntEnum
 # EnOceanSerialProtocol3.pdf / 12
 class PACKET(IntEnum):
     RESERVED = 0x00
+    # RADIO == RADIO_ERP1
+    # Kept for backwards compatibility reasons, for example custom packet
+    # generation shouldn't be affected...
     RADIO = 0x01
+    RADIO_ERP1 = 0x01
     RESPONSE = 0x02
     RADIO_SUB_TEL = 0x03
     EVENT = 0x04
@@ -14,7 +18,12 @@ class PACKET(IntEnum):
     SMART_ACK_COMMAND = 0x06
     REMOTE_MAN_COMMAND = 0x07
     RADIO_MESSAGE = 0x09
+    # RADIO_ADVANCED == RADIO_ERP2
+    # Kept for backwards compatibility reasons
     RADIO_ADVANCED = 0x0A
+    RADIO_ERP2 = 0x0A
+    RADIO_802_15_4 = 0x10
+    COMMAND_2_4 = 0x11
 
 
 # EnOceanSerialProtocol3.pdf / 18
