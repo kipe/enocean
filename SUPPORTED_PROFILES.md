@@ -245,6 +245,16 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |1 - available                                                         |
 
 
+##### RORG 0xA5 - FUNC 0x04 - TYPE 0x03 - Range -20°C  to +60°C 10bit-measurement  and 0% to 100%
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|HUM     |Rel. Humidity (linear)                            |value   |0.0-255.0 ↔ 0.0-100.0 %                                               |
+|TMP     |Temperature (linear)                              |value   |0.0-1023.0 ↔ -20.0-60.0 °C                                            |
+|TTP     |Telegram Type                                     |enum    |0 - Heartbeat                                                         |
+|        |                                                  |        |1 - Event triggered                                                   |
+
+
 
 ##### RORG 0xA5 - FUNC 0x06 - TYPE 0x01 - Range 300lx to 60.000lx
 

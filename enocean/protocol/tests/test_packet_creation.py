@@ -42,7 +42,7 @@ def test_packet_assembly():
     ])
 
     # manually assemble packet
-    packet = Packet(PACKET.RADIO)
+    packet = Packet(PACKET.RADIO_ERP1)
     packet.rorg = RORG.BS4
     sender_bytes = [(0xdeadbeef >> i & 0xff) for i in (24, 16, 8, 0)]
     data = [0, 0, 0, 0]
@@ -82,7 +82,7 @@ def test_packet_assembly():
     assert packet.rorg_type == 0x01
 
     # Test the easier method of sending packets.
-    packet = Packet.create(PACKET.RADIO, rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01, learn=True, direction=1, **prop)
+    packet = Packet.create(PACKET.RADIO_ERP1, rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01, learn=True, direction=1, **prop)
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(PACKET_CONTENT_3)
     assert list(packet_serialized) == list(PACKET_CONTENT_3)
@@ -309,17 +309,17 @@ def test_fails():
     except ValueError:
         assert True
     try:
-        Packet.create(PACKET.RADIO, 0xA6, 0x01, 0x01)
+        Packet.create(PACKET.RADIO_ERP1, 0xA6, 0x01, 0x01)
         assert False
     except ValueError:
         assert True
     try:
-        Packet.create(PACKET.RADIO, 0xA5, 0x01, 0x01, destination='ASDASDASD')
+        Packet.create(PACKET.RADIO_ERP1, 0xA5, 0x01, 0x01, destination='ASDASDASD')
         assert False
     except ValueError:
         assert True
     try:
-        Packet.create(PACKET.RADIO, 0xA5, 0x01, 0x01, sender='ASDASDASD')
+        Packet.create(PACKET.RADIO_ERP1, 0xA5, 0x01, 0x01, sender='ASDASDASD')
         assert False
     except ValueError:
         assert True
