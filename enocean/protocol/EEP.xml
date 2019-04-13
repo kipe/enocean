@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <telegrams version="2.6.4" major_version="2" minor_version="6" revision="4">
   <telegram rorg="0xF6" type="RPS" description="RPS Telegram">
+    <profiles func="0x01" description="Switch Buttons">
+      <profile type="0x01" description="Push Button">
+        <data>
+          <enum description="Status of the push button" shortcut="PB" offset="3" size="1">
+            <item description="Released" value="0" />
+            <item description="Pressed" value="1" />
+        </data>
+      </profile>
+    </profiles>
     <profiles func="0x02" description="Rocker Switch, 2 Rocker">
       <profile type="0x02" description="Light and Blind Control - Application Style 2">
         <data>
@@ -609,6 +618,108 @@
           </value>
         </data>
       </profile>
+      <profile description="Temperature Sensor, Set Point and Occupancy Control" type="0x05">
+        <data>
+          <value shortcut="SP" description="Set Point (linear)" offset="8" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>255</max>
+            </scale>
+          </value>
+          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>40</max>
+            </scale>
+          </value>
+          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
+            <item description="Teach-in telegram" value="0" />
+            <item description="Data telegram" value="1" />
+          </enum>
+          <enum shortcut="OCC" description="Occupancy Button" offset="31" size="1">
+            <item description="Button pressed" value="0" />
+            <item description="Button released" value="1" />
+          </enum>
+        </data>
+      </profile>
+      <profile description="Temperature Sensor, Set Point and Day/Night Control" type="0x06">
+        <data>
+          <value shortcut="SP" description="Set Point (linear)" offset="8" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>255</max>
+            </scale>
+          </value>
+          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="°C">
+            <range>
+              <min>255</min>
+              <max>0</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>40</max>
+            </scale>
+          </value>
+          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
+            <item description="Teach-in telegram" value="0" />
+            <item description="Data telegram" value="1" />
+          </enum>
+          <enum shortcut="SLSW" description="Slide switch" offset="31" size="1">
+            <item description="Position I / Night /Off" value="0" />
+            <item description="Position O / Day /On" value="1" />
+          </enum>
+        </data>
+      </profile>
+      <profile description="Temperature and Humidity Sensor, Set Point and Occupancy Control" type="0x10">
+        <data>
+          <value shortcut="SP" description="Set Point (linear)" offset="0" size="8" unit="">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>255</max>
+            </scale>
+          </value>
+          <value shortcut="HUM" description="Rel. Humidity (linear)" offset="8" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>250</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>100</max>
+            </scale>
+          </value>
+          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="°C">
+            <range>
+              <min>0</min>
+              <max>250</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>40</max>
+            </scale>
+          </value>
+          <enum shortcut="OCC" description="Occupancy Button" offset="31" size="1">
+            <item description="Button pressed" value="0" />
+            <item description="Button released" value="1" />
+          </enum>
+        </data>
+      </profile>
       <profile description="Temperature and Humidity Sensor and Set Point" type="0x12">
         <data>
           <value shortcut="SP" description="Set Point (linear)" offset="0" size="8" unit="">
@@ -682,7 +793,7 @@
             <item description="No alarm" value="0" />
             <item description="Alarm" value="1" />
           </enum>
-          <enum shortcut="CTM" description="Controller mode" offset="25" size="1">
+          <enum shortcut="CTM" description="Controller mode" offset="25" size="2">
             <item description="Heating" value="1" />
             <item description="Cooling" value="2" />
             <item description="Off" value="3" />
