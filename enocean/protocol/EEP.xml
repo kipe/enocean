@@ -640,10 +640,6 @@
               <max>40</max>
             </scale>
           </value>
-          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
-            <item description="Teach-in telegram" value="0" />
-            <item description="Data telegram" value="1" />
-          </enum>
           <enum shortcut="OCC" description="Occupancy Button" offset="31" size="1">
             <item description="Button pressed" value="0" />
             <item description="Button released" value="1" />
@@ -672,13 +668,9 @@
               <max>40</max>
             </scale>
           </value>
-          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
-            <item description="Teach-in telegram" value="0" />
-            <item description="Data telegram" value="1" />
-          </enum>
           <enum shortcut="SLSW" description="Slide switch" offset="31" size="1">
-            <item description="Position I / Night /Off" value="0" />
-            <item description="Position O / Day /On" value="1" />
+            <item description="Position I / Night / Off" value="0" />
+            <item description="Position O / Day / On" value="1" />
           </enum>
         </data>
       </profile>
