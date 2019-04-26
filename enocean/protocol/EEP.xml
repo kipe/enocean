@@ -1168,7 +1168,7 @@
         </data>
       </profile>
       <profile type="0x09" description="Electronic switch with Local Control">
-        <command description="command indentifier" shortcut="CMD" offset="4" size="4">
+        <command description="command identifier" shortcut="CMD" offset="4" size="4">
           <item description="Actuator Set Output" value="1" />
           <!-- <item description="Actuator Set Local" value="2" /> -->
           <item description="Actuator Status Query" value="3" />
