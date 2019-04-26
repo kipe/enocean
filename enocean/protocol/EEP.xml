@@ -1184,7 +1184,7 @@
           <!-- <item description="Actuator External Interface Settings Response" value="13" /> -->
         </command>
         <data command="1" bits="3">
-          <enum description="Command indentifier" shortcut="CMD" offset="4" size="4">
+          <enum description="command identifier" shortcut="CMD" offset="4" size="4">
             <rangeitem description="Command ID {value}" start="0" end="13" />
           </enum>
           <enum description="Dim value" shortcut="DV" offset="8" size="3">
