@@ -1300,7 +1300,7 @@
           </enum>
         </data>
         <data command="6" bits="3">
-          <enum description="Command indentifier" shortcut="CMD" offset="4" size="4">
+          <enum description="Command identifier" shortcut="CMD" offset="4" size="4">
             <rangeitem description="Command ID {value}" start="0" end="13" />
           </enum>
           <enum description="Query" shortcut="qu" offset="10" size="1">
