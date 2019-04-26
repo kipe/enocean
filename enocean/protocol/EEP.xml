@@ -1304,7 +1304,7 @@
             <rangeitem description="Command ID {value}" start="0" end="13" />
           </enum>
           <enum description="Query" shortcut="qu" offset="10" size="1">
-            <item description="Query emergy" value="0" />
+            <item description="Query energy" value="0" />
             <item description="Query power" value="1" />
           </enum>
           <enum description="I/O channel" shortcut="IO" offset="11" size="5">
