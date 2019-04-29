@@ -25,7 +25,7 @@ class Packet(object):
         self.rorg_func = None
         self.rorg_type = None
         self.rorg_manufacturer = None
-
+        self.command = None'''i'll save here the command of every VDL packet'''#look at the example
         self.received = None
 
         if not isinstance(data, list) or data is None:
@@ -326,7 +326,9 @@ class RadioPacket(Packet):
         self.learn = True
 
         self.rorg = self.data[0]
-
+        #parse the command of the VDL packet
+        if self.rorg== RORG.VLD:
+            self.command = enocean.utils.from_bitarray(self._bit_data[7:4:-1])'''in this way i'll store the command of the packet'''
         # parse learn bit and FUNC/TYPE, if applicable
         if self.rorg == RORG.BS1:
             self.learn = not self._bit_data[DB0.BIT_3]
