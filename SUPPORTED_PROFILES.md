@@ -2,6 +2,15 @@
 All profiles (should) correspond to the official [EEP](http://www.enocean-alliance.org/eep/) by EnOcean.
 
 ### RPS Telegram (0xF6)
+##### RORG 0xF6 - FUNC 0x01 - TYPE 0x01 - Push Button
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|PB      |Status of the push button                         |enum    |0 - Released                                                          |
+|        |                                                  |        |1 - Pressed                                                           |
+
+
+
 ##### RORG 0xF6 - FUNC 0x02 - TYPE 0x02 - Light and Blind Control - Application Style 2
 
 |shortcut|description                                       |type    |values                                                                |
@@ -300,6 +309,37 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |TMP     |Temperature (linear)                              |value   |255.0-0.0 ↔ 0.0-40.0 °C                                               |
 
 
+##### RORG 0xA5 - FUNC 0x10 - TYPE 0x05 - Temperature Sensor, Set Point and Occupancy Control
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SP      |Set Point (linear)                                |value   |0.0-255.0 ↔ 0.0-255.0 %                                               |
+|TMP     |Temperature (linear)                              |value   |255.0-0.0 ↔ 0.0-40.0 °C                                               |
+|OCC     |Occupancy Button                                  |enum    |0 - Button pressed                                                    |
+|        |                                                  |        |1 - Button released                                                   |
+
+
+##### RORG 0xA5 - FUNC 0x10 - TYPE 0x06 - Temperature Sensor, Set Point and Day/Night Control
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SP      |Set Point (linear)                                |value   |0.0-255.0 ↔ 0.0-255.0 %                                               |
+|TMP     |Temperature (linear)                              |value   |255.0-0.0 ↔ 0.0-40.0 °C                                               |
+|SLSW    |Slide switch                                      |enum    |0 - Position I / Night / Off                                          |
+|        |                                                  |        |1 - Position O / Day / On                                             |
+
+
+##### RORG 0xA5 - FUNC 0x10 - TYPE 0x10 - Temperature and Humidity Sensor, Set Point and Occupancy Control
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SP      |Set Point (linear)                                |value   |0.0-255.0 ↔ 0.0-255.0                                                 |
+|HUM     |Rel. Humidity (linear)                            |value   |0.0-250.0 ↔ 0.0-100.0 %                                               |
+|TMP     |Temperature (linear)                              |value   |0.0-250.0 ↔ 0.0-40.0 °C                                               |
+|OCC     |Occupancy Button                                  |enum    |0 - Button pressed                                                    |
+|        |                                                  |        |1 - Button released                                                   |
+
+
 ##### RORG 0xA5 - FUNC 0x10 - TYPE 0x12 - Temperature and Humidity Sensor and Set Point
 
 |shortcut|description                                       |type    |values                                                                |
@@ -497,6 +537,7 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |2 - Dim to new output level - dim timer 2                             |
 |        |                                                  |        |3 - Dim to new output level - dim timer 3                             |
 |        |                                                  |        |4 - Stop dimming                                                      |
+|        |                                                  |        |5-7 - Not used                                                        |
 |IO      |I/O channel                                       |enum    |0-29 - Output channel {value} (to load)                               |
 |        |                                                  |        |30 - All output channels supported by the device                      |
 |        |                                                  |        |31 - Input channel (from mains supply)                                |
@@ -504,6 +545,110 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |1-100 - Output value {value}% or ON                                   |
 |        |                                                  |        |101-126 - Not used                                                    |
 |        |                                                  |        |127 - output value not valid / not set                                |
+
+
+##### RORG 0xD2 - FUNC 0x01 - TYPE 0x09 - Electronic switch with Local Control
+
+###### command: 1
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|CMD     |command identifier                                |enum    |0-13 - Command ID {value}                                             |
+|DV      |Dim value                                         |enum    |0 - Switch to new output value                                        |
+|        |                                                  |        |1 - Dim to new output level - dim timer 1                             |
+|        |                                                  |        |2 - Dim to new output level - dim timer 2                             |
+|        |                                                  |        |3 - Dim to new output level - dim timer 3                             |
+|        |                                                  |        |4 - Stop dimming                                                      |
+|        |                                                  |        |5-7 - Not used                                                        |
+|IO      |I/O channel                                       |enum    |0-29 - Output channel {value} (to load)                               |
+|        |                                                  |        |30 - All output channels supported by the device                      |
+|        |                                                  |        |31 - Input channel (from mains supply)                                |
+|OV      |Output value                                      |enum    |0 - Output value 0% or OFF                                            |
+|        |                                                  |        |1-100 - Output value {value}% or ON                                   |
+|        |                                                  |        |101-126 - Not used                                                    |
+|        |                                                  |        |127 - Output value not valid / not set                                |
+
+###### command: 3
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|CMD     |command identifier                                |enum    |0-13 - Command ID {value}                                             |
+|IO      |I/O channel                                       |enum    |0-29 - Output channel {value} (to load)                               |
+|        |                                                  |        |30 - All output channels supported by the device                      |
+|        |                                                  |        |31 - Input channel (from mains supply)                                |
+
+###### command: 4
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|PF      |Power Failure                                     |enum    |0 - Power Failure Detection disabled/not supported                    |
+|        |                                                  |        |1 - Power Failure Detection enabled                                   |
+|PFD     |Power Failure Detection                           |enum    |0 - Power Failure Detection not detected/not supported/disabled       |
+|        |                                                  |        |1 - Power Failure Detection Detected                                  |
+|CMD     |command identifier                                |enum    |0-13 - Command ID {value}                                             |
+|OC      |Over current switch off                           |enum    |0 - Over current switch off: ready / not supported                    |
+|        |                                                  |        |1 - Over current switch off: executed                                 |
+|EL      |Error level                                       |enum    |0 - Error level 0: hardware OK                                        |
+|        |                                                  |        |1 - Error level 1: hardware warning                                   |
+|        |                                                  |        |2 - Error level 2: hardware failure                                   |
+|        |                                                  |        |3 - Error level not supported                                         |
+|IO      |I/O channel                                       |enum    |0-29 - Output channel {value} (to load)                               |
+|        |                                                  |        |30 - Not applicable, do not use                                       |
+|        |                                                  |        |31 - Input channel (from mains supply)                                |
+|LC      |Local control                                     |enum    |0 - Local control disabled / not supported                            |
+|        |                                                  |        |1 - Local control enabled                                             |
+|OV      |Output value                                      |enum    |0 - Output value 0% or OFF                                            |
+|        |                                                  |        |1-100 - Output value {value}% or ON                                   |
+|        |                                                  |        |101-126 - Not used                                                    |
+|        |                                                  |        |127 - output value not valid / not set                                |
+
+###### command: 5
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|CMD     |command identifier                                |enum    |0-13 - Command ID {value}                                             |
+|RM      |Report measurement                                |enum    |0 - Report measurement: query only                                    |
+|        |                                                  |        |1 - Report measurement: query / auto reporting                        |
+|RE      |Reset measurement                                 |enum    |0 - Report measurement: not active                                    |
+|        |                                                  |        |1 - Report measurement: trigger signal                                |
+|e/p     |Measurement mode                                  |enum    |0 - Energy measurement                                                |
+|        |                                                  |        |1 - Power measurement                                                 |
+|IO      |I/O channel                                       |enum    |0-29 - Output channel {value} (to load)                               |
+|        |                                                  |        |30 - All output channels supported by the device                      |
+|        |                                                  |        |31 - Input channel (from mains supply)                                |
+|MD_LSB  |Measurement delta to be reported(LSB)             |enum    |0-4095 - N/A                                                          |
+|UN      |Unit                                              |enum    |0 - Energy[Ws]                                                        |
+|        |                                                  |        |1 - Energy[Wh]                                                        |
+|        |                                                  |        |2 - Energy[KWh]                                                       |
+|        |                                                  |        |3 - Power[W]                                                          |
+|        |                                                  |        |4 - Power[KW]                                                         |
+|        |                                                  |        |5-7 - Not used                                                        |
+|MD_MSB  |Measurement delta to be reported(MSB)             |enum    |0-4095 - N/A                                                          |
+|MAT     |Maximum time between two subsequent actuator messages|enum    |1-255 - Measurement Response messages[10s]                            |
+|        |                                                  |        |0 - Reserved                                                          |
+|MIT     |Minimum time between two subsequent actuator messages|enum    |1-255 - Measurement Response messages[s]                              |
+|        |                                                  |        |0 - Reserved                                                          |
+
+###### command: 6
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|CMD     |command identifier                                |enum    |0-13 - Command ID {value}                                             |
+|qu      |Query                                             |enum    |0 - Query energy                                                      |
+|        |                                                  |        |1 - Query power                                                       |
+|IO      |I/O channel                                       |enum    |0-29 - Output channel {value} (to load)                               |
+|        |                                                  |        |30 - All output channels supported by the device                      |
+|        |                                                  |        |31 - Input channel (from mains supply)                                |
+
+###### command: 7
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|CMD     |command indentifier                               |enum    |0-13 - Command ID {value}                                             |
+|UN      |Unit                                              |enum    |0 - Energy[Ws]                                                        |
+|        |                                                  |        |1 - Energy[Wh]                                                        |
+|        |                                                  |        |2 - Energy[KWh]                                                       |
+|        |                                                  |        |3 - Power[W]                                                          |
+|        |                                                  |        |4 - Power[KW]                                                         |
+|        |                                                  |        |5-7 - Not used                                                        |
+|IO      |I/O channel                                       |enum    |0-29 - Output channel {value} (to load)                               |
+|        |                                                  |        |30 - Not applicable, do not use                                       |
+|        |                                                  |        |31 - Input channel (from mains supply)                                |
+|MV      |Measurement value(4 bytes)                        |enum    |0-4294967295 - DB3 = MSB / DB0 = LSB                                  |
 
 
 
