@@ -1,31 +1,27 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
-from enocean.consolelogger import init_logging
-from enocean.communicators.serialcommunicator import SerialCommunicator
-from enocean.communicators.utils import send_to_tcp_socket
-import sys
-import traceback
+from enocean_async.consolelogger import init_logging
+from enocean_async.communicators.serialcommunicator import SerialCommunicator
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
 
-init_logging()
-communicator = SerialCommunicator()
-communicator.start()
-while communicator.is_alive():
-    try:
-        # Loop to empty the queue...
-        packet = communicator.receive.get(block=True, timeout=1)
-        send_to_tcp_socket('localhost', 9637, packet)
-    except queue.Empty:
-        continue
-    except KeyboardInterrupt:
-        break
-    except Exception:
-        traceback.print_exc(file=sys.stdout)
-        break
+class USB300DB(SerialCommunicator):
+    async def packet(self, packet):
+        self.loop.create_task(self.send_to_tcp_socket('localhost', 9637, packet))
+        return
 
-if communicator.is_alive():
-    communicator.stop()
+
+def main():
+    init_logging()
+    Gateway = USB300DB()
+    Gateway.start()
+
+    EXIT = False
+    while EXIT is not True:
+        e =input("PRESS E TO EXIT\n")
+        if e == 'E' or e == 'e':
+            EXIT = True
+
+    Gateway.stop()
+
+if __name__ == "__main__" :
+    main()

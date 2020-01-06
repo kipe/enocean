@@ -3,10 +3,10 @@ from __future__ import print_function, unicode_literals, division, absolute_impo
 import logging
 from collections import OrderedDict
 
-import enocean.utils
-from enocean.protocol import crc8
-from enocean.protocol.eep import EEP
-from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3, DB4, DB6
+import enocean_async.utils
+from enocean_async.protocol import crc8
+from enocean_async.protocol.eep import EEP
+from enocean_async.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3, DB4, DB6
 
 
 class Packet(object):
@@ -29,13 +29,11 @@ class Packet(object):
         self.received = None
 
         if not isinstance(data, list) or data is None:
-            self.logger.warning('Replacing Packet.data with default value.')
             self.data = []
         else:
             self.data = data
 
         if not isinstance(optional, list) or optional is None:
-            self.logger.warning('Replacing Packet.optional with default value.')
             self.optional = []
         else:
             self.optional = optional
@@ -63,13 +61,13 @@ class Packet(object):
         # Needs the redefinition of Packet.data -> Packet.message.
         # Packet.data would then only have the actual, documented data-bytes. Packet.message would contain the whole message.
         # See discussion in issue #14
-        return enocean.utils.to_bitarray(self.data[1:len(self.data) - 5], (len(self.data) - 6) * 8)
+        return enocean_async.utils.to_bitarray(self.data[1:len(self.data) - 5], (len(self.data) - 6) * 8)
 
     @_bit_data.setter
     def _bit_data(self, value):
         # The same as getting the data, first and last 5 bits are ommitted, as they are defined...
         for byte in range(len(self.data) - 6):
-            self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
+            self.data[byte+1] = enocean_async.utils.from_bitarray(value[byte*8:(byte+1)*8])
 
     # # COMMENTED OUT, AS NOTHING TOUCHES _bit_optional FOR NOW.
     # # Thus, this is also untested.
@@ -87,11 +85,11 @@ class Packet(object):
 
     @property
     def _bit_status(self):
-        return enocean.utils.to_bitarray(self.status)
+        return enocean_async.utils.to_bitarray(self.status)
 
     @_bit_status.setter
     def _bit_status(self, value):
-        self.status = enocean.utils.from_bitarray(value)
+        self.status = enocean_async.utils.from_bitarray(value)
 
     @staticmethod
     def parse_msg(buf):
@@ -105,11 +103,11 @@ class Packet(object):
         # If the buffer doesn't contain 0x55 (start char)
         # the message isn't needed -> ignore
         if 0x55 not in buf:
-            return PARSE_RESULT.INCOMPLETE, [], None
+            return PARSE_RESULT.INCOMPLETE, bytes(), None
 
         # Valid buffer starts from 0x55
         # Convert to list, as index -method isn't defined for bytearray
-        buf = [ord(x) if not isinstance(x, int) else x for x in buf[list(buf).index(0x55):]]
+        buf = [ord(x) if not isinstance(x, int) else x for x in buf[buf.index(0x55):]]
         try:
             data_len = (buf[1] << 8) | buf[2]
             opt_len = buf[3]
@@ -250,7 +248,7 @@ class Packet(object):
 
         if self.rorg in [RORG.RPS, RORG.BS1, RORG.BS4]:
             # These message types should have repeater count in the last for bits of status.
-            self.repeater_count = enocean.utils.from_bitarray(self._bit_status[4:])
+            self.repeater_count = enocean_async.utils.from_bitarray(self._bit_status[4:])
         return self.parsed
 
     def select_eep(self, rorg_func, rorg_type, direction=None, command=None):
@@ -304,19 +302,19 @@ class RadioPacket(Packet):
 
     @property
     def sender_int(self):
-        return enocean.utils.combine_hex(self.sender)
+        return enocean_async.utils.combine_hex(self.sender)
 
     @property
     def sender_hex(self):
-        return enocean.utils.to_hex_string(self.sender)
+        return enocean_async.utils.to_hex_string(self.sender)
 
     @property
     def destination_int(self):
-        return enocean.utils.combine_hex(self.destination)
+        return enocean_async.utils.combine_hex(self.destination)
 
     @property
     def destination_hex(self):
-        return enocean.utils.to_hex_string(self.destination)
+        return enocean_async.utils.to_hex_string(self.destination)
 
     def parse(self):
         self.destination = self.optional[1:5]
@@ -328,7 +326,7 @@ class RadioPacket(Packet):
         self.rorg = self.data[0]
         #parse the command of the VDL packet
         if self.rorg== RORG.VLD:
-            self.command = enocean.utils.from_bitarray(self._bit_data[4:8]) #in this way i'll store the command of the packet
+            self.command = enocean_async.utils.from_bitarray(self._bit_data[4:8]) #in this way i'll store the command of the packet
         # parse learn bit and FUNC/TYPE, if applicable
         if self.rorg == RORG.BS1:
             self.learn = not self._bit_data[DB0.BIT_3]
@@ -338,9 +336,9 @@ class RadioPacket(Packet):
                 self.contains_eep = self._bit_data[DB0.BIT_7]
                 if self.contains_eep:
                     # Get rorg_func and rorg_type from an unidirectional learn packet
-                    self.rorg_func = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_7:DB3.BIT_1])
-                    self.rorg_type = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_1:DB2.BIT_2])
-                    self.rorg_manufacturer = enocean.utils.from_bitarray(self._bit_data[DB2.BIT_2:DB0.BIT_7])
+                    self.rorg_func = enocean_async.utils.from_bitarray(self._bit_data[DB3.BIT_7:DB3.BIT_1])
+                    self.rorg_type = enocean_async.utils.from_bitarray(self._bit_data[DB3.BIT_1:DB2.BIT_2])
+                    self.rorg_manufacturer = enocean_async.utils.from_bitarray(self._bit_data[DB2.BIT_2:DB0.BIT_7])
                     self.logger.debug('learn received, EEP detected, RORG: 0x%02X, FUNC: 0x%02X, TYPE: 0x%02X, Manufacturer: 0x%02X' % (self.rorg, self.rorg_func, self.rorg_type, self.rorg_manufacturer))
 
         return super(RadioPacket, self).parse()
@@ -383,8 +381,8 @@ class UTETeachInPacket(RadioPacket):
         super(UTETeachInPacket, self).parse()
         self.unidirectional = not self._bit_data[DB6.BIT_7]
         self.response_expected = not self._bit_data[DB6.BIT_6]
-        self.request_type = enocean.utils.from_bitarray(self._bit_data[DB6.BIT_5:DB6.BIT_3])
-        self.rorg_manufacturer = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_2:DB2.BIT_7] + self._bit_data[DB4.BIT_7:DB3.BIT_7])
+        self.request_type = enocean_async.utils.from_bitarray(self._bit_data[DB6.BIT_5:DB6.BIT_3])
+        self.rorg_manufacturer = enocean_async.utils.from_bitarray(self._bit_data[DB3.BIT_2:DB2.BIT_7] + self._bit_data[DB4.BIT_7:DB3.BIT_7])
         self.channel = self.data[2]
         self.rorg_type = self.data[5]
         self.rorg_func = self.data[6]
@@ -400,7 +398,7 @@ class UTETeachInPacket(RadioPacket):
         # - Databytes 5 to 0 are copied from the original message
         # - Set sender id and status
         data = [self.rorg] + \
-               [enocean.utils.from_bitarray([True, False] + response + [False, False, False, True])] + \
+               [enocean_async.utils.from_bitarray([True, False] + response + [False, False, False, True])] + \
                self.data[2:8] + \
                sender_id + [0]
 

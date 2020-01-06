@@ -1,67 +1,71 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
-from enocean.consolelogger import init_logging
-import enocean.utils
-from enocean.communicators.serialcommunicator import SerialCommunicator
-from enocean.protocol.packet import RadioPacket
-from enocean.protocol.constants import PACKET, RORG
-import sys
-import traceback
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+"""
+Example on getting the information about the EnOcean controller.
+The sending is happening between the application and the EnOcean controller,
+no wireless communication is taking place here.
 
+The command used here is specified as 1.10.5 Code 03: CO_RD_VERSION
+in the ESP3 document.
+"""
 
-def assemble_radio_packet(transmitter_id):
-    return RadioPacket.create(rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01,
-                              sender=transmitter_id,
-                              CV=50,
-                              TMP=21.5,
-                              ES='true')
+from enocean_async.consolelogger import init_logging
+from enocean_async.communicators.serialcommunicator import SerialCommunicator
+from enocean_async.protocol.constants import RORG
+import asyncio
+import time
+from functools import partial
+import serial_asyncio
+from enocean_async import utils
 
-
-init_logging()
-communicator = SerialCommunicator()
-communicator.start()
-print('The Base ID of your module is %s.' % enocean.utils.to_hex_string(communicator.base_id))
-
-if communicator.base_id is not None:
-    print('Sending example package.')
-    communicator.send(assemble_radio_packet(communicator.base_id))
-
-# endless loop receiving radio packets
-while communicator.is_alive():
-    try:
-        # Loop to empty the queue...
-        packet = communicator.receive.get(block=True, timeout=1)
-        if packet.packet_type == PACKET.RADIO_ERP1 and packet.rorg == RORG.VLD:
+"""
+'/dev/ttyUSB0' might change depending on where your device is.
+To prevent running the app as root, change the access permissions:
+'sudo chmod 777 /dev/ttyUSB0'
+"""
+class USB300DB(SerialCommunicator):
+    async def packet(self, packet):
+        if packet.rorg == RORG.VLD:
             packet.select_eep(0x05, 0x00)
             packet.parse_eep()
+            await asyncio.sleep(0)
             for k in packet.parsed:
                 print('%s: %s' % (k, packet.parsed[k]))
-        if packet.packet_type == PACKET.RADIO_ERP1 and packet.rorg == RORG.BS4:
+                await asyncio.sleep(0)
+            
+            return
+    
+        if packet.rorg == RORG.BS4:
             # parse packet with given FUNC and TYPE
             for k in packet.parse_eep(0x02, 0x05):
+                await asyncio.sleep(0)
                 print('%s: %s' % (k, packet.parsed[k]))
-        if packet.packet_type == PACKET.RADIO_ERP1 and packet.rorg == RORG.BS1:
+
+        if packet.rorg == RORG.BS1:
             # alternatively you can select FUNC and TYPE explicitely
             packet.select_eep(0x00, 0x01)
             # parse it
             packet.parse_eep()
+            await asyncio.sleep(0)
             for k in packet.parsed:
                 print('%s: %s' % (k, packet.parsed[k]))
-        if packet.packet_type == PACKET.RADIO_ERP1 and packet.rorg == RORG.RPS:
-            for k in packet.parse_eep(0x02, 0x02):
-                print('%s: %s' % (k, packet.parsed[k]))
-    except queue.Empty:
-        continue
-    except KeyboardInterrupt:
-        break
-    except Exception:
-        traceback.print_exc(file=sys.stdout)
-        break
+                await asyncio.sleep(0)
 
-if communicator.is_alive():
-    communicator.stop()
+
+        if packet.rorg == RORG.RPS:
+            for k in packet.parse_eep(0x02, 0x02):
+                await asyncio.sleep(0)
+                print('%s: %s' % (k, packet.parsed[k]))
+
+
+def main():
+    init_logging()
+    Gateway = USB300DB()
+    Gateway.start()
+    input("PRESS A BUTTON TO EXIT\n")
+    Gateway.stop()
+
+if __name__ == "__main__" :
+    main()
+    

@@ -6,8 +6,8 @@ from sys import version_info
 from collections import OrderedDict
 from bs4 import BeautifulSoup
 
-import enocean.utils
-from enocean.protocol.constants import RORG
+import enocean_async.utils
+from enocean_async.protocol.constants import RORG
 
 
 class EEP(object):

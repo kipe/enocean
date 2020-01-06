@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 
-from enocean.protocol.packet import Packet
-from enocean.protocol.eep import EEP
-from enocean.protocol.constants import RORG
-from enocean.decorators import timing
+from enocean_async.protocol.packet import Packet
+from enocean_async.protocol.eep import EEP
+from enocean_async.protocol.constants import RORG
+from enocean_async.decorators import timing
 
 
 @timing(1000)

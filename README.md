@@ -12,11 +12,11 @@ design challenge @ [element14](http://www.element14.com/).
 
 If not installed already, install [pip](https://pypi.python.org/pypi/pip) by running
 
-`sudo apt-get install python-pip`
+`sudo apt-get install python3-pip`
 
 After pip is installed, install the module by running
 
-`sudo pip install enocean` (or `sudo pip install git+https://github.com/kipe/enocean.git` if you want the "bleeding edge").
+`sudo pip install enocean-async` (or `sudo pip install git+https://github.com/kipe/enocean.git` if you want the "bleeding edge").
 
 After this, it's just a matter of running `enocean_example.py` and pressing the
 learn button on magnetic contact or temperature switch or pressing the rocker switch.

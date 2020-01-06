@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 
-from enocean.protocol.packet import Packet, EventPacket
-from enocean.protocol.constants import PACKET, PARSE_RESULT, EVENT_CODE
-from enocean.decorators import timing
+from enocean_async.protocol.packet import Packet, EventPacket
+from enocean_async.protocol.constants import PACKET, PARSE_RESULT, EVENT_CODE
+from enocean_async.decorators import timing
 
 
 @timing(1000)

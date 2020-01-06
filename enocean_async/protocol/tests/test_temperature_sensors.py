@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 
-from enocean.protocol.eep import EEP
+from enocean_async.protocol.eep import EEP
 eep = EEP()
 # profiles = eep.
 
