@@ -593,6 +593,85 @@
         </data>
       </profile>
     </profiles>
+    <profiles func="0x09" description="Gas Sensor">
+      <profile description="CO2 Sensor" type="0x04">
+        <data>
+          <value shortcut="HUM" description="Rel. Humidity (linear)" offset="0" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>200</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>100</max>
+            </scale>
+          </value>
+          <value shortcut="Conc" description="Concentration (linear)" offset="8" size="8" unit="ppm">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>2550</max>
+            </scale>
+          </value>
+          <value shortcut="TMP" description="Temperature (linear)" offset="16" size="8" unit="°C">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>51</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+      <profile description="VOC Sensor" type="0x05">
+        <data>
+          <value shortcut="Conc" description="VOC Concentration" offset="0" size="16" unit="ppb">
+            <range>
+              <min>0</min>
+              <max>65535</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>65535</max>
+            </scale>
+          </value>
+          <enum shortcut="VOC_ID" description="VOC Identification" offset="16" size="8">
+            <item description="VOCT (total)" value="0" />
+            <item description="Formaldehyde" value="1" />
+            <item description="Benzene" value="2" />
+            <item description="Styrene" value="3" />
+            <item description="Toluene" value="4" />
+            <item description="Tetrachloroethylene" value="5" />
+            <item description="Xylene" value="6" />
+            <item description="n-Hexane" value="7" />
+            <item description="n-Octane" value="8" />
+            <item description="Cyclopentane" value="9" />
+            <item description="Methanol" value="10" />
+            <item description="Ethanol" value="11" />
+            <item description="1-Pentanol" value="12" />
+            <item description="Acetone" value="13" />
+            <item description="ethylene Oxide" value="14" />
+            <item description="Acetaldehyde ue" value="15" />
+            <item description="Acetic Acid" value="16" />
+            <item description="Propionice Acid" value="17" />
+            <item description="ValericAcid" value="18" />
+            <item description="ButyricAcid" value="19" />
+            <item description="Ammoniac" value="20" />
+            <item description="Hydrogen Sulfide" value="22" />
+            <item description="Dimethylsulfide" value="23" />
+            <item description="2-Butanol (butyl Alcohol)" value="24" />
+            <item description="2-Methylpropanol" value="25" />
+            <item description="Diethyl ether" value="26" />
+            <item description="ozone" value="255" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
     <profiles description="Room Operating Panel" func="0x10">
       <profile description="Temperature Sensor and Set Point" type="0x03">
         <data>
