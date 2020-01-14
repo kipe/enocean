@@ -2,6 +2,15 @@
 All profiles (should) correspond to the official [EEP](http://www.enocean-alliance.org/eep/) by EnOcean.
 
 ### RPS Telegram (0xF6)
+##### RORG 0xF6 - FUNC 0x01 - TYPE 0x01 - Push Button
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|PB      |Status of the push button                         |enum    |0 - Released                                                          |
+|        |                                                  |        |1 - Pressed                                                           |
+
+
+
 ##### RORG 0xF6 - FUNC 0x02 - TYPE 0x02 - Light and Blind Control - Application Style 2
 
 |shortcut|description                                       |type    |values                                                                |
@@ -292,12 +301,87 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 
+##### RORG 0xA5 - FUNC 0x09 - TYPE 0x04 - CO2 Sensor
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|HUM     |Rel. Humidity (linear)                            |value   |0.0-200.0 ↔ 0.0-100.0 %                                               |
+|Conc    |Concentration (linear)                            |value   |0.0-255.0 ↔ 0.0-2550.0 ppm                                            |
+|TMP     |Temperature (linear)                              |value   |0.0-255.0 ↔ 0.0-51.0 °C                                               |
+
+
+##### RORG 0xA5 - FUNC 0x09 - TYPE 0x05 - VOC Sensor
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|Conc    |VOC Concentration                                 |value   |0.0-65535.0 ↔ 0.0-65535.0 ppb                                         |
+|VOC_ID  |VOC Identification                                |enum    |0 - VOCT (total)                                                      |
+|        |                                                  |        |1 - Formaldehyde                                                      |
+|        |                                                  |        |2 - Benzene                                                           |
+|        |                                                  |        |3 - Styrene                                                           |
+|        |                                                  |        |4 - Toluene                                                           |
+|        |                                                  |        |5 - Tetrachloroethylene                                               |
+|        |                                                  |        |6 - Xylene                                                            |
+|        |                                                  |        |7 - n-Hexane                                                          |
+|        |                                                  |        |8 - n-Octane                                                          |
+|        |                                                  |        |9 - Cyclopentane                                                      |
+|        |                                                  |        |10 - Methanol                                                         |
+|        |                                                  |        |11 - Ethanol                                                          |
+|        |                                                  |        |12 - 1-Pentanol                                                       |
+|        |                                                  |        |13 - Acetone                                                          |
+|        |                                                  |        |14 - ethylene Oxide                                                   |
+|        |                                                  |        |15 - Acetaldehyde ue                                                  |
+|        |                                                  |        |16 - Acetic Acid                                                      |
+|        |                                                  |        |17 - Propionice Acid                                                  |
+|        |                                                  |        |18 - ValericAcid                                                      |
+|        |                                                  |        |19 - ButyricAcid                                                      |
+|        |                                                  |        |20 - Ammoniac                                                         |
+|        |                                                  |        |22 - Hydrogen Sulfide                                                 |
+|        |                                                  |        |23 - Dimethylsulfide                                                  |
+|        |                                                  |        |24 - 2-Butanol (butyl Alcohol)                                        |
+|        |                                                  |        |25 - 2-Methylpropanol                                                 |
+|        |                                                  |        |26 - Diethyl ether                                                    |
+|        |                                                  |        |255 - ozone                                                           |
+
+
+
 ##### RORG 0xA5 - FUNC 0x10 - TYPE 0x03 - Temperature Sensor and Set Point
 
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
 |SP      |Set Point (linear)                                |value   |0.0-255.0 ↔ 0.0-255.0 %                                               |
 |TMP     |Temperature (linear)                              |value   |255.0-0.0 ↔ 0.0-40.0 °C                                               |
+
+
+##### RORG 0xA5 - FUNC 0x10 - TYPE 0x05 - Temperature Sensor, Set Point and Occupancy Control
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SP      |Set Point (linear)                                |value   |0.0-255.0 ↔ 0.0-255.0 %                                               |
+|TMP     |Temperature (linear)                              |value   |255.0-0.0 ↔ 0.0-40.0 °C                                               |
+|OCC     |Occupancy Button                                  |enum    |0 - Button pressed                                                    |
+|        |                                                  |        |1 - Button released                                                   |
+
+
+##### RORG 0xA5 - FUNC 0x10 - TYPE 0x06 - Temperature Sensor, Set Point and Day/Night Control
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SP      |Set Point (linear)                                |value   |0.0-255.0 ↔ 0.0-255.0 %                                               |
+|TMP     |Temperature (linear)                              |value   |255.0-0.0 ↔ 0.0-40.0 °C                                               |
+|SLSW    |Slide switch                                      |enum    |0 - Position I / Night / Off                                          |
+|        |                                                  |        |1 - Position O / Day / On                                             |
+
+
+##### RORG 0xA5 - FUNC 0x10 - TYPE 0x10 - Temperature and Humidity Sensor, Set Point and Occupancy Control
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SP      |Set Point (linear)                                |value   |0.0-255.0 ↔ 0.0-255.0                                                 |
+|HUM     |Rel. Humidity (linear)                            |value   |0.0-250.0 ↔ 0.0-100.0 %                                               |
+|TMP     |Temperature (linear)                              |value   |0.0-250.0 ↔ 0.0-40.0 °C                                               |
+|OCC     |Occupancy Button                                  |enum    |0 - Button pressed                                                    |
+|        |                                                  |        |1 - Button released                                                   |
 
 
 ##### RORG 0xA5 - FUNC 0x10 - TYPE 0x12 - Temperature and Humidity Sensor and Set Point
