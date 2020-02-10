@@ -575,6 +575,33 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |SW      |Switching command                                 |enum    |0 - Off                                                               |
 |        |                                                  |        |1 - On                                                                |
 
+###### command: 7
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|COM     |Command ID                                        |enum    |0-13 - Command ID {value}                                             |
+|P1      |Function defined parameter value 1                |value   |0.0-255.0 ↔ 0.0-255.0 none                                            |
+|P2      |Function defined parameter value 2                |value   |0.0-255.0 ↔ 0.0-255.0 none                                            |
+|FUNC    |Function                                          |enum    |0 - Do nothing, status request                                        |
+|        |                                                  |        |1 - Blind stops                                                       |
+|        |                                                  |        |2 - Blind opens                                                       |
+|        |                                                  |        |3 - Blind closes                                                      |
+|        |                                                  |        |4 - Blind drives to position with angle value                         |
+|        |                                                  |        |5 - Blind opens for time (position value) and angle (angle value)     |
+|        |                                                  |        |6 - Blind closes for time (position value) and angle (angle value)    |
+|        |                                                  |        |7 - Set Runtime parameters                                            |
+|        |                                                  |        |8 - Set angle configuration                                           |
+|        |                                                  |        |9 - Set Min, Max values                                               |
+|        |                                                  |        |10 - Set slat angle for SHUT and OPEN position                        |
+|        |                                                  |        |11 - Set position logic                                               |
+|LRNB    |LRN bit                                           |enum    |0 - Teach in telegram                                                 |
+|        |                                                  |        |1 - Data telegram                                                     |
+|SSF     |Send status flag                                  |enum    |0 - Send new status of device                                         |
+|        |                                                  |        |1 - Send no status                                                    |
+|PAF     |Position and Angle flag                           |enum    |0 - No Angle and position value available                             |
+|        |                                                  |        |1 - Angle and position value available                                |
+|SMF     |Service mode flag                                 |enum    |0 - Normal operation                                                  |
+|        |                                                  |        |1 - Service mode                                                      |
+
 
 
 ### VLD Telegram (0xD2)
