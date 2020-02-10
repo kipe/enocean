@@ -424,6 +424,38 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |3 - Frost                                                             |
 
 
+##### RORG 0xA5 - FUNC 0x11 - TYPE 0x03 - Blind Status
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|BSP     |Blind/shutter position                            |value   |0.0-255.0 ↔ 0.0-100.0 %                                               |
+|AS      |Angle sign                                        |enum    |0 - Positive sign                                                     |
+|        |                                                  |        |1 - Negative sign                                                     |
+|AN      |Angle in 2 degrees steps                          |value   |0.0-180.0 ↔ 0.0-360.0 degrees                                         |
+|PVF     |Position value flag                               |enum    |0 - No position value available                                       |
+|        |                                                  |        |1 - Position value available                                          |
+|AVF     |Angle value flag                                  |enum    |0 - No Angle value available                                          |
+|        |                                                  |        |1 - Angle value available                                             |
+|ES      |Error state                                       |enum    |0 - No error present                                                  |
+|        |                                                  |        |1 - End-positions are not configured                                  |
+|        |                                                  |        |2 - Internal failure                                                  |
+|        |                                                  |        |3 - Not used                                                          |
+|EP      |End position                                      |enum    |0 - No End-position available                                         |
+|        |                                                  |        |1 - No End-position reached                                           |
+|        |                                                  |        |2 - Blind fully open                                                  |
+|        |                                                  |        |3 - Blind fully closed                                                |
+|ST      |Status                                            |enum    |0 - No status available                                               |
+|        |                                                  |        |1 - Blind is stopped                                                  |
+|        |                                                  |        |2 - Blind opens                                                       |
+|        |                                                  |        |3 - Blind closes                                                      |
+|SM      |Service mode                                      |enum    |0 - Normal mode                                                       |
+|        |                                                  |        |1 - Service mode activated                                            |
+|MOTP    |Mode of the position                              |enum    |0 - Normal mode                                                       |
+|        |                                                  |        |1 - Inverse ode                                                       |
+|LRNB    |Learn bit                                         |enum    |0 - Teach in                                                          |
+|        |                                                  |        |1 - Data telegram                                                     |
+
+
 
 ##### RORG 0xA5 - FUNC 0x14 - TYPE 0x01 - Single Input Contact (Window/Door), Supply voltage monitor
 
