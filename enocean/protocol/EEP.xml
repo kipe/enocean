@@ -7,6 +7,7 @@
           <enum description="Status of the push button" shortcut="PB" offset="3" size="1">
             <item description="Released" value="0" />
             <item description="Pressed" value="1" />
+          </enum>
         </data>
       </profile>
     </profiles>
@@ -884,6 +885,72 @@
             <item description="Frost" value="3" />
           </enum>
         </data>
+      </profile>
+      <profile description="Blind Status" type="0x03">
+      <data>
+        <value shortcut="BSP" description="Blind/shutter position" offset="0" size="8" unit="%">
+          <range>
+            <min>0</min>
+            <max>255</max>
+          </range>
+          <scale>
+            <min>0</min>
+            <max>100</max>
+          </scale>
+        </value>
+        <enum shortcut="AS" description="Angle sign" offset="8" size="1">
+          <item description="Positive sign" value="0" />
+          <item description="Negative sign" value="1" />
+        </enum>
+        <value shortcut="AN" description="Angle in 2 degrees steps" offset="9" size="7" unit="degrees">
+          <range>
+            <min>0</min>
+            <max>180</max>
+          </range>
+          <scale>
+            <min>0</min>
+            <max>360</max>
+          </scale>
+        </value>
+        <enum shortcut="PVF" description="Position value flag" offset="16" size="1">
+          <item description="No position value available" value="0" />
+          <item description="Position value available" value="1" />
+        </enum>
+        <enum shortcut="AVF" description="Angle value flag" offset="17" size="1">
+          <item description="No Angle value available" value="0" />
+          <item description="Angle value available" value="1" />
+        </enum>
+        <enum shortcut="ES" description="Error state" offset="18" size="2">
+          <item description="No error present" value="0" />
+          <item description="End-positions are not configured" value="1" />
+          <item description="Internal failure" value="2" />
+          <item description="Not used" value="3" />
+        </enum>
+        <enum shortcut="EP" description="End position" offset="20" size="2">
+          <item description="No End-position available" value="0" />
+          <item description="No End-position reached" value="1" />
+          <item description="Blind fully open" value="2" />
+          <item description="Blind fully closed" value="3" />
+        </enum>
+        <enum shortcut="ST" description="Status" offset="22" size="2">
+          <item description="No status available" value="0" />
+          <item description="Blind is stopped" value="1" />
+          <item description="Blind opens" value="2" />
+          <item description="Blind closes" value="3" />
+        </enum>
+        <enum shortcut="SM" description="Service mode" offset="24" size="1">
+          <item description="Normal mode" value="0" />
+          <item description="Service mode activated" value="1" />
+        </enum>
+        <enum shortcut="MOTP" description="Mode of the position" offset="25" size="1">
+          <item description="Normal mode" value="0" />
+          <item description="Inverse ode" value="1" />
+        </enum>
+        <enum shortcut="LRNB" description="Learn bit" offset="28" size="1">
+          <item description="Teach in" value="0" />
+          <item description="Data telegram" value="1" />
+        </enum>
+      </data>
       </profile>
     </profiles>
     <profiles func="0x14" description="Multi-Func Sensor">
