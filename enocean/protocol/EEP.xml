@@ -11,6 +11,32 @@
       </profile>
     </profiles>
     <profiles func="0x02" description="Rocker Switch, 2 Rocker">
+      <profile type="0x01" description="Light and Blind Control - Application Style 1">
+        <data>
+          <enum description="Rocker 1st action" shortcut="R1" offset="0" size="3">
+            <item description="Button AI" value="0" />
+            <item description="Button AO" value="1" />
+            <item description="Button BI" value="2" />
+            <item description="Button BO" value="3" />
+          </enum>
+          <enum description="Energy bow" shortcut="EB" offset="3" size="1">
+            <item description="released" value="0" />
+            <item description="pressed" value="1" />
+          </enum>
+          <enum description="Rocker 2nd action" shortcut="R2" offset="4" size="3">
+            <item description="Button AI" value="0" />
+            <item description="Button AO" value="1" />
+            <item description="Button BI" value="2" />
+            <item description="Button BO" value="3" />
+          </enum>
+          <enum description="2nd action" shortcut="SA" offset="7" size="1">
+            <item description="No 2nd action" value="0" />
+            <item description="2nd action valid" value="1" />
+          </enum>
+          <status description="T21" shortcut="T21" offset="2" size="1" />
+          <status description="NU" shortcut="NU" offset="3" size="1" />
+        </data>
+      </profile>
       <profile type="0x02" description="Light and Blind Control - Application Style 2">
         <data>
           <enum description="Rocker 1st action" shortcut="R1" offset="0" size="3">
@@ -961,9 +987,13 @@
               <max>40</max>
             </scale>
           </value>
+          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
+            <item description="Tech-in telegram" value="0" />
+            <item description="Data telegram" value="1" />
+          </enum>
         </data>
         <data direction="2">
-          <value shortcut="SP" description="Valve Position" offset="0" size="8" unit="%">
+          <value shortcut="SP" description="Valve Position or Temperature Setpoint" offset="0" size="8" unit="%">
             <range>
               <min>0</min>
               <max>100</max>
@@ -1014,6 +1044,10 @@
           <enum shortcut="RCU" description="Select function" offset="23" size="1">
             <item description="RCU" value="0" />
             <item description="service on" value="1" />
+          </enum>
+          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
+            <item description="Tech-in telegram" value="0" />
+            <item description="Data telegram" value="1" />
           </enum>
         </data>
       </profile>
