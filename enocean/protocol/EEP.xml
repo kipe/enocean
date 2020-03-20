@@ -486,7 +486,7 @@
           </enum>
         </data>
       </profile>
-      <profile type="0x03" description="Range -20°C  to +60°C 10bit-measurement  and 0% to 100%">
+      <profile type="0x03" description="Range -20°C to +60°C 10bit-measurement and 0% to 100%">
         <data>
           <value description="Rel. Humidity (linear)" shortcut="HUM" offset="0" size="8" unit="%">
             <range>
@@ -548,6 +548,52 @@
               <max>60000.000000</max>
             </scale>
           </value>
+          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
+            <item description="Tech-in telegram" value="0" />
+            <item description="Data telegram" value="1" />
+          </enum>
+          <enum description="Range select" shortcut="RS" offset="31" size="1">
+            <item description="Range acc. to DB_1 (ILL1)" value="0" />
+            <item description="Range acc. to DB_2 (ILL2)" value="1" />
+          </enum>
+        </data>
+      </profile>
+      <profile type="0x02" description="Range 0lx to 1.020lx">
+        <data>
+          <value description="Supply voltage (linear)" shortcut="SVC" offset="0" size="8" unit="V">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0.000000</min>
+              <max>5.100000</max>
+            </scale>
+          </value>
+          <value description="Illumination 2 (linear)" shortcut="ILL2" offset="8" size="8" unit="lx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0.000000</min>
+              <max>510.000000</max>
+            </scale>
+          </value>
+          <value description="Illumination 1 (linear)" shortcut="ILL1" offset="16" size="8" unit="lx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0.000000</min>
+              <max>1020.000000</max>
+            </scale>
+          </value>
+          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
+            <item description="Tech-in telegram" value="0" />
+            <item description="Data telegram" value="1" />
+          </enum>
           <enum description="Range select" shortcut="RS" offset="31" size="1">
             <item description="Range acc. to DB_1 (ILL1)" value="0" />
             <item description="Range acc. to DB_2 (ILL2)" value="1" />
@@ -698,8 +744,8 @@
         </data>
       </profile>
     </profiles>
-    <profiles description="Room Operating Panel" func="0x10">
-      <profile description="Temperature Sensor and Set Point" type="0x03">
+    <profiles func="0x10" description="Room Operating Panel">
+      <profile type="0x03" description="Temperature Sensor and Set Point">
         <data>
           <value shortcut="SP" description="Set Point (linear)" offset="8" size="8" unit="%">
             <range>
@@ -852,8 +898,8 @@
         </data>
       </profile>
     </profiles>
-    <profiles description="Controller Status" func="0x11">
-      <profile description="Temperature Controller Output" type="0x02">
+    <profiles func="0x11" description="Controller Status">
+      <profile type="0x02" description="Temperature Controller Output">
         <data>
           <value shortcut="CVAR" description="Actual value of controller" offset="0" size="8" unit="%">
             <range>
@@ -932,8 +978,8 @@
         </data>
       </profile>
     </profiles>
-    <profiles description="HVAC Components" func="0x20">
-      <profile description="Battery Powered Actuator (BI-DIR)" type="0x01">
+    <profiles func="0x20" description="HVAC Components">
+      <profile type="0x01" description="Battery Powered Actuator (BI-DIR)">
         <data direction="1">
           <value shortcut="CV" description="Current Value" offset="0" size="8" unit="%">
             <range>
