@@ -7,6 +7,7 @@
           <enum description="Status of the push button" shortcut="PB" offset="3" size="1">
             <item description="Released" value="0" />
             <item description="Pressed" value="1" />
+          </enum>
         </data>
       </profile>
     </profiles>
