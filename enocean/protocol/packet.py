@@ -221,7 +221,7 @@ class Packet(object):
         # and no security (security not supported as per EnOcean Serial Protocol).
         packet.optional = [3] + destination + [0xFF] + [0]
 
-        if command:
+        if command and rorg == RORG.VLD:
             # Set CMD to command, if applicable.. Helps with VLD.
             kwargs['CMD'] = command
 
