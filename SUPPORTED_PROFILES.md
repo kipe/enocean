@@ -43,6 +43,15 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |NU      |NU                                                |status  |                                                                      |
 
 
+##### RORG 0xF6 - FUNC 0x05 - TYPE 0x02 - Smoke Detector
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SMO     |Status of detection and battery                   |enum    |0 - Smoke Alarm OFF                                                   |
+|        |                                                  |        |16 - Smoke Alarm ON                                                   |
+|        |                                                  |        |48 - Energy LOW                                                       |
+
+
 
 ##### RORG 0xF6 - FUNC 0x10 - TYPE 0x00 - Window Handle
 

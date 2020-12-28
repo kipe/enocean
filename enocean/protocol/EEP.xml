@@ -50,6 +50,15 @@
           <status description="NU" shortcut="NU" offset="3" size="1" />
         </data>
       </profile>
+      <profile type="0x02" description="Smoke Detector">
+        <data>
+          <enum description="Status of detection and battery" shortcut="SMO" offset="0" size="8">
+            <item description="Smoke Alarm OFF" value="0" />
+            <item description="Smoke Alarm ON" value="16" />
+            <item description="Energy LOW" value="48" />
+          </enum>
+        </data>
+      </profile>
     </profiles>
     <profiles func="0x10" description="Mechanical Handle">
       <profile type="0x00" description="Window Handle">
