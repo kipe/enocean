@@ -182,7 +182,10 @@ def test_packet_equals():
     _, _, packet_1 = Packet.parse_msg(data_1)
     _, _, packet_2 = Packet.parse_msg(data_2)
 
-    assert str(packet_1) == '0x%02X %s %s %s' % (packet_1.packet_type, [hex(o) for o in packet_1.data], [hex(o) for o in packet_1.optional], packet_1.parsed)
+    assert str(packet_1) == '0x%02X %s %s %s' % (packet_1.packet_type,
+                                                 [hex(o) for o in packet_1.data],
+                                                 [hex(o) for o in packet_1.optional],
+                                                 packet_1.parsed)
     assert str(packet_1) == str(packet_2)
     assert packet_1 == packet_2
 

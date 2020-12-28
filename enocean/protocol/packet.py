@@ -48,20 +48,26 @@ class Packet(object):
         self.parse()
 
     def __str__(self):
-        return '0x%02X %s %s %s' % (self.packet_type, [hex(o) for o in self.data], [hex(o) for o in self.optional], self.parsed)
+        return '0x%02X %s %s %s' % (
+            self.packet_type,
+            [hex(o) for o in self.data],
+            [hex(o) for o in self.optional],
+            self.parsed)
 
     def __unicode__(self):
         return self.__str__()
 
     def __eq__(self, other):
-        return self.packet_type == other.packet_type and self.rorg == other.rorg and self.data == other.data and self.optional == other.optional
+        return self.packet_type == other.packet_type and self.rorg == other.rorg \
+            and self.data == other.data and self.optional == other.optional
 
     @property
     def _bit_data(self):
         # First and last 5 bits are always defined, so the data we're modifying is between them...
         # TODO: This is valid for the packets we're currently manipulating.
         # Needs the redefinition of Packet.data -> Packet.message.
-        # Packet.data would then only have the actual, documented data-bytes. Packet.message would contain the whole message.
+        # Packet.data would then only have the actual, documented data-bytes.
+        # Packet.message would contain the whole message.
         # See discussion in issue #14
         return enocean.utils.to_bitarray(self.data[1:len(self.data) - 5], (len(self.data) - 6) * 8)
 
@@ -300,7 +306,8 @@ class RadioPacket(Packet):
     @staticmethod
     def create(rorg, rorg_func, rorg_type, direction=None, command=None,
                destination=None, sender=None, learn=False, **kwargs):
-        return Packet.create(PACKET.RADIO_ERP1, rorg, rorg_func, rorg_type, direction, command, destination, sender, learn, **kwargs)
+        return Packet.create(PACKET.RADIO_ERP1, rorg, rorg_func, rorg_type,
+                             direction, command, destination, sender, learn, **kwargs)
 
     @property
     def sender_int(self):
@@ -339,7 +346,7 @@ class RadioPacket(Packet):
                     self.rorg_func = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_7:DB3.BIT_1])
                     self.rorg_type = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_1:DB2.BIT_2])
                     self.rorg_manufacturer = enocean.utils.from_bitarray(self._bit_data[DB2.BIT_2:DB0.BIT_7])
-                    self.logger.debug('learn received, EEP detected, RORG: 0x%02X, FUNC: 0x%02X, TYPE: 0x%02X, Manufacturer: 0x%02X' % (self.rorg, self.rorg_func, self.rorg_type, self.rorg_manufacturer))
+                    self.logger.debug('learn received, EEP detected, RORG: 0x%02X, FUNC: 0x%02X, TYPE: 0x%02X, Manufacturer: 0x%02X' % (self.rorg, self.rorg_func, self.rorg_type, self.rorg_manufacturer))  # noqa: E501
 
         return super(RadioPacket, self).parse()
 
@@ -382,7 +389,7 @@ class UTETeachInPacket(RadioPacket):
         self.unidirectional = not self._bit_data[DB6.BIT_7]
         self.response_expected = not self._bit_data[DB6.BIT_6]
         self.request_type = enocean.utils.from_bitarray(self._bit_data[DB6.BIT_5:DB6.BIT_3])
-        self.rorg_manufacturer = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_2:DB2.BIT_7] + self._bit_data[DB4.BIT_7:DB3.BIT_7])
+        self.rorg_manufacturer = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_2:DB2.BIT_7] + self._bit_data[DB4.BIT_7:DB3.BIT_7])  # noqa: E501
         self.channel = self.data[2]
         self.rorg_type = self.data[5]
         self.rorg_func = self.data[6]

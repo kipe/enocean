@@ -82,7 +82,8 @@ def test_packet_assembly():
     assert packet.rorg_type == 0x01
 
     # Test the easier method of sending packets.
-    packet = Packet.create(PACKET.RADIO_ERP1, rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01, learn=True, direction=1, **prop)
+    packet = Packet.create(PACKET.RADIO_ERP1, rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01,
+                           learn=True, direction=1, **prop)
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(PACKET_CONTENT_3)
     assert list(packet_serialized) == list(PACKET_CONTENT_3)
@@ -109,7 +110,8 @@ def test_temperature():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0x5C
     ])
-    packet = RadioPacket.create(rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05, sender=[0x01, 0x81, 0xB7, 0x44], TMP=26.66666666666666666666666666666666666666666667)
+    packet = RadioPacket.create(rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05,
+                                sender=[0x01, 0x81, 0xB7, 0x44], TMP=26.66666666666666666666666666666666666666666667)
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(TEMPERATURE)
     assert list(packet_serialized) == list(TEMPERATURE)
@@ -123,7 +125,8 @@ def test_temperature():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0xE0
     ])
-    packet = RadioPacket.create(rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05, sender=[0x01, 0x81, 0xB7, 0x44], learn=True, TMP=26.66666666666666666666666666666666666666666667)
+    packet = RadioPacket.create(rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05, sender=[0x01, 0x81, 0xB7, 0x44],
+                                learn=True, TMP=26.66666666666666666666666666666666666666666667)
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(TEMPERATURE)
     assert packet.learn is True
@@ -140,7 +143,8 @@ def test_magnetic_switch():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0xBA
     ])
-    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB], CO='open')
+    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
+                                CO='open')
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
     assert list(packet_serialized) == list(MAGNETIC_SWITCH)
@@ -154,7 +158,8 @@ def test_magnetic_switch():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0x06
     ])
-    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB], learn=True, CO='open')
+    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
+                                learn=True, CO='open')
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
     assert list(packet_serialized) == list(MAGNETIC_SWITCH)
@@ -169,7 +174,8 @@ def test_magnetic_switch():
         0x2E
     ])
 
-    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB], CO='closed')
+    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
+                                CO='closed')
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
     assert list(packet_serialized) == list(MAGNETIC_SWITCH)
@@ -184,7 +190,8 @@ def test_magnetic_switch():
         0x92
     ])
 
-    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB], learn=True, CO='closed')
+    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
+                                learn=True, CO='closed')
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
     assert list(packet_serialized) == list(MAGNETIC_SWITCH)
@@ -257,7 +264,9 @@ def test_packets_with_destination():
         0x03, 0xDE, 0xAD, 0xBE, 0xEF, 0xFF, 0x00,
         0x5F
     ])
-    packet = RadioPacket.create(rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05, sender=[0x01, 0x81, 0xB7, 0x44], destination=[0xDE, 0xAD, 0xBE, 0xEF], TMP=26.66666666666666666666666666666666666666666667)
+    packet = RadioPacket.create(rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05, sender=[0x01, 0x81, 0xB7, 0x44],
+                                destination=[0xDE, 0xAD, 0xBE, 0xEF],
+                                TMP=26.66666666666666666666666666666666666666666667)
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(TEMPERATURE)
     assert list(packet_serialized) == list(TEMPERATURE)
@@ -273,7 +282,8 @@ def test_packets_with_destination():
         0x03, 0xDE, 0xAD, 0xBE, 0xEF, 0xFF, 0x00,
         0xB9
     ])
-    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB], destination=[0xDE, 0xAD, 0xBE, 0xEF], CO='open')
+    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
+                                destination=[0xDE, 0xAD, 0xBE, 0xEF], CO='open')
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
     assert list(packet_serialized) == list(MAGNETIC_SWITCH)

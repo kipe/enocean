@@ -7,7 +7,8 @@ from collections import OrderedDict
 from bs4 import BeautifulSoup
 
 import enocean.utils
-from enocean.protocol.constants import RORG
+# Left as a helper
+from enocean.protocol.constants import RORG  # noqa: F401
 
 
 class EEP(object):
@@ -17,12 +18,13 @@ class EEP(object):
         self.init_ok = False
         self.telegrams = {}
 
+        eep_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml')
         try:
             if version_info[0] > 2:
-                with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml'), 'r', encoding='UTF-8') as xml_file:
+                with open(eep_path, 'r', encoding='UTF-8') as xml_file:
                     self.soup = BeautifulSoup(xml_file.read(), "html.parser")
             else:
-                with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml'), 'r') as xml_file:
+                with open(eep_path, 'r') as xml_file:
                     self.soup = BeautifulSoup(xml_file.read(), "html.parser")
             self.init_ok = True
             self.__load_xml()
