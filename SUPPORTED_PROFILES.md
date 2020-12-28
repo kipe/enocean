@@ -11,6 +11,26 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 
+##### RORG 0xF6 - FUNC 0x02 - TYPE 0x01 - Light and Blind Control - Application Style 1
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|R1      |Rocker 1st action                                 |enum    |0 - Button AI                                                         |
+|        |                                                  |        |1 - Button AO                                                         |
+|        |                                                  |        |2 - Button BI                                                         |
+|        |                                                  |        |3 - Button BO                                                         |
+|EB      |Energy bow                                        |enum    |0 - released                                                          |
+|        |                                                  |        |1 - pressed                                                           |
+|R2      |Rocker 2nd action                                 |enum    |0 - Button AI                                                         |
+|        |                                                  |        |1 - Button AO                                                         |
+|        |                                                  |        |2 - Button BI                                                         |
+|        |                                                  |        |3 - Button BO                                                         |
+|SA      |2nd action                                        |enum    |0 - No 2nd action                                                     |
+|        |                                                  |        |1 - 2nd action valid                                                  |
+|T21     |T21                                               |status  |                                                                      |
+|NU      |NU                                                |status  |                                                                      |
+
+
 ##### RORG 0xF6 - FUNC 0x02 - TYPE 0x02 - Light and Blind Control - Application Style 2
 
 |shortcut|description                                       |type    |values                                                                |
@@ -263,7 +283,7 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |1 - available                                                         |
 
 
-##### RORG 0xA5 - FUNC 0x04 - TYPE 0x03 - Range -20°C  to +60°C 10bit-measurement  and 0% to 100%
+##### RORG 0xA5 - FUNC 0x04 - TYPE 0x03 - Range -20°C to +60°C 10bit-measurement and 0% to 100%
 
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
@@ -281,6 +301,17 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |SVC     |Supply voltage (linear)                           |value   |0.0-255.0 ↔ 0.0-5.1 V                                                 |
 |ILL2    |Illumination 2 (linear)                           |value   |0.0-255.0 ↔ 300.0-30000.0 lx                                          |
 |ILL1    |Illumination 1 (linear)                           |value   |0.0-255.0 ↔ 600.0-60000.0 lx                                          |
+|RS      |Range select                                      |enum    |0 - Range acc. to DB_1 (ILL1)                                         |
+|        |                                                  |        |1 - Range acc. to DB_2 (ILL2)                                         |
+
+
+##### RORG 0xA5 - FUNC 0x06 - TYPE 0x02 - Range 0lx to 1.020lx
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SVC     |Supply voltage (linear)                           |value   |0.0-255.0 ↔ 0.0-5.1 V                                                 |
+|ILL2    |Illumination 2 (linear)                           |value   |0.0-255.0 ↔ 0.0-510.0 lx                                              |
+|ILL1    |Illumination 1 (linear)                           |value   |0.0-255.0 ↔ 0.0-1020.0 lx                                             |
 |RS      |Range select                                      |enum    |0 - Range acc. to DB_1 (ILL1)                                         |
 |        |                                                  |        |1 - Range acc. to DB_2 (ILL2)                                         |
 
@@ -433,6 +464,36 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |3 - Frost                                                             |
 
 
+##### RORG 0xA5 - FUNC 0x11 - TYPE 0x03 - Blind Status
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|BSP     |Blind/shutter position                            |value   |0.0-100.0 ↔ 0.0-100.0 %                                               |
+|AS      |Angle sign                                        |enum    |0 - Positive sign                                                     |
+|        |                                                  |        |1 - Negative sign                                                     |
+|AN      |Angle in 2 degrees steps                          |value   |0.0-90.0 ↔ 0.0-180.0 degrees                                          |
+|PVF     |Position value flag                               |enum    |0 - No position value available                                       |
+|        |                                                  |        |1 - Position value available                                          |
+|AVF     |Angle value flag                                  |enum    |0 - No Angle value available                                          |
+|        |                                                  |        |1 - Angle value available                                             |
+|ES      |Error state                                       |enum    |0 - No error present                                                  |
+|        |                                                  |        |1 - End-positions are not configured                                  |
+|        |                                                  |        |2 - Internal failure                                                  |
+|        |                                                  |        |3 - Not used                                                          |
+|EP      |End position                                      |enum    |0 - No End-position available                                         |
+|        |                                                  |        |1 - No End-position reached                                           |
+|        |                                                  |        |2 - Blind fully open                                                  |
+|        |                                                  |        |3 - Blind fully closed                                                |
+|ST      |Status                                            |enum    |0 - No status available                                               |
+|        |                                                  |        |1 - Blind is stopped                                                  |
+|        |                                                  |        |2 - Blind opens                                                       |
+|        |                                                  |        |3 - Blind closes                                                      |
+|SM      |Service mode                                      |enum    |0 - Normal mode                                                       |
+|        |                                                  |        |1 - Service mode activated                                            |
+|MOTP    |Mode of the position                              |enum    |0 - Normal mode                                                       |
+|        |                                                  |        |1 - Inverse ode                                                       |
+
+
 
 ##### RORG 0xA5 - FUNC 0x14 - TYPE 0x01 - Single Input Contact (Window/Door), Supply voltage monitor
 
@@ -471,7 +532,7 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 ###### direction: 2
 |shortcut|description                                       |type    |values                                                                |
 |--------|--------------------------------------------------|--------|----                                                                  |
-|SP      |Valve Position                                    |value   |0.0-100.0 ↔ 0.0-100.0 %                                               |
+|SP      |Valve Position or Temperature Setpoint            |value   |0.0-100.0 ↔ 0.0-100.0 %                                               |
 |TMP     |Temperature from RCU                              |value   |0.0-255.0 ↔ 0.0-40.0 °C                                               |
 |RIN     |Run init sequence                                 |enum    |0 - false                                                             |
 |        |                                                  |        |1 - true                                                              |
