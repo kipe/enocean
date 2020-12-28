@@ -557,10 +557,6 @@
               <max>60000.000000</max>
             </scale>
           </value>
-          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
-            <item description="Tech-in telegram" value="0" />
-            <item description="Data telegram" value="1" />
-          </enum>
           <enum description="Range select" shortcut="RS" offset="31" size="1">
             <item description="Range acc. to DB_1 (ILL1)" value="0" />
             <item description="Range acc. to DB_2 (ILL2)" value="1" />
@@ -599,10 +595,6 @@
               <max>1020.000000</max>
             </scale>
           </value>
-          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
-            <item description="Tech-in telegram" value="0" />
-            <item description="Data telegram" value="1" />
-          </enum>
           <enum description="Range select" shortcut="RS" offset="31" size="1">
             <item description="Range acc. to DB_1 (ILL1)" value="0" />
             <item description="Range acc. to DB_2 (ILL2)" value="1" />
@@ -1042,10 +1034,6 @@
               <max>40</max>
             </scale>
           </value>
-          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
-            <item description="Tech-in telegram" value="0" />
-            <item description="Data telegram" value="1" />
-          </enum>
         </data>
         <data direction="2">
           <value shortcut="SP" description="Valve Position or Temperature Setpoint" offset="0" size="8" unit="%">
@@ -1099,10 +1087,6 @@
           <enum shortcut="RCU" description="Select function" offset="23" size="1">
             <item description="RCU" value="0" />
             <item description="service on" value="1" />
-          </enum>
-          <enum shortcut="LRNB" description="LRN Bit" offset="28" size="1">
-            <item description="Tech-in telegram" value="0" />
-            <item description="Data telegram" value="1" />
           </enum>
         </data>
       </profile>
