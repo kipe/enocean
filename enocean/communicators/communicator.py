@@ -97,7 +97,7 @@ class Communicator(threading.Thread):
             try:
                 packet = self.receive.get(block=True, timeout=0.1)
                 # We're only interested in responses to the request in question.
-                if packet.packet_type == PACKET.RESPONSE and packet.response == RETURN_CODE.OK and len(packet.response_data) == 4:
+                if packet.packet_type == PACKET.RESPONSE and packet.response == RETURN_CODE.OK and len(packet.response_data) == 4:  # noqa: E501
                     # Base ID is set in the response data.
                     self._base_id = packet.response_data
                     # Put packet back to the Queue, so the user can also react to it if required...

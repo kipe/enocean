@@ -23,10 +23,10 @@ def test_temperature():
     assert packet.parsed['TMP']['raw_value'] == 85
     assert packet.learn is False
     assert packet.contains_eep is False
-    assert packet.rorg is 0xA5
-    assert packet.rorg is int(RORG.BS4)
-    assert packet.rorg_func is 0x02
-    assert packet.rorg_type is 0x05
+    assert packet.rorg == 0xA5
+    assert packet.rorg == int(RORG.BS4)
+    assert packet.rorg_func == 0x02
+    assert packet.rorg_type == 0x05
     assert packet.status == 0x00
     assert packet.repeater_count == 0
     assert packet.sender == [0x01, 0x81, 0xB7, 0x44]
