@@ -59,6 +59,11 @@ class RORG(IntEnum):
     SYS_EX = 0xC5
     SEC = 0x30
     SEC_ENCAPS = 0x31
+    SECD = 0x32
+    SEC_CDM = 0x33
+    SEC_MAN = 0x34
+    SEC_TI = 0x35
+    SIGNAL = 0xD0
     UTE = 0xD4
 
 
