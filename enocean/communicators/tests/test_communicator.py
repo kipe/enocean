@@ -30,7 +30,7 @@ def test_buffer():
 @timing(1000)
 def test_send():
     ''' Test sending packets to Communicator '''
-    com = Communicator()
+    com = Communicator(get_base_id=False)
     assert com.send('AJSNDJASNDJANSD') is False
     assert com.transmit.qsize() == 0
     assert com._get_from_send_queue() is None
@@ -38,9 +38,17 @@ def test_send():
     assert com.transmit.qsize() == 1
     assert isinstance(com._get_from_send_queue(), Packet)
 
+@timing(5000)
+def test_start():
+    com = Communicator(get_base_id=False)
+    assert com.start() is True
+    assert com.parse_started.is_set()
+    assert not com._stop_flag.is_set()
+    com.stop()
+    assert com._stop_flag.is_set()
 
 def test_stop():
-    com = Communicator()
+    com = Communicator(get_base_id=False)
     com.stop()
     assert com._stop_flag.is_set()
 
@@ -58,14 +66,18 @@ def test_callback():
         0x75
     ])
 
-    com = Communicator(callback=callback)
+    com = Communicator(callback=callback, get_base_id=False)
     com._buffer.extend(data)
     com.parse()
     assert com.receive.qsize() == 0
 
 
 def test_base_id():
-    com = Communicator()
+    def callback(packet):
+        assert isinstance(packet, RadioPacket)
+
+    com = Communicator(callback=callback)
+    assert com.transmit.qsize() == 1
     assert com.base_id is None
 
     other_data = bytearray([
