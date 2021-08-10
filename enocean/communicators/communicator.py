@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
+from enocean.protocol.esp2_packet import ESP2Packet
+from enocean.protocol.esp3_packet import ESP3Packet
 import logging
 import datetime
 
@@ -11,6 +13,11 @@ except ImportError:
 from enocean.protocol.packet import Packet, UTETeachInPacket
 from enocean.protocol.constants import PACKET, PARSE_RESULT, RETURN_CODE
 
+from enum import Enum
+
+class ESP_Version(Enum):
+     ESP2 = 2
+     ESP3 = 3
 
 class Communicator(threading.Thread):
     '''
@@ -19,7 +26,7 @@ class Communicator(threading.Thread):
     '''
     logger = logging.getLogger('enocean.communicators.Communicator')
 
-    def __init__(self, callback=None, teach_in=True):
+    def __init__(self, version: ESP_Version=ESP_Version.ESP3, callback=None, teach_in=True):
         super(Communicator, self).__init__()
         # Create an event to stop the thread
         self._stop_flag = threading.Event()
@@ -35,6 +42,7 @@ class Communicator(threading.Thread):
         # Should new messages be learned automatically? Defaults to True.
         # TODO: Not sure if we should use CO_WR_LEARNMODE??
         self.teach_in = teach_in
+        self._version = version
 
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
@@ -61,7 +69,7 @@ class Communicator(threading.Thread):
         ''' Parses messages and puts them to receive queue '''
         # Loop while we get new messages
         while True:
-            status, self._buffer, packet = Packet.parse_msg(self._buffer)
+            status, self._buffer, packet = ESP3Packet.parse_msg(self._buffer) if self._version == ESP_Version.ESP3 else ESP2Packet.parse_msg(self._buffer)
             # If message is incomplete -> break the loop
             if status == PARSE_RESULT.INCOMPLETE:
                 return status

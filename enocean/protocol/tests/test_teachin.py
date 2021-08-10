@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
+from enocean.protocol.esp3_packet import ESP3Packet
 
 from enocean.communicators import Communicator
 from enocean.protocol.packet import Packet
@@ -12,7 +13,7 @@ def test_ute_in():
     communicator = Communicator()
     communicator.base_id = [0xDE, 0xAD, 0xBE, 0xEF]
 
-    status, buf, packet = Packet.parse_msg(
+    status, buf, packet = ESP3Packet.parse_msg(
         bytearray([
             0x55,
             0x00, 0x0D, 0x07, 0x01,
