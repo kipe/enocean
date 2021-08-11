@@ -721,3 +721,21 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 
+##### RORG 0xD2 - FUNC 0x14 - TYPE 0x41 - Type 0x41
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature (linear)                              |value   |0.0-1000.0 ↔ -40.0-60.0 °C                                            |
+|HUM     |Rel. Humidity (linear)                            |value   |0.0-200.0 ↔ 0.0-100.0 %                                               |
+|ILL     |Illumination (linear)                             |value   |0.0-1000000.0 ↔ 0.0-1000000.0 lx                                      |
+|ACCS    |Acceleration Status                               |enum    |0 - Periodic Update                                                   |
+|        |                                                  |        |1 - Threshold 1 exceeded                                              |
+|        |                                                  |        |2 - Threshold 2 exceeded                                              |
+|ACCX    |Acceleration X (linear)                           |value   |0.0-1000.0 ↔ -2.5-2.5 g                                               |
+|ACCY    |Acceleration Y (linear)                           |value   |0.0-1000.0 ↔ -2.5-2.5 g                                               |
+|ACCZ    |Acceleration Z (linear)                           |value   |0.0-1000.0 ↔ -2.5-2.5 g                                               |
+|CO      |Contact                                           |enum    |0 - open                                                              |
+|        |                                                  |        |1 - closed                                                            |
+
+
+
