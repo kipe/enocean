@@ -7,7 +7,7 @@ http://www.g-media.fr/prise-gigogne-enocean.html
 Waits for UTE Teach-ins, sends the response automatically and prints the ID of new device.
 '''
 
-from enocean.protocol.esp3_packet import ESP3RadioPacket
+from enocean.protocol.packet import RadioPacket
 import sys
 import time
 import traceback
@@ -25,7 +25,7 @@ except ImportError:
 def send_command(destination, output_value):
     global communicator
     communicator.send(
-        ESP3RadioPacket.create(rorg=RORG.VLD, rorg_func=0x01, rorg_type=0x01, destination=destination, sender=communicator.base_id, command=1, IO=0x1E, OV=output_value)
+        RadioPacket.create(rorg=RORG.VLD, rorg_func=0x01, rorg_type=0x01, destination=destination, sender=communicator.base_id, command=1, IO=0x1E, OV=output_value)
     )
 
 

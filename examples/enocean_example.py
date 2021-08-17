@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-from enocean.protocol.esp3_packet import ESP3RadioPacket
+from enocean.protocol.packet import RadioPacket
 from enocean.consolelogger import init_logging
 import enocean.utils
 from enocean.communicators.serialcommunicator import SerialCommunicator
@@ -16,7 +16,7 @@ except ImportError:
 
 
 def assemble_radio_packet(transmitter_id):
-    return ESP3RadioPacket.create(rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01,
+    return RadioPacket.create(rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01,
                               sender=transmitter_id,
                               CV=50,
                               TMP=21.5,
