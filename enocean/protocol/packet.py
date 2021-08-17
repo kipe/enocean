@@ -259,16 +259,6 @@ class Packet(object):
             self.repeater_count = enocean.utils.from_bitarray(self._bit_status[4:])
         return self.parsed
 
-    def build(self):
-        ''' Build Packet for sending to EnOcean controller '''
-        data_length = len(self.data)
-        ords = [0x55, (data_length >> 8) & 0xFF, data_length & 0xFF, len(self.optional), int(self.packet_type)]
-        ords.append(crc8.calc_ESP3(ords[1:5]))
-        ords.extend(self.data)
-        ords.extend(self.optional)
-        ords.append(crc8.calc_ESP3(ords[6:]))
-        return ords
-
     def select_eep(self, rorg_func, rorg_type, direction=None, command=None):
         ''' Set EEP based on FUNC and TYPE '''
         # set EEP profile
@@ -290,6 +280,16 @@ class Packet(object):
     def set_eep(self, data):
         ''' Update packet data based on EEP. Input data is a dictionary with keys corresponding to the EEP. '''
         self._bit_data, self._bit_status = self.eep.set_values(self._profile, self._bit_data, self._bit_status, data)
+
+    def build(self):
+        ''' Build Packet for sending to EnOcean controller '''
+        data_length = len(self.data)
+        ords = [0x55, (data_length >> 8) & 0xFF, data_length & 0xFF, len(self.optional), int(self.packet_type)]
+        ords.append(crc8.calc_ESP3(ords[1:5]))
+        ords.extend(self.data)
+        ords.extend(self.optional)
+        ords.append(crc8.calc_ESP3(ords[6:]))
+        return ords
 
 class RadioPacket(Packet):
     destination = [0xFF, 0xFF, 0xFF, 0xFF]
