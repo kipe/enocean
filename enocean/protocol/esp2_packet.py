@@ -84,7 +84,8 @@ class ESP2Packet(Packet):
             data[0] = RORG.RPS
 
         # If we got this far, everything went ok (?)
-        if packet_type == PACKET.RADIO:
+        # in ESP2 the exist only two type of packets, RadioPacket and Command
+        if packet_type == PACKET.RADIO or packet_type == PACKET.RESERVED or packet_type == PACKET.EVENT:
             # Need to handle UTE Teach-in here, as it's a separate packet type...
             if data[0] == RORG.UTE:
                 packet = ESP2UTETeachInPacket(packet_type, data, opt_data)
@@ -96,9 +97,6 @@ class ESP2Packet(Packet):
                 packet = ESP2RadioPacket(packet_type, data, opt_data)
         elif packet_type == PACKET.RESPONSE:
             packet = ESP2ResponsePacket(packet_type, data, opt_data)
-        elif packet_type == PACKET.EVENT:
-            #packet = EventPacket(packet_type, data, opt_data)
-            packet = ESP2RadioPacket(packet_type, data, opt_data)
         else:
             packet = ESP2Packet(packet_type, data, opt_data)
 
