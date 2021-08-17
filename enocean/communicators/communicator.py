@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
 from enocean.protocol.esp2_packet import ESP2Packet
-from enocean.protocol.esp3_packet import ESP3Packet
+from enocean.protocol.packet import ESP3Packet
 import logging
 import datetime
 
