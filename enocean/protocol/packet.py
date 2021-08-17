@@ -12,6 +12,9 @@ from enocean.protocol.constants import PACKET, PARSE_RESULT, RORG, DB0, DB2, DB3
 class Packet(object):
     '''
     Base class for Packet.
+    Mainly used for for packet generation and
+    Packet.parse_msg(buf) for parsing message.
+    parse_msg() returns subclass, if one is defined for the data type.
     '''
     eep = EEP()
     logger = logging.getLogger('enocean.protocol.packet')
@@ -43,6 +46,58 @@ class Packet(object):
         self._profile = None
 
         self.parse()
+
+    def __str__(self):
+        return '0x%02X %s %s %s' % (
+            self.packet_type,
+            [hex(o) for o in self.data],
+            [hex(o) for o in self.optional],
+            self.parsed)
+
+    def __unicode__(self):
+        return self.__str__()
+
+    def __eq__(self, other):
+        return self.packet_type == other.packet_type and self.rorg == other.rorg \
+            and self.data == other.data and self.optional == other.optional
+
+    @property
+    def _bit_data(self):
+        # First and last 5 bits are always defined, so the data we're modifying is between them...
+        # TODO: This is valid for the packets we're currently manipulating.
+        # Needs the redefinition of Packet.data -> Packet.message.
+        # Packet.data would then only have the actual, documented data-bytes.
+        # Packet.message would contain the whole message.
+        # See discussion in issue #14
+        return enocean.utils.to_bitarray(self.data[1:len(self.data) - 5], (len(self.data) - 6) * 8)
+
+    @_bit_data.setter
+    def _bit_data(self, value):
+        # The same as getting the data, first and last 5 bits are ommitted, as they are defined...
+        for byte in range(len(self.data) - 6):
+            self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
+
+    # # COMMENTED OUT, AS NOTHING TOUCHES _bit_optional FOR NOW.
+    # # Thus, this is also untested.
+    # @property
+    # def _bit_optional(self):
+    #     return enocean.utils.to_bitarray(self.optional, 8 * len(self.optional))
+
+    # @_bit_optional.setter
+    # def _bit_optional(self, value):
+    #     if self.rorg in [RORG.RPS, RORG.BS1]:
+    #         self.data[1] = enocean.utils.from_bitarray(value)
+    #     if self.rorg == RORG.BS4:
+    #         for byte in range(4):
+    #             self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
+
+    @property
+    def _bit_status(self):
+        return enocean.utils.to_bitarray(self.status)
+
+    @_bit_status.setter
+    def _bit_status(self, value):
+        self.status = enocean.utils.from_bitarray(value)
 
     @staticmethod
     def parse_msg(buf):
@@ -191,68 +246,6 @@ class Packet(object):
         packet.parse_eep(rorg_func, rorg_type, direction, command)
         return packet
 
-    def build(self):
-        ''' Build Packet for sending to EnOcean controller '''
-        data_length = len(self.data)
-        ords = [0x55, (data_length >> 8) & 0xFF, data_length & 0xFF, len(self.optional), int(self.packet_type)]
-        ords.append(crc8.calc_ESP3(ords[1:5]))
-        ords.extend(self.data)
-        ords.extend(self.optional)
-        ords.append(crc8.calc_ESP3(ords[6:]))
-        return ords
-
-    def __str__(self):
-        return '0x%02X %s %s %s' % (
-            self.packet_type,
-            [hex(o) for o in self.data],
-            [hex(o) for o in self.optional],
-            self.parsed)
-
-    def __unicode__(self):
-        return self.__str__()
-
-    def __eq__(self, other):
-        return self.packet_type == other.packet_type and self.rorg == other.rorg \
-            and self.data == other.data and self.optional == other.optional
-
-    @property
-    def _bit_data(self):
-        # First and last 5 bits are always defined, so the data we're modifying is between them...
-        # TODO: This is valid for the packets we're currently manipulating.
-        # Needs the redefinition of Packet.data -> Packet.message.
-        # Packet.data would then only have the actual, documented data-bytes.
-        # Packet.message would contain the whole message.
-        # See discussion in issue #14
-        return enocean.utils.to_bitarray(self.data[1:len(self.data) - 5], (len(self.data) - 6) * 8)
-
-    @_bit_data.setter
-    def _bit_data(self, value):
-        # The same as getting the data, first and last 5 bits are ommitted, as they are defined...
-        for byte in range(len(self.data) - 6):
-            self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
-
-    # # COMMENTED OUT, AS NOTHING TOUCHES _bit_optional FOR NOW.
-    # # Thus, this is also untested.
-    # @property
-    # def _bit_optional(self):
-    #     return enocean.utils.to_bitarray(self.optional, 8 * len(self.optional))
-
-    # @_bit_optional.setter
-    # def _bit_optional(self, value):
-    #     if self.rorg in [RORG.RPS, RORG.BS1]:
-    #         self.data[1] = enocean.utils.from_bitarray(value)
-    #     if self.rorg == RORG.BS4:
-    #         for byte in range(4):
-    #             self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
-
-    @property
-    def _bit_status(self):
-        return enocean.utils.to_bitarray(self.status)
-
-    @_bit_status.setter
-    def _bit_status(self, value):
-        self.status = enocean.utils.from_bitarray(value)
-
     def parse(self):
         ''' Parse data from Packet '''
         # Parse status from messages
@@ -265,6 +258,16 @@ class Packet(object):
             # These message types should have repeater count in the last for bits of status.
             self.repeater_count = enocean.utils.from_bitarray(self._bit_status[4:])
         return self.parsed
+
+    def build(self):
+        ''' Build Packet for sending to EnOcean controller '''
+        data_length = len(self.data)
+        ords = [0x55, (data_length >> 8) & 0xFF, data_length & 0xFF, len(self.optional), int(self.packet_type)]
+        ords.append(crc8.calc_ESP3(ords[1:5]))
+        ords.extend(self.data)
+        ords.extend(self.optional)
+        ords.append(crc8.calc_ESP3(ords[6:]))
+        return ords
 
     def select_eep(self, rorg_func, rorg_type, direction=None, command=None):
         ''' Set EEP based on FUNC and TYPE '''
@@ -295,14 +298,15 @@ class RadioPacket(Packet):
     learn = True
     contains_eep = False
 
+    def __str__(self):
+        packet_str = super(RadioPacket, self).__str__()
+        return '%s->%s (%d dBm): %s' % (self.sender_hex, self.destination_hex, self.dBm, packet_str)
+
     @staticmethod
     def create(rorg, rorg_func, rorg_type, direction=None, command=None,
                destination=None, sender=None, learn=False, **kwargs):
         return Packet.create(PACKET.RADIO_ERP1, rorg, rorg_func, rorg_type,
                              direction, command, destination, sender, learn, **kwargs)
-    def __str__(self):
-        packet_str = super(RadioPacket, self).__str__()
-        return '%s->%s (%d dBm): %s' % (self.sender_hex, self.destination_hex, self.dBm, packet_str)
 
     @property
     def sender_int(self):
