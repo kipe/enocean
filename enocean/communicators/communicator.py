@@ -69,10 +69,14 @@ class Communicator(threading.Thread):
         ''' Parses messages and puts them to receive queue '''
         # Loop while we get new messages
         while True:
-            status, self._buffer, packet = ESP3Packet.parse_msg(self._buffer) if self._version == ESP_Version.ESP3 else ESP2Packet.parse_msg(self._buffer)
+            status, self._buffer, packet = ESP3Packet.parse_msg(self._buffer) if self._version == ESP_Version.ESP3.value else ESP2Packet.parse_msg(self._buffer)
             # If message is incomplete -> break the loop
             if status == PARSE_RESULT.INCOMPLETE:
                 return status
+
+            # if message has a crc error, ignore current buffer
+            if status == PARSE_RESULT.CRC_MISMATCH:
+                self._buffer.clear()
 
             # If message is OK, add it to receive queue or send to the callback method
             if status == PARSE_RESULT.OK and packet:

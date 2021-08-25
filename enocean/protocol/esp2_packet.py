@@ -89,7 +89,7 @@ class ESP2Packet(Packet):
                 # Send a response automatically, works only if
                 # - communicator is set
                 # - communicator.teach_in == True
-                packet.send_response()
+                # packet.send_response()
             else:
                 packet = ESP2RadioPacket(packet_type, data, opt_data)
         elif packet_type == PACKET.RESPONSE:
@@ -181,7 +181,7 @@ class ESP2Packet(Packet):
 
         # Parse the built packet, so it corresponds to the received packages
         # For example, stuff like RadioPacket.learn should be set.
-        packet = ESP2Packet.parse(packet.build_ESP2())[2]
+        packet = ESP2Packet.parse_msg(packet.build())[2]
         return packet
 
     def build(self):
