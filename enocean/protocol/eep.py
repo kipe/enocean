@@ -161,15 +161,15 @@ class EEP(object):
             return None
 
         if eep_rorg not in self.telegrams.keys():
-            self.logger.warn('Cannot find rorg in EEP!')
+            self.logger.warn('Cannot find rorg %s in EEP!', hex(eep_rorg))
             return None
 
         if rorg_func not in self.telegrams[eep_rorg].keys():
-            self.logger.warn('Cannot find func in EEP!')
+            self.logger.warn('Cannot find rorg %s func %s in EEP!', hex(eep_rorg), hex(rorg_func))
             return None
 
         if rorg_type not in self.telegrams[eep_rorg][rorg_func].keys():
-            self.logger.warn('Cannot find type in EEP!')
+            self.logger.warn('Cannot find rorg %s func %s type %s in EEP!', hex(eep_rorg), hex(rorg_func), hex(rorg_type))
             return None
 
         profile = self.telegrams[eep_rorg][rorg_func][rorg_type]
