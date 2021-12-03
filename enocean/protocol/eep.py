@@ -173,10 +173,11 @@ class EEP(object):
             return None
 
         profile = self.telegrams[eep_rorg][rorg_func][rorg_type]
+        eep_command = profile.find('command', recursive=False)
 
         if command:
             # multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
-            eep_command = profile.find('command', recursive=False)
+
             # If commands are not set in EEP, or command is None,
             # get the first data as a "best guess".
             if not eep_command:
@@ -184,6 +185,18 @@ class EEP(object):
 
             # If eep_command is defined, so should be data.command
             return profile.find('data', {'command': str(command)}, recursive=False)
+
+        elif eep_command:
+            # no explicit command has been passed, but the EEP prescribes a command
+            # try to decode it from the packet
+            command_value = self._get_raw(eep_command, bitarray)
+
+            found_data = profile.find('data', {'command': str(command_value)}, recursive=False)
+            if found_data:
+                return found_data
+
+            # return the first hit as a best guess
+            return profile.find('data', recursive=False)
 
         # extract data description
         # the direction tag is optional
