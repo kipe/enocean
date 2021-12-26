@@ -19,7 +19,7 @@ class Communicator(threading.Thread):
     '''
     logger = logging.getLogger('enocean.communicators.Communicator')
 
-    def __init__(self, callback=None, teach_in=True):
+    def __init__(self, callback=None, teach_in=True, get_base_id=True):
         super(Communicator, self).__init__()
         # Create an event to stop the thread
         self._stop_flag = threading.Event()
@@ -35,6 +35,16 @@ class Communicator(threading.Thread):
         # Should new messages be learned automatically? Defaults to True.
         # TODO: Not sure if we should use CO_WR_LEARNMODE??
         self.teach_in = teach_in
+        # Keep track if parsing started ok
+        self.parse_started = threading.Event()
+        # Should we try to get base id in init?
+        self.get_base_id = get_base_id
+        if get_base_id:
+            # Ask for base_id, put as first packet in transmit buffer, wait for answer in parse loop
+            self.send(Packet(PACKET.COMMON_COMMAND, data=[0x08]))
+        else:
+            # Starting without base_id, set parsing started flag now
+            self.parse_started.set()
 
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
@@ -54,6 +64,18 @@ class Communicator(threading.Thread):
         self.transmit.put(packet)
         return True
 
+    def start(self):
+        ''' Try to start parsing '''
+        super(Communicator, self).start()
+        # wait for parse to start
+        started_ok = self.parse_started.wait(5)
+        if not started_ok:
+            # Failed, stop parsing
+            self.logger.error('Communicator failed to start in time, stopping Communicator.')
+            self.stop()
+            return False
+        return True
+
     def stop(self):
         self._stop_flag.set()
 
@@ -70,47 +92,45 @@ class Communicator(threading.Thread):
             if status == PARSE_RESULT.OK and packet:
                 packet.received = datetime.datetime.now()
 
-                if isinstance(packet, UTETeachInPacket) and self.teach_in:
-                    response_packet = packet.create_response_packet(self.base_id)
-                    self.logger.info('Sending response to UTE teach-in.')
-                    self.send(response_packet)
-
-                if self.__callback is None:
+                if not self.parse_started.is_set():
+                    # Put packet in receive buffer
                     self.receive.put(packet)
+                    # look for response packet with base id
+                    if packet.packet_type == PACKET.RESPONSE and packet.response == RETURN_CODE.OK and len(packet.response_data) == 4:  # noqa: E501
+                        # Base ID is set with the response data, if not already set
+                        if self._base_id is None:
+                            self._base_id = packet.response_data
+                            self.logger.info('Base ID: {}'.format(''.join('{:02X}'.format(x) for x in self._base_id)))
+                    if self._base_id is not None:
+                        self.parse_started.set()
+                        self.logger.debug('Parsing started.')
+                        if self.__callback is not None:
+                            # Send receive queue to callback
+                            while not self.receive.empty:
+                                packet_from_queue = self.receive.get(block=False)
+                                self.__callback(packet_from_queue)
                 else:
-                    self.__callback(packet)
-                self.logger.debug(packet)
+                    if isinstance(packet, UTETeachInPacket) and self.teach_in:
+                        if self.base_id is None:
+                            self.logger.warning('Sending response to UTE teach-in failed, no base_id set.')
+                        else:
+                            response_packet = packet.create_response_packet(self.base_id)
+                            self.logger.info('Sending response to UTE teach-in.')
+                            self.send(response_packet)
+
+                    if self.__callback is None:
+                        self.receive.put(packet)
+                    else:
+                        self.__callback(packet)
+                    self.logger.debug(packet)
 
     @property
     def base_id(self):
-        ''' Fetches Base ID from the transmitter, if required. Otherwise returns the currently set Base ID. '''
-        # If base id is already set, return it.
-        if self._base_id is not None:
-            return self._base_id
-
-        # Send COMMON_COMMAND 0x08, CO_RD_IDBASE request to the module
-        self.send(Packet(PACKET.COMMON_COMMAND, data=[0x08]))
-        # Loop over 10 times, to make sure we catch the response.
-        # Thanks to timeout, shouldn't take more than a second.
-        # Unfortunately, all other messages received during this time are ignored.
-        for i in range(0, 10):
-            try:
-                packet = self.receive.get(block=True, timeout=0.1)
-                # We're only interested in responses to the request in question.
-                if packet.packet_type == PACKET.RESPONSE and packet.response == RETURN_CODE.OK and len(packet.response_data) == 4:  # noqa: E501
-                    # Base ID is set in the response data.
-                    self._base_id = packet.response_data
-                    # Put packet back to the Queue, so the user can also react to it if required...
-                    self.receive.put(packet)
-                    break
-                # Put other packets back to the Queue.
-                self.receive.put(packet)
-            except queue.Empty:
-                continue
-        # Return the current Base ID (might be None).
         return self._base_id
 
     @base_id.setter
     def base_id(self, base_id):
         ''' Sets the Base ID manually, only for testing purposes. '''
         self._base_id = base_id
+        self.logger.info('Base ID (set manually): {}'.format(''.join('{:02X}'.format(x) for x in self._base_id)))
+
