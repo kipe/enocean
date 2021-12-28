@@ -44,6 +44,26 @@ class EVENT_CODE(IntEnum):
     CO_EVENT_SECUREDEVICES = 0x05
 
 
+# ESP2 ORG EnOcean_Equipment_Profiles_2.0.pdf
+class ORG(IntEnum):
+    BS4 = 0x07
+    BS1 = 0x06
+    RPS = 0x05
+
+#ESP2 Message Status Field EnOcean_Equipment_Profiles_2.0.pdf
+class MSGSTATUS(IntEnum):
+    #RPS definitions
+    T2Msg = 0x20
+    NMsg = 0x10
+    T2NMsg = 0x30
+    T2UMsg = 0x20
+    T1NMsg = 0x10
+    T1UMsg = 0x00
+    #BS4 definitions
+    BS4 = 0x00 #must be zero in BS4 messages with RP count of 0
+    #BS1 definitions
+    BS1 = 0x00 #must be zero in BS1 too
+
 # EnOcean_Equipment_Profiles_EEP_V2.61_public.pdf / 8
 class RORG(IntEnum):
     UNDEFINED = 0x00
