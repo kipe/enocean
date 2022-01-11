@@ -1622,6 +1622,30 @@
         </data>
       </profile>
     </profiles>
+    <profiles func="0x03" description="Light, Switching + Blind Control">
+      <profile type="0x00" description="2 Rocker Switch">
+        <data>
+          <enum description="Rocker Information" shortcut="RI2" offset="4" size="4">
+            <item description="Reserved" value="0" />
+            <item description="Reserved" value="1" />
+            <item description="Reserved" value="2" />
+            <item description="Reserved" value="3" />
+            <item description="Reserved" value="4" />
+            <item description="Button A1 + B0 pressed, energy bow pressed" value="5" />
+            <item description="3 or 4 buttons pressed, energy bow pressed" value="6" />
+            <item description="Button A0 + B0 pressed, energy bow pressed" value="7" />
+            <item description="No buttons pressed, energybow pressed" value="8" />
+            <item description="Button A1 + B1 pressed, energy bow pressed" value="9" />
+            <item description="Button A0 + B1 pressed, energy bow pressed" value="10" />
+            <item description="Button B1 pressed, energybow pressed" value="11" />
+            <item description="Button B0 pressed, energybow pressed" value="12" />
+            <item description="Button A1 pressed, energybow pressed" value="13" />
+            <item description="Button A0 pressed, energybow pressed" value="14" />
+            <item description="Energy bow released" value="15" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
     <profiles func="0x05" description="Blinds Control for Position and Angle">
       <profile type="0x00" description="Type 0x00">
         <command description="command indentifier" shortcut="CMD" offset="28" size="4">
@@ -1660,7 +1684,7 @@
             <item description="Channel 1" value="0" />
           </enum>
           <enum description="Command Id" shortcut="CMD" offset="28" size="4">
-             <rangeitem description="Command ID {value}" start="0" end="5" />
+            <rangeitem description="Command ID {value}" start="0" end="5" />
           </enum>
         </data>
         <data command="2" bits="1">
@@ -1784,6 +1808,80 @@
           <enum description="Contact" shortcut="CO" offset="67" size="1">
             <item description="Open" value="0" />
             <item description="Closed" value="1" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
+  </telegram>
+  <telegram rorg="0x35" type="SEC_TI" description="Secure Teach-In Telegram">
+    <profiles func="0x00" description="Secure Teach-In Telegram">
+      <profile type="0x00" description="Secure Teach-In Telegram">
+        <command description="Packet index" shortcut="IDX" offset="0" size="2">
+          <item description="First packet" value="0" />
+          <item description="Second packet" value="1" />
+          <item description="Third packet" value="2" />
+          <item description="Fourth packet" value="3" />
+        </command>
+        <data command="0">
+          <enum description="Packet Index" shortcut="IDX" offset="0" size="2">
+            <rangeitem description="Packet {value}" start="0" end="3" />
+          </enum>
+          <enum description="Packet Count" shortcut="CNT" offset="2" size="2">
+            <rangeitem description="{value} Packets" start="0" end="3" />
+          </enum>
+          <enum description="RLC and KEY encryption" shortcut="PSK" offset="4" size="1">
+            <item description="No PSK" value="0" />
+            <item description="PSK" value="1" />
+          </enum>
+          <enum description="Application Type" shortcut="TYPE" offset="5" size="1">
+            <item description="No PTM" value="0" />
+            <item description="PTM" value="1" />
+          </enum>
+          <enum description="Info" shortcut="INFO" offset="6" size="2">
+            <item description="ROCKER A normal Teach In" value="0" /><!-- No PTM: Unidirectional security teach-in procedure -->
+            <item description="ROCKER B normal Teach In" value="1" /><!-- No PTM: Bidirectional teach-in procedure -->
+          </enum>
+          <enum description="RLC Algorithm" shortcut="RLC_ALGO" offset="8" size="3">
+            <item description="No RLC" value="0" />
+            <item description="Reserved for future use" value="1" />
+            <item description="16 Bit implicit RLC - Roll Over/ Window Algorithm" value="2" />
+            <item description="16 Reserved for future use" value="3" />
+            <item description="24 Bit implicit - Roll Over/ Window Algorithm" value="4" />
+            <item description="24 Bit explicit RLC [24 Bit transmitted] No Roll Over / No Window Algorithm" value="5" />
+            <item description="32 Bit explicit RLC [24 Bit transmitted] No Roll Over / No Window Algorithm" value="6" />
+            <item description="32 Bit explicit RLC [32 Bit transmitted] No Roll Over / No Window Algorithm" value="7" />
+          </enum>
+          <enum description="RLC Transmission" shortcut="RLC_TX" offset="10" size="1"><!-- deprecated -->
+            <item description="No" value="0" />
+            <item description="Yes" value="1" />
+          </enum>
+          <enum description="MAC Algorithm" shortcut="MAC_ALGO" offset="11" size="2">
+            <item description="No MAC" value="0" />
+            <item description="AES128 3 byte" value="1" />
+            <item description="AES128 4 byte" value="2" />
+            <item description="N/A" value="3" />
+          </enum>
+          <enum description="Data Encryption" shortcut="DATA_ENC" offset="13" size="3">
+            <item description="No data encryption" value="0" />
+            <item description="EnOcean High security extension" value="1" />
+            <item description="N/A" value="2" />
+            <item description="VAES - AES128" value="3" />
+            <item description="AES-CBC - AES128" value="4" /><!-- deprecated -->
+          </enum>
+          <value shortcut="RLC" description="Rolling code" offset="16" size="16" unit="">
+            <range>
+              <min>0</min>
+              <max>65535</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>65535</max>
+            </scale>
+          </value>
+        </data>
+        <data command="1">
+          <enum description="Packet Index" shortcut="IDX" offset="0" size="2">
+            <rangeitem description="Index {value}" start="0" end="3" />
           </enum>
         </data>
       </profile>
