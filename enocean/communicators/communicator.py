@@ -81,6 +81,14 @@ class Communicator(threading.Thread):
                     self.__callback(packet)
                 self.logger.debug(packet)
 
+    @property  # getter
+    def callback(self):
+        return self.__callback
+
+    @callback.setter
+    def callback(self, callback):
+        self.__callback = callback
+
     @property
     def base_id(self):
         ''' Fetches Base ID from the transmitter, if required. Otherwise returns the currently set Base ID. '''
