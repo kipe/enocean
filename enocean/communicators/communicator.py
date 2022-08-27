@@ -11,7 +11,7 @@ try:
 except ImportError:
     import Queue as queue
 from enocean.protocol.packet import Packet, UTETeachInPacket
-from enocean.protocol.constants import PACKET, PARSE_RESULT, RETURN_CODE
+from enocean.protocol.constants import COMMON_COMMAND_CODE, PACKET, PARSE_RESULT, RETURN_CODE
 
 
 class Communicator(threading.Thread):
@@ -95,7 +95,7 @@ class Communicator(threading.Thread):
         start = datetime.datetime.now()
 
         # Send COMMON_COMMAND 0x08, CO_RD_IDBASE request to the module
-        self.send(Packet(PACKET.COMMON_COMMAND, data=[0x08]))
+        self.send(Packet(PACKET.COMMON_COMMAND, data=[COMMON_COMMAND_CODE.CO_RD_IDBASE.value]))
 
         # wait at most 1 second for the response
         while True:
@@ -143,7 +143,7 @@ class Communicator(threading.Thread):
         start = datetime.datetime.now()
 
         # Send COMMON_COMMAND 0x03, CO_RD_VERSION request to the module
-        self.send(Packet(PACKET.COMMON_COMMAND, data=[0x03]))
+        self.send(Packet(PACKET.COMMON_COMMAND, data=[COMMON_COMMAND_CODE.CO_RD_VERSION.value]))
 
         # wait at most 1 second for the response
         while True:
