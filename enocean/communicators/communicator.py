@@ -127,7 +127,10 @@ class Communicator(threading.Thread):
     @property 
     def chip_id(self):
         ''' Fetches Chip ID from the transmitter, if required. Otherwise returns the currently set Chip ID. '''
-        return self.version_info.chip_id
+        if self.version_info is not None:
+            return self.version_info.chip_id
+        
+        return None
 
     @property
     def version_info(self):
