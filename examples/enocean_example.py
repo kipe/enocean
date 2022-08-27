@@ -25,6 +25,7 @@ def assemble_radio_packet(transmitter_id):
 init_logging()
 communicator = SerialCommunicator()
 communicator.start()
+print('The Chip ID of your module is %s.' % enocean.utils.to_hex_string(communicator.chip_id))
 print('The Base ID of your module is %s.' % enocean.utils.to_hex_string(communicator.base_id))
 
 if communicator.base_id is not None:
