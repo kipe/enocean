@@ -4,12 +4,14 @@ import logging
 import datetime
 
 import threading
+from enocean.protocol.version_info import VersionInfo
+
 try:
     import queue
 except ImportError:
     import Queue as queue
 from enocean.protocol.packet import Packet, UTETeachInPacket
-from enocean.protocol.constants import PACKET, PARSE_RESULT, RETURN_CODE
+from enocean.protocol.constants import COMMON_COMMAND_CODE, PACKET, PARSE_RESULT, RETURN_CODE
 
 
 class Communicator(threading.Thread):
@@ -32,6 +34,8 @@ class Communicator(threading.Thread):
         self.__callback = callback
         # Internal variable for the Base ID of the module.
         self._base_id = None
+        # Internal variable for the version info of the module.
+        self._version_info = None
         # Should new messages be learned automatically? Defaults to True.
         # TODO: Not sure if we should use CO_WR_LEARNMODE??
         self.teach_in = teach_in
@@ -88,12 +92,17 @@ class Communicator(threading.Thread):
         if self._base_id is not None:
             return self._base_id
 
+        start = datetime.datetime.now()
+
         # Send COMMON_COMMAND 0x08, CO_RD_IDBASE request to the module
-        self.send(Packet(PACKET.COMMON_COMMAND, data=[0x08]))
-        # Loop over 10 times, to make sure we catch the response.
-        # Thanks to timeout, shouldn't take more than a second.
-        # Unfortunately, all other messages received during this time are ignored.
-        for i in range(0, 10):
+        self.send(Packet(PACKET.COMMON_COMMAND, data=[COMMON_COMMAND_CODE.CO_RD_IDBASE.value]))
+
+        # wait at most 1 second for the response
+        while True:
+            seconds_elapsed = (datetime.datetime.now() - start).total_seconds()
+            if seconds_elapsed > 1:
+                self.logger.error("Could not obtain base id from module within 1 second (timeout).")
+                break
             try:
                 packet = self.receive.get(block=True, timeout=0.1)
                 # We're only interested in responses to the request in question.
@@ -114,3 +123,66 @@ class Communicator(threading.Thread):
     def base_id(self, base_id):
         ''' Sets the Base ID manually, only for testing purposes. '''
         self._base_id = base_id
+
+    @property 
+    def chip_id(self):
+        ''' Fetches Chip ID from the transmitter, if required. Otherwise returns the currently set Chip ID. '''
+        if self.version_info is not None:
+            return self.version_info.chip_id
+        
+        return None
+
+    @property
+    def version_info(self):
+        ''' Fetches version info from the transmitter, if required. Otherwise returns the currently set version info. '''
+
+        # If version info is already set, return it.
+        if self._version_info is not None:
+            return self._version_info
+
+        start = datetime.datetime.now()
+
+        # Send COMMON_COMMAND 0x03, CO_RD_VERSION request to the module
+        self.send(Packet(PACKET.COMMON_COMMAND, data=[COMMON_COMMAND_CODE.CO_RD_VERSION.value]))
+
+        # wait at most 1 second for the response
+        while True:
+            seconds_elapsed = (datetime.datetime.now() - start).total_seconds()
+            if seconds_elapsed > 1:
+                self.logger.error("Could not obtain version info from module within 1 second (timeout).")
+                break
+
+            try:
+                packet = self.receive.get(block=True, timeout=0.1)
+                if packet.packet_type == PACKET.RESPONSE and packet.response == RETURN_CODE.OK and len(packet.response_data) == 32: 
+                    # interpret the version info
+                    self._version_info: VersionInfo = VersionInfo()
+                    res = packet.response_data
+
+                    self._version_info.app_version.main = res[0]
+                    self._version_info.app_version.beta = res[1]
+                    self._version_info.app_version.alpha = res[2]
+                    self._version_info.app_version.build = res[3]
+
+                    self._version_info.api_version.main = res[4]
+                    self._version_info.api_version.beta = res[5]
+                    self._version_info.api_version.alpha = res[6]
+                    self._version_info.api_version.build = res[7]
+                    
+                    self._version_info.chip_id = [
+                        res[8], res[9], res[10], res[11]
+                    ]
+                    self._version_info.chip_version = int.from_bytes(res[12:15], 'big')
+
+                    self._version_info.app_description = bytearray(res[16:32]).decode('utf8').strip()
+
+                    # Put packet back to the Queue, so the user can also react to it if required...
+                    self.receive.put(packet)
+                    break
+                # Put other packets back to the Queue.
+                self.receive.put(packet)
+            except queue.Empty:
+                continue
+        # Return the current version info (might be None).        
+        return self._version_info
+

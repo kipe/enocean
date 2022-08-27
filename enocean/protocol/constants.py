@@ -146,3 +146,7 @@ class DB6(object):
     BIT_5 = -54
     BIT_6 = -55
     BIT_7 = -56
+
+class COMMON_COMMAND_CODE(IntEnum):
+    CO_RD_VERSION = 0x03
+    CO_RD_IDBASE = 0x08
