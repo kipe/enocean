@@ -745,6 +745,20 @@
           </enum>
         </data>
       </profile>
+      <profile description="Gas Sensor" type="0x09">
+        <data>
+          <value shortcut="CO2", description="CO2 Measurement" offset="16" size="8" unit="ppm">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>2000</max>
+            </scale>   
+          </value>
+        </data>
+      </profile>
     </profiles>
     <profiles func="0x10" description="Room Operating Panel">
       <profile type="0x03" description="Temperature Sensor and Set Point">
