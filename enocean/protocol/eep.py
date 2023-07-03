@@ -14,11 +14,15 @@ from enocean.protocol.constants import RORG  # noqa: F401
 class EEP(object):
     logger = logging.getLogger('enocean.protocol.eep')
 
-    def __init__(self):
+    def __init__(self, file: str = None):
         self.init_ok = False
         self.telegrams = {}
 
-        eep_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml')
+        if file is None:
+            eep_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml')
+        else:
+            eep_path = os.path.join(os.path.dirname(os.curdir), file)
+
         try:
             if version_info[0] > 2:
                 with open(eep_path, 'r', encoding='UTF-8') as xml_file:
