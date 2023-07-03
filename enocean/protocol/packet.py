@@ -259,9 +259,10 @@ class Packet(object):
             self.repeater_count = enocean.utils.from_bitarray(self._bit_status[4:])
         return self.parsed
 
-    def set_eep_file(self, eep_file):
+    @classmethod
+    def set_eep_file(cls, eep_file):
         ''' Set EEP file '''
-        self.eep = EEP(eep_file)
+        cls.eep = EEP(eep_file)
 
     def select_eep(self, rorg_func, rorg_type, direction=None, command=None):
         ''' Set EEP based on FUNC and TYPE '''
