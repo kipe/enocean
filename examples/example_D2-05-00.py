@@ -14,6 +14,7 @@ import enocean.utils
 from enocean.communicators import SerialCommunicator
 from enocean.protocol.packet import RadioPacket, UTETeachInPacket
 from enocean.protocol.constants import RORG
+from enocean.protocol.eep import EEP
 
 try:
     import queue
@@ -24,7 +25,7 @@ except ImportError:
 def set_position(destination, percentage):
     global communicator
     communicator.send(
-        RadioPacket.create(rorg=RORG.VLD, rorg_func=0x05, rorg_type=0x00, destination=destination, sender=communicator.base_id, command=1, POS=percentage)
+        RadioPacket.create(EEP(), rorg=RORG.VLD, rorg_func=0x05, rorg_type=0x00, destination=destination, sender=communicator.base_id, command=1, POS=percentage)
     )
 
 

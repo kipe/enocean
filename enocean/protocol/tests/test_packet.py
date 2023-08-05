@@ -3,6 +3,7 @@ from __future__ import print_function, unicode_literals, division, absolute_impo
 
 from enocean.protocol.packet import Packet, EventPacket
 from enocean.protocol.constants import PACKET, PARSE_RESULT, EVENT_CODE
+from enocean.protocol.eep import EEP
 from enocean.decorators import timing
 
 
@@ -106,7 +107,7 @@ def test_packet_examples():
     }
 
     for packet, values in telegram_examples.items():
-        status, remainder, pack = Packet.parse_msg(values['msg'])
+        status, remainder, pack = Packet.parse_msg(EEP(), values['msg'])
         assert status == PARSE_RESULT.OK
         assert pack.packet_type != 0x00
         assert pack.packet_type == packet
@@ -160,7 +161,7 @@ def test_packet_fails():
     )
 
     for msg in fail_examples:
-        status, remainder, packet = Packet.parse_msg(msg)
+        status, remainder, packet = Packet.parse_msg(EEP(), msg)
         assert status in [PARSE_RESULT.INCOMPLETE, PARSE_RESULT.CRC_MISMATCH]
 
 
@@ -179,8 +180,8 @@ def test_packet_equals():
         0x08,
         0x38
     ])
-    _, _, packet_1 = Packet.parse_msg(data_1)
-    _, _, packet_2 = Packet.parse_msg(data_2)
+    _, _, packet_1 = Packet.parse_msg(EEP(), data_1)
+    _, _, packet_2 = Packet.parse_msg(EEP(), data_2)
 
     assert str(packet_1) == '0x%02X %s %s %s' % (packet_1.packet_type,
                                                  [hex(o) for o in packet_1.data],
@@ -199,7 +200,7 @@ def test_event_packet():
         0x07
     ])
 
-    _, _, packet = Packet.parse_msg(data)
+    _, _, packet = Packet.parse_msg(EEP(), data)
     assert isinstance(packet, EventPacket)
     assert packet.event == EVENT_CODE.SA_RECLAIM_NOT_SUCCESFUL
     assert packet.event_data == []

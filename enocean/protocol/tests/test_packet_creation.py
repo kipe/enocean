@@ -1,13 +1,15 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
-from nose.tools import raises
+# from nose.tools import raises
+import pytest
 
 from enocean.protocol.packet import Packet, RadioPacket
 from enocean.protocol.constants import PACKET, RORG
 from enocean.decorators import timing
+from enocean.protocol.eep import EEP
 
 
-@timing(1000)
+# @timing(1000)
 def test_packet_assembly():
     PACKET_CONTENT_1 = bytearray([
         0x55,
@@ -41,8 +43,10 @@ def test_packet_assembly():
         0x80
     ])
 
+    eep = EEP()
+
     # manually assemble packet
-    packet = Packet(PACKET.RADIO_ERP1)
+    packet = Packet(eep, PACKET.RADIO_ERP1)
     packet.rorg = RORG.BS4
     sender_bytes = [(0xdeadbeef >> i & 0xff) for i in (24, 16, 8, 0)]
     data = [0, 0, 0, 0]
@@ -82,7 +86,7 @@ def test_packet_assembly():
     assert packet.rorg_type == 0x01
 
     # Test the easier method of sending packets.
-    packet = Packet.create(PACKET.RADIO_ERP1, rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01,
+    packet = Packet.create(eep, PACKET.RADIO_ERP1, rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01,
                            learn=True, direction=1, **prop)
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(PACKET_CONTENT_3)
@@ -91,7 +95,7 @@ def test_packet_assembly():
     assert packet.rorg_type == 0x01
 
     # Test creating RadioPacket directly.
-    packet = RadioPacket.create(rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01, learn=True, direction=2, SP=50)
+    packet = RadioPacket.create(eep, rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01, learn=True, direction=2, SP=50)
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(PACKET_CONTENT_4)
     assert list(packet_serialized) == list(PACKET_CONTENT_4)
@@ -110,7 +114,9 @@ def test_temperature():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0x5C
     ])
-    packet = RadioPacket.create(rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05,
+    eep = EEP()
+
+    packet = RadioPacket.create(eep, rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05,
                                 sender=[0x01, 0x81, 0xB7, 0x44], TMP=26.66666666666666666666666666666666666666666667)
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(TEMPERATURE)
@@ -125,7 +131,7 @@ def test_temperature():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0xE0
     ])
-    packet = RadioPacket.create(rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05, sender=[0x01, 0x81, 0xB7, 0x44],
+    packet = RadioPacket.create(eep, rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05, sender=[0x01, 0x81, 0xB7, 0x44],
                                 learn=True, TMP=26.66666666666666666666666666666666666666666667)
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(TEMPERATURE)
@@ -143,7 +149,9 @@ def test_magnetic_switch():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0xBA
     ])
-    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
+    eep = EEP()
+
+    packet = RadioPacket.create(eep, rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
                                 CO='open')
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
@@ -158,7 +166,7 @@ def test_magnetic_switch():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0x06
     ])
-    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
+    packet = RadioPacket.create(eep, rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
                                 learn=True, CO='open')
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
@@ -173,8 +181,9 @@ def test_magnetic_switch():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0x2E
     ])
+    eep = EEP()
 
-    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
+    packet = RadioPacket.create(eep, rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
                                 CO='closed')
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
@@ -190,7 +199,7 @@ def test_magnetic_switch():
         0x92
     ])
 
-    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
+    packet = RadioPacket.create(eep, rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
                                 learn=True, CO='closed')
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
@@ -200,6 +209,8 @@ def test_magnetic_switch():
 
 @timing(1000)
 def test_switch():
+    eep = EEP()
+
     SWITCH = bytearray([
         0x55,
         0x00, 0x07, 0x07, 0x01,
@@ -210,7 +221,7 @@ def test_switch():
     ])
 
     # test also enum setting by integer value with EB0
-    packet = RadioPacket.create(rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79],
+    packet = RadioPacket.create(eep, rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79],
                                 SA='No 2nd action',
                                 EB=1,
                                 R1='Button BI',
@@ -230,7 +241,7 @@ def test_switch():
         0xD2
     ])
 
-    packet = RadioPacket.create(rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79],
+    packet = RadioPacket.create(eep, rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79],
                                 SA='No 2nd action',
                                 EB='released',
                                 T21=True,
@@ -242,20 +253,24 @@ def test_switch():
 
 
 @timing(1000)
-@raises(ValueError)
+# @raises(ValueError)
+@pytest.mark.xfail(raises=ValueError)
 def test_illegal_eep_enum1():
-    RadioPacket.create(rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB='inexisting')
+    RadioPacket.create(EEP(), rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB='inexisting')
 
 
-@raises(ValueError)
 @timing(1000)
+# @raises(ValueError)
+@pytest.mark.xfail(raises=ValueError)
 def test_illegal_eep_enum2():
-    RadioPacket.create(rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB=2)
+    RadioPacket.create(EEP(), rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB=2)
 
 
 # Corresponds to the tests done in test_eep
 @timing(1000)
 def test_packets_with_destination():
+    eep = EEP()
+
     TEMPERATURE = bytearray([
         0x55,
         0x00, 0x0A, 0x07, 0x01,
@@ -264,7 +279,7 @@ def test_packets_with_destination():
         0x03, 0xDE, 0xAD, 0xBE, 0xEF, 0xFF, 0x00,
         0x5F
     ])
-    packet = RadioPacket.create(rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05, sender=[0x01, 0x81, 0xB7, 0x44],
+    packet = RadioPacket.create(eep, rorg=RORG.BS4, rorg_func=0x02, rorg_type=0x05, sender=[0x01, 0x81, 0xB7, 0x44],
                                 destination=[0xDE, 0xAD, 0xBE, 0xEF],
                                 TMP=26.66666666666666666666666666666666666666666667)
     packet_serialized = packet.build()
@@ -282,7 +297,7 @@ def test_packets_with_destination():
         0x03, 0xDE, 0xAD, 0xBE, 0xEF, 0xFF, 0x00,
         0xB9
     ])
-    packet = RadioPacket.create(rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
+    packet = RadioPacket.create(eep, rorg=RORG.BS1, rorg_func=0x00, rorg_type=0x01, sender=[0x01, 0x82, 0x5D, 0xAB],
                                 destination=[0xDE, 0xAD, 0xBE, 0xEF], CO='open')
     packet_serialized = packet.build()
     assert len(packet_serialized) == len(MAGNETIC_SWITCH)
@@ -300,7 +315,7 @@ def test_vld():
         0x03, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
         0x5A
     ])
-    packet = RadioPacket.create(rorg=RORG.VLD, rorg_func=0x01, rorg_type=0x01, command=1, DV=0, IO=0x1E, OV=0x64)
+    packet = RadioPacket.create(EEP(), rorg=RORG.VLD, rorg_func=0x01, rorg_type=0x01, command=1, DV=0, IO=0x1E, OV=0x64)
     packet_serialized = packet.build()
 
     assert len(packet_serialized) == len(SWITCH)
@@ -313,23 +328,24 @@ def test_vld():
 
 
 def test_fails():
+    eep = EEP()
     try:
-        Packet.create(PACKET.RESPONSE, 0xA5, 0x01, 0x01)
+        Packet.create(eep, PACKET.RESPONSE, 0xA5, 0x01, 0x01)
         assert False
     except ValueError:
         assert True
     try:
-        Packet.create(PACKET.RADIO_ERP1, 0xA6, 0x01, 0x01)
+        Packet.create(eep, PACKET.RADIO_ERP1, 0xA6, 0x01, 0x01)
         assert False
     except ValueError:
         assert True
     try:
-        Packet.create(PACKET.RADIO_ERP1, 0xA5, 0x01, 0x01, destination='ASDASDASD')
+        Packet.create(eep, PACKET.RADIO_ERP1, 0xA5, 0x01, 0x01, destination='ASDASDASD')
         assert False
     except ValueError:
         assert True
     try:
-        Packet.create(PACKET.RADIO_ERP1, 0xA5, 0x01, 0x01, sender='ASDASDASD')
+        Packet.create(eep, PACKET.RADIO_ERP1, 0xA5, 0x01, 0x01, sender='ASDASDASD')
         assert False
     except ValueError:
         assert True

@@ -5,6 +5,7 @@ import enocean.utils
 from enocean.communicators.serialcommunicator import SerialCommunicator
 from enocean.protocol.packet import RadioPacket
 from enocean.protocol.constants import PACKET, RORG
+from enocean.protocol.eep import EEP
 import sys
 import traceback
 
@@ -15,7 +16,7 @@ except ImportError:
 
 
 def assemble_radio_packet(transmitter_id):
-    return RadioPacket.create(rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01,
+    return RadioPacket.create(EEP(), rorg=RORG.BS4, rorg_func=0x20, rorg_type=0x01,
                               sender=transmitter_id,
                               CV=50,
                               TMP=21.5,
