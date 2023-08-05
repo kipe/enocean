@@ -179,9 +179,16 @@ class EEP(object):
 
         profile = self.telegrams[eep_rorg][rorg_func][rorg_type]
 
+        # multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
+        eep_command = profile.find('command', recursive=False)
+
+        # get command from package if none is in func arguments
+        if  not command and eep_command is not None:
+            offset = eep_command['offset']
+            size = eep_command['size']
+            command = int(bitarray[offset:offset+size], 2)
+
         if command:
-            # multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
-            eep_command = profile.find('command', recursive=False)
             # If commands are not set in EEP, or command is None,
             # get the first data as a "best guess".
             if not eep_command:
