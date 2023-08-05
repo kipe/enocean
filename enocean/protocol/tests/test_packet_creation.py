@@ -9,7 +9,7 @@ from enocean.decorators import timing
 from enocean.protocol.eep import EEP
 
 
-# @timing(1000)
+@timing(1000)
 def test_packet_assembly():
     PACKET_CONTENT_1 = bytearray([
         0x55,
@@ -253,17 +253,15 @@ def test_switch():
 
 
 @timing(1000)
-# @raises(ValueError)
-@pytest.mark.xfail(raises=ValueError)
 def test_illegal_eep_enum1():
-    RadioPacket.create(EEP(), rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB='inexisting')
+    with pytest.raises(ValueError):
+        RadioPacket.create(EEP(), rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB='inexisting')
 
 
 @timing(1000)
-# @raises(ValueError)
-@pytest.mark.xfail(raises=ValueError)
 def test_illegal_eep_enum2():
-    RadioPacket.create(EEP(), rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB=2)
+    with pytest.raises(ValueError):
+        RadioPacket.create(EEP(), rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB=2)
 
 
 # Corresponds to the tests done in test_eep
