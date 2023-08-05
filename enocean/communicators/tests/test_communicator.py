@@ -34,7 +34,7 @@ def test_send():
     assert com.send('AJSNDJASNDJANSD') is False
     assert com.transmit.qsize() == 0
     assert com._get_from_send_queue() is None
-    assert com.send(Packet(PACKET.COMMON_COMMAND, [0x08])) is True
+    assert com.send(Packet(com.eep, PACKET.COMMON_COMMAND, [0x08])) is True
     assert com.transmit.qsize() == 1
     assert isinstance(com._get_from_send_queue(), Packet)
 
