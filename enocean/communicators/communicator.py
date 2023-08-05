@@ -10,6 +10,7 @@ except ImportError:
     import Queue as queue
 from enocean.protocol.packet import Packet, UTETeachInPacket
 from enocean.protocol.constants import PACKET, PARSE_RESULT, RETURN_CODE
+from enocean.protocol.eep import EEP
 
 
 class Communicator(threading.Thread):
@@ -36,6 +37,8 @@ class Communicator(threading.Thread):
         # TODO: Not sure if we should use CO_WR_LEARNMODE??
         self.teach_in = teach_in
 
+        self.eep = EEP()
+
     def _get_from_send_queue(self):
         ''' Get message from send queue, if one exists '''
         try:
@@ -61,7 +64,7 @@ class Communicator(threading.Thread):
         ''' Parses messages and puts them to receive queue '''
         # Loop while we get new messages
         while True:
-            status, self._buffer, packet = Packet.parse_msg(self._buffer)
+            status, self._buffer, packet = Packet.parse_msg(self.eep, self._buffer)
             # If message is incomplete -> break the loop
             if status == PARSE_RESULT.INCOMPLETE:
                 return status
@@ -89,7 +92,7 @@ class Communicator(threading.Thread):
             return self._base_id
 
         # Send COMMON_COMMAND 0x08, CO_RD_IDBASE request to the module
-        self.send(Packet(PACKET.COMMON_COMMAND, data=[0x08]))
+        self.send(Packet(self.eep, PACKET.COMMON_COMMAND, data=[0x08]))
         # Loop over 10 times, to make sure we catch the response.
         # Thanks to timeout, shouldn't take more than a second.
         # Unfortunately, all other messages received during this time are ignored.
