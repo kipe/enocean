@@ -20,14 +20,8 @@ class EEP(object):
 
         eep_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml')
         try:
-            if version_info[0] > 2:
-                with open(eep_path, 'r', encoding='UTF-8') as xml_file:
-                    self.soup = BeautifulSoup(xml_file.read(), "html.parser")
-            else:
-                with open(eep_path, 'r') as xml_file:
-                    self.soup = BeautifulSoup(xml_file.read(), "html.parser")
+            self.telegrams = self.__load_xml(eep_path)
             self.init_ok = True
-            self.__load_xml()
         except IOError:
             # Impossible to test with the current structure?
             # To be honest, as the XML is included with the library,
@@ -35,8 +29,16 @@ class EEP(object):
             self.logger.warn('Cannot load protocol file!')
             self.init_ok = False
 
-    def __load_xml(self):
-        self.telegrams = {
+    @staticmethod
+    def __load_xml(eep_path):
+        if version_info[0] > 2:
+            with open(eep_path, 'r', encoding='UTF-8') as xml_file:
+                soup = BeautifulSoup(xml_file.read(), "xml")
+        else:
+            with open(eep_path, 'r') as xml_file:
+                soup = BeautifulSoup(xml_file.read(), "xml")
+
+        return {
             enocean.utils.from_hex_string(telegram['rorg']): {
                 enocean.utils.from_hex_string(function['func']): {
                     enocean.utils.from_hex_string(type['type'], ): type
@@ -44,8 +46,11 @@ class EEP(object):
                 }
                 for function in telegram.find_all('profiles')
             }
-            for telegram in self.soup.find_all('telegram')
+            for telegram in soup.find_all('telegram')
         }
+
+    def add_eep_file(self, eep_path):
+        self.telegrams.update(self.__load_xml(eep_path))
 
     @staticmethod
     def _get_raw(source, bitarray):
