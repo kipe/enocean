@@ -14,6 +14,7 @@ from enocean.consolelogger import init_logging
 from enocean.communicators.serialcommunicator import SerialCommunicator
 from enocean.protocol.packet import Packet
 from enocean.protocol.constants import PACKET
+from enocean.protocol.eep import EEP
 from enocean import utils
 import traceback
 import sys
@@ -30,7 +31,7 @@ To prevent running the app as root, change the access permissions:
 'sudo chmod 777 /dev/ttyUSB0'
 """
 communicator = SerialCommunicator(port=u'/dev/ttyUSB0', callback=None)
-packet = Packet(PACKET.COMMON_COMMAND, [0x03])
+packet = Packet(EEP(), PACKET.COMMON_COMMAND, [0x03])
 
 communicator.daemon = True
 communicator.start()

@@ -2,6 +2,7 @@
 from __future__ import print_function, unicode_literals, division, absolute_import
 import os
 import logging
+import glob
 from sys import version_info
 from collections import OrderedDict
 from bs4 import BeautifulSoup
@@ -18,34 +19,46 @@ class EEP(object):
         self.init_ok = False
         self.telegrams = {}
 
-        eep_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml')
-        try:
-            if version_info[0] > 2:
-                with open(eep_path, 'r', encoding='UTF-8') as xml_file:
-                    self.soup = BeautifulSoup(xml_file.read(), "html.parser")
-            else:
-                with open(eep_path, 'r') as xml_file:
-                    self.soup = BeautifulSoup(xml_file.read(), "html.parser")
-            self.init_ok = True
-            self.__load_xml()
-        except IOError:
-            # Impossible to test with the current structure?
-            # To be honest, as the XML is included with the library,
-            # there should be no possibility of ever reaching this...
-            self.logger.warn('Cannot load protocol file!')
-            self.init_ok = False
+        for eep_path in glob.glob(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'eeps', '*.xml')):
+            try:
+                self.telegrams.update(self.__load_xml(eep_path))
+                self.init_ok = True
+            except IOError:
+                # Impossible to test with the current structure?
+                # To be honest, as the XML is included with the library,
+                # there should be no possibility of ever reaching this...
+                self.logger.warn('Cannot load protocol file!')
+                self.init_ok = False
 
-    def __load_xml(self):
-        self.telegrams = {
-            enocean.utils.from_hex_string(telegram['rorg']): {
-                enocean.utils.from_hex_string(function['func']): {
-                    enocean.utils.from_hex_string(type['type'], ): type
-                    for type in function.find_all('profile')
+    @staticmethod
+    def __load_xml(eep_path):
+        if version_info[0] > 2:
+            with open(eep_path, 'r', encoding='UTF-8') as xml_file:
+                soup = BeautifulSoup(xml_file.read(), "xml")
+        else:
+            with open(eep_path, 'r') as xml_file:
+                soup = BeautifulSoup(xml_file.read(), "xml")
+
+        try:
+            manufacturer = enocean.utils.from_hex_string(soup.find('telegrams').attrs['manufacturer'])
+        except KeyError:
+            manufacturer = 0x0
+
+        return {
+            manufacturer: {
+                enocean.utils.from_hex_string(telegram['rorg']): {
+                    enocean.utils.from_hex_string(function['func']): {
+                        enocean.utils.from_hex_string(type['type'], ): type
+                        for type in function.find_all('profile')
+                    }
+                    for function in telegram.find_all('profiles')
                 }
-                for function in telegram.find_all('profiles')
+                for telegram in soup.find_all('telegram')
             }
-            for telegram in self.soup.find_all('telegram')
         }
+
+    def add_eep_file(self, eep_path):
+        self.telegrams.update(self.__load_xml(eep_path))
 
     @staticmethod
     def _get_raw(source, bitarray):
@@ -154,29 +167,43 @@ class EEP(object):
         bitarray[int(target['offset'])] = data
         return bitarray
 
-    def find_profile(self, bitarray, eep_rorg, rorg_func, rorg_type, direction=None, command=None):
+    def find_profile(self, bitarray, eep_rorg, rorg_func, rorg_type, direction=None, command=None, manufacturer=0x0):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
         if not self.init_ok:
             self.logger.warn('EEP.xml not loaded!')
             return None
 
-        if eep_rorg not in self.telegrams.keys():
+        if manufacturer not in self.telegrams.keys():
+            self.logger.warn('Cannot find manufacturer %s in EEP!', hex(manufacturer))
+            return None
+
+        if eep_rorg not in self.telegrams[manufacturer].keys():
             self.logger.warn('Cannot find rorg %s in EEP!', hex(eep_rorg))
             return None
 
-        if rorg_func not in self.telegrams[eep_rorg].keys():
+        if rorg_func not in self.telegrams[manufacturer][eep_rorg].keys():
             self.logger.warn('Cannot find rorg %s func %s in EEP!', hex(eep_rorg), hex(rorg_func))
             return None
 
-        if rorg_type not in self.telegrams[eep_rorg][rorg_func].keys():
-            self.logger.warn('Cannot find rorg %s func %s type %s in EEP!', hex(eep_rorg), hex(rorg_func), hex(rorg_type))
+        if rorg_type not in self.telegrams[manufacturer][eep_rorg][rorg_func].keys():
+            if manufacturer:
+                self.logger.warn('Cannot find rorg %s func %s type %s in EEP for manufacturer %s!', hex(eep_rorg), hex(rorg_func), hex(rorg_type), hex(manufacturer))
+            else:
+                self.logger.warn('Cannot find rorg %s func %s type %s in EEP!', hex(eep_rorg), hex(rorg_func), hex(rorg_type))
             return None
 
-        profile = self.telegrams[eep_rorg][rorg_func][rorg_type]
+        profile = self.telegrams[manufacturer][eep_rorg][rorg_func][rorg_type]
+
+        # multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
+        eep_command = profile.find('command', recursive=False)
+
+        # get command from package if none is in func arguments
+        if  not command and eep_command is not None:
+            offset = int(eep_command['offset'])
+            size = int(eep_command['size'])
+            command = enocean.utils.from_bitarray(bitarray[offset:offset+size])
 
         if command:
-            # multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
-            eep_command = profile.find('command', recursive=False)
             # If commands are not set in EEP, or command is None,
             # get the first data as a "best guess".
             if not eep_command:

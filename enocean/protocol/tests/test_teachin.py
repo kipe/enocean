@@ -4,6 +4,7 @@ from __future__ import print_function, unicode_literals, division, absolute_impo
 from enocean.communicators import Communicator
 from enocean.protocol.packet import Packet
 from enocean.protocol.constants import RORG, DB6
+from enocean.protocol.eep import EEP
 from enocean.decorators import timing
 
 
@@ -12,7 +13,7 @@ def test_ute_in():
     communicator = Communicator()
     communicator.base_id = [0xDE, 0xAD, 0xBE, 0xEF]
 
-    status, buf, packet = Packet.parse_msg(
+    status, buf, packet = Packet.parse_msg(EEP(), 
         bytearray([
             0x55,
             0x00, 0x0D, 0x07, 0x01,

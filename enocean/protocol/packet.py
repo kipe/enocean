@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 import enocean.utils
 from enocean.protocol import crc8
-from enocean.protocol.eep import EEP
+# from enocean.protocol.eep import EEP
 from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3, DB4, DB6
 
 
@@ -13,13 +13,15 @@ class Packet(object):
     '''
     Base class for Packet.
     Mainly used for for packet generation and
-    Packet.parse_msg(buf) for parsing message.
+    Packet.parse_msg(eep, buf) for parsing message.
     parse_msg() returns subclass, if one is defined for the data type.
     '''
-    eep = EEP()
+    # eep = EEP()
     logger = logging.getLogger('enocean.protocol.packet')
 
-    def __init__(self, packet_type, data=None, optional=None):
+    def __init__(self, eep, packet_type, data=None, optional=None):
+        self.eep = eep
+
         self.packet_type = packet_type
         self.rorg = RORG.UNDEFINED
         self.rorg_func = None
@@ -100,7 +102,7 @@ class Packet(object):
         self.status = enocean.utils.from_bitarray(value)
 
     @staticmethod
-    def parse_msg(buf):
+    def parse_msg(eep, buf):
         '''
         Parses message from buffer.
         returns:
@@ -152,23 +154,23 @@ class Packet(object):
         if packet_type == PACKET.RADIO_ERP1:
             # Need to handle UTE Teach-in here, as it's a separate packet type...
             if data[0] == RORG.UTE:
-                packet = UTETeachInPacket(packet_type, data, opt_data)
+                packet = UTETeachInPacket(eep, packet_type, data, opt_data)
             else:
-                packet = RadioPacket(packet_type, data, opt_data)
+                packet = RadioPacket(eep, packet_type, data, opt_data)
         elif packet_type == PACKET.RESPONSE:
-            packet = ResponsePacket(packet_type, data, opt_data)
+            packet = ResponsePacket(eep, packet_type, data, opt_data)
         elif packet_type == PACKET.EVENT:
-            packet = EventPacket(packet_type, data, opt_data)
+            packet = EventPacket(eep, packet_type, data, opt_data)
         else:
-            packet = Packet(packet_type, data, opt_data)
+            packet = Packet(eep, packet_type, data, opt_data)
 
         return PARSE_RESULT.OK, buf, packet
 
     @staticmethod
-    def create(packet_type, rorg, rorg_func, rorg_type, direction=None, command=None,
+    def create(eep, packet_type, rorg, rorg_func, rorg_type, direction=None, command=None,
                destination=None,
                sender=None,
-               learn=False, **kwargs):
+               learn=False, manufacturer=0x0, **kwargs):
         '''
         Creates an packet ready for sending.
         Uses rorg, rorg_func and rorg_type to determine the values set based on EEP.
@@ -208,11 +210,11 @@ class Packet(object):
         if not isinstance(sender, list) or len(sender) != 4:
             raise ValueError('Sender must a list containing 4 (numeric) values.')
 
-        packet = Packet(packet_type, data=[], optional=[])
+        packet = Packet(eep, packet_type, data=[], optional=[])
         packet.rorg = rorg
         packet.data = [packet.rorg]
         # Select EEP at this point, so we know how many bits we're dealing with (for VLD).
-        packet.select_eep(rorg_func, rorg_type, direction, command)
+        packet.select_eep(rorg_func, rorg_type, direction, command, manufacturer)
 
         # Initialize data depending on the profile.
         if rorg in [RORG.RPS, RORG.BS1]:
@@ -241,7 +243,7 @@ class Packet(object):
 
         # Parse the built packet, so it corresponds to the received packages
         # For example, stuff like RadioPacket.learn should be set.
-        packet = Packet.parse_msg(packet.build())[2]
+        packet = Packet.parse_msg(eep, packet.build())[2]
         packet.rorg = rorg
         packet.parse_eep(rorg_func, rorg_type, direction, command)
         return packet
@@ -259,19 +261,19 @@ class Packet(object):
             self.repeater_count = enocean.utils.from_bitarray(self._bit_status[4:])
         return self.parsed
 
-    def select_eep(self, rorg_func, rorg_type, direction=None, command=None):
+    def select_eep(self, rorg_func, rorg_type, direction=None, command=None, manufacturer=0x0):
         ''' Set EEP based on FUNC and TYPE '''
         # set EEP profile
         self.rorg_func = rorg_func
         self.rorg_type = rorg_type
-        self._profile = self.eep.find_profile(self._bit_data, self.rorg, rorg_func, rorg_type, direction, command)
+        self._profile = self.eep.find_profile(self._bit_data, self.rorg, rorg_func, rorg_type, direction, command, manufacturer)
         return self._profile is not None
 
-    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None, command=None):
+    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None, command=None, manufacturer=0x0):
         ''' Parse EEP based on FUNC and TYPE '''
         # set EEP profile, if demanded
         if rorg_func is not None and rorg_type is not None:
-            self.select_eep(rorg_func, rorg_type, direction, command)
+            self.select_eep(rorg_func, rorg_type, direction, command, manufacturer)
         # parse data
         provides, values = self.eep.get_values(self._profile, self._bit_data, self._bit_status)
         self.parsed.update(values)
@@ -304,9 +306,9 @@ class RadioPacket(Packet):
         return '%s->%s (%d dBm): %s' % (self.sender_hex, self.destination_hex, self.dBm, packet_str)
 
     @staticmethod
-    def create(rorg, rorg_func, rorg_type, direction=None, command=None,
+    def create(eep, rorg, rorg_func, rorg_type, direction=None, command=None,
                destination=None, sender=None, learn=False, **kwargs):
-        return Packet.create(PACKET.RADIO_ERP1, rorg, rorg_func, rorg_type,
+        return Packet.create(eep, PACKET.RADIO_ERP1, rorg, rorg_func, rorg_type,
                              direction, command, destination, sender, learn, **kwargs)
 
     @property
@@ -412,7 +414,7 @@ class UTETeachInPacket(RadioPacket):
         # Always use 0x03 to indicate sending, attach sender ID, dBm, and security level
         optional = [0x03] + self.sender + [0xFF, 0x00]
 
-        return RadioPacket(PACKET.RADIO_ERP1, data=data, optional=optional)
+        return RadioPacket(self.eep, PACKET.RADIO_ERP1, data=data, optional=optional)
 
 
 class ResponsePacket(Packet):

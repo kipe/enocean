@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<telegrams manufacturer="0x00D" description="Eltako specific">
+  <telegram rorg="0xA5" type="4BS" description="4BS Telegram">
+    <profiles func="0x00">
+      <profile type="0x01" description="shutter command">
+        <data>
+          <value shortcut="TIM" description="Time in 1/10 seconds. 0 = no time specifed" offset="0" size="16" unit="s">
+            <range>
+              <min>1</min>
+              <max>65535</max>
+            </range>
+            <scale>
+              <min>0.1</min>
+              <max>6553.5</max>
+            </scale>
+          </value>
+          <enum description="Command" shortcut="CMD" offset="16" size="8">
+            <item description="Stopp" value="0" />
+            <item description="Up" value="1" />
+            <item description="Down" value="2" />
+          </enum>
+          <enum description="Lock sensors" shortcut="LCK" offset="29" size="1">
+            <item description="Unlock" value="0" />
+            <item description="Lock" value="1" />
+          </enum>
+          <enum description="Time in seconds instead of 1/10 s" shortcut="SEC" offset="30" size="1">
+            <item description="1/10 s" value="0" />
+            <item description="s" value="1" />
+          </enum>
+        </data>
+      </profile>
+      <profile type="0x02" description="cover acknowledge">
+        <data>
+          <value shortcut="TRA" description="Traveled time in 1/10 seconds" offset="0" size="16" unit="s">
+            <range>
+              <min>1</min>
+              <max>65535</max>
+            </range>
+            <scale>
+              <min>0.1</min>
+              <max>6553.5</max>
+            </scale>
+          </value>
+          <enum description="Direction" shortcut="DIR" offset="16" size="8">
+            <item description="Up" value="1" />
+            <item description="Down" value="2" />
+          </enum>
+          <enum description="Lock sensors" shortcut="LCK" offset="24" size="8">
+            <item description="Unlock" value="10" />
+            <item description="Lock" value="15" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
+    <!-- -->
+    <profiles func="0x13" description="Environmental Applications">
+      <profile type="0x01" description="Weather Station">
+        <command description="command identifier" shortcut="CMD" offset="24" size="4">
+          <item description="Weather Station" value="1" />
+          <item description="Sun Intensity" value="2" />
+        </command>
+        <data command="1" bits="15">
+          <value description="Dawn sensor" shortcut="DWS" offset="0" size="8" unit="lx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>999</max>
+            </scale>
+          </value>
+          <value description="Outdoor Temp" shortcut="TMP" offset="8" size="8" unit="°C">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>-40</min>
+              <max>80</max>
+            </scale>
+          </value>
+	        <value description="Wind speed" shortcut="WND" offset="16" size="8" unit="m/s">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>70</max>
+            </scale>
+          </value>
+	        <enum description="Rain Indication" shortcut="RAN" offset="30" size="1">
+            <item description="no rain" value="0" />
+            <item description="rain" value="1" />
+          </enum>
+        </data>
+        <data command="2" bits="15">
+          <value description="Sun - West" shortcut="SNW" offset="0" size="8" unit="klx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>150</max>
+            </scale>
+          </value>
+          <value description="Sun - South" shortcut="SNS" offset="8" size="8" unit="klx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>150</max>
+            </scale>
+          </value>
+    	    <value description="Sun - East" shortcut="SNE" offset="16" size="8" unit="klx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>150</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+    </profiles>
+  </telegram>
+</telegrams>
