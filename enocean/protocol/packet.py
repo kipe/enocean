@@ -170,7 +170,7 @@ class Packet(object):
     def create(eep, packet_type, rorg, rorg_func, rorg_type, direction=None, command=None,
                destination=None,
                sender=None,
-               learn=False, **kwargs):
+               learn=False, manufacturer=0x0, **kwargs):
         '''
         Creates an packet ready for sending.
         Uses rorg, rorg_func and rorg_type to determine the values set based on EEP.
@@ -214,7 +214,7 @@ class Packet(object):
         packet.rorg = rorg
         packet.data = [packet.rorg]
         # Select EEP at this point, so we know how many bits we're dealing with (for VLD).
-        packet.select_eep(rorg_func, rorg_type, direction, command)
+        packet.select_eep(rorg_func, rorg_type, direction, command, manufacturer)
 
         # Initialize data depending on the profile.
         if rorg in [RORG.RPS, RORG.BS1]:
@@ -261,7 +261,7 @@ class Packet(object):
             self.repeater_count = enocean.utils.from_bitarray(self._bit_status[4:])
         return self.parsed
 
-    def select_eep(self, rorg_func, rorg_type, direction=None, command=None, manufacturer='0x0'):
+    def select_eep(self, rorg_func, rorg_type, direction=None, command=None, manufacturer=0x0):
         ''' Set EEP based on FUNC and TYPE '''
         # set EEP profile
         self.rorg_func = rorg_func
@@ -269,11 +269,11 @@ class Packet(object):
         self._profile = self.eep.find_profile(self._bit_data, self.rorg, rorg_func, rorg_type, direction, command, manufacturer)
         return self._profile is not None
 
-    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None, command=None, manufacturer='0x0'):
+    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None, command=None, manufacturer=0x0):
         ''' Parse EEP based on FUNC and TYPE '''
         # set EEP profile, if demanded
         if rorg_func is not None and rorg_type is not None:
-            self.select_eep(rorg_func, rorg_type, direction, command)
+            self.select_eep(rorg_func, rorg_type, direction, command, manufacturer)
         # parse data
         provides, values = self.eep.get_values(self._profile, self._bit_data, self._bit_status)
         self.parsed.update(values)
