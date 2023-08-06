@@ -261,15 +261,15 @@ class Packet(object):
             self.repeater_count = enocean.utils.from_bitarray(self._bit_status[4:])
         return self.parsed
 
-    def select_eep(self, rorg_func, rorg_type, direction=None, command=None):
+    def select_eep(self, rorg_func, rorg_type, direction=None, command=None, manufacturer='0x0'):
         ''' Set EEP based on FUNC and TYPE '''
         # set EEP profile
         self.rorg_func = rorg_func
         self.rorg_type = rorg_type
-        self._profile = self.eep.find_profile(self._bit_data, self.rorg, rorg_func, rorg_type, direction, command)
+        self._profile = self.eep.find_profile(self._bit_data, self.rorg, rorg_func, rorg_type, direction, command, manufacturer)
         return self._profile is not None
 
-    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None, command=None):
+    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None, command=None, manufacturer='0x0'):
         ''' Parse EEP based on FUNC and TYPE '''
         # set EEP profile, if demanded
         if rorg_func is not None and rorg_type is not None:
