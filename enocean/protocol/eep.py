@@ -2,6 +2,7 @@
 from __future__ import print_function, unicode_literals, division, absolute_import
 import os
 import logging
+import glob
 from sys import version_info
 from collections import OrderedDict
 from bs4 import BeautifulSoup
@@ -18,16 +19,16 @@ class EEP(object):
         self.init_ok = False
         self.telegrams = {}
 
-        eep_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml')
-        try:
-            self.telegrams = self.__load_xml(eep_path)
-            self.init_ok = True
-        except IOError:
-            # Impossible to test with the current structure?
-            # To be honest, as the XML is included with the library,
-            # there should be no possibility of ever reaching this...
-            self.logger.warn('Cannot load protocol file!')
-            self.init_ok = False
+        for eep_path in glob.glob(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'eeps', '*.xml')):
+            try:
+                self.telegrams.update(self.__load_xml(eep_path))
+                self.init_ok = True
+            except IOError:
+                # Impossible to test with the current structure?
+                # To be honest, as the XML is included with the library,
+                # there should be no possibility of ever reaching this...
+                self.logger.warn('Cannot load protocol file!')
+                self.init_ok = False
 
     @staticmethod
     def __load_xml(eep_path):
@@ -38,15 +39,22 @@ class EEP(object):
             with open(eep_path, 'r') as xml_file:
                 soup = BeautifulSoup(xml_file.read(), "xml")
 
+        try:
+            manufacturer = enocean.utils.from_hex_string(soup.find('telegrams').attrs['manufacturer'])
+        except KeyError:
+            manufacturer = 0x0
+
         return {
-            enocean.utils.from_hex_string(telegram['rorg']): {
-                enocean.utils.from_hex_string(function['func']): {
-                    enocean.utils.from_hex_string(type['type'], ): type
-                    for type in function.find_all('profile')
+            manufacturer: {
+                enocean.utils.from_hex_string(telegram['rorg']): {
+                    enocean.utils.from_hex_string(function['func']): {
+                        enocean.utils.from_hex_string(type['type'], ): type
+                        for type in function.find_all('profile')
+                    }
+                    for function in telegram.find_all('profiles')
                 }
-                for function in telegram.find_all('profiles')
+                for telegram in soup.find_all('telegram')
             }
-            for telegram in soup.find_all('telegram')
         }
 
     def add_eep_file(self, eep_path):
@@ -159,7 +167,7 @@ class EEP(object):
         bitarray[int(target['offset'])] = data
         return bitarray
 
-    def find_profile(self, bitarray, eep_rorg, rorg_func, rorg_type, direction=None, command=None, manufacturer='0x0'):
+    def find_profile(self, bitarray, eep_rorg, rorg_func, rorg_type, direction=None, command=None, manufacturer=0x0):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
         if not self.init_ok:
             self.logger.warn('EEP.xml not loaded!')
@@ -191,9 +199,9 @@ class EEP(object):
 
         # get command from package if none is in func arguments
         if  not command and eep_command is not None:
-            offset = eep_command['offset']
-            size = eep_command['size']
-            command = int(bitarray[offset:offset+size], 2)
+            offset = int(eep_command['offset'])
+            size = int(eep_command['size'])
+            command = enocean.utils.from_bitarray(bitarray[offset:offset+size])
 
         if command:
             # If commands are not set in EEP, or command is None,
