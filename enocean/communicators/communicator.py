@@ -98,7 +98,8 @@ class Communicator(threading.Thread):
 
         data, optional = self._catch_common_response(0x08, 4, optional_length=1)
         self._base_id = data
-        self._remaining_base_id_writes = optional[0]
+        if optional and len(optional) == 1:
+            self._remaining_base_id_writes = optional[0]
 
         # # Send COMMON_COMMAND 0x08, CO_RD_IDBASE request to the module
         # self.send(Packet(self.eep, PACKET.COMMON_COMMAND, data=[0x08]))
@@ -170,7 +171,7 @@ class Communicator(threading.Thread):
                         response_data = packet.response_data
                         optional_data = packet.optional
                         # Put packet back to the Queue, so the user can also react to it if required...
-                        # self.receive.put(packet)
+                        self.receive.put(packet)
                         break
                 # Put other packets back to the Queue.
                 self.receive.put(packet)
