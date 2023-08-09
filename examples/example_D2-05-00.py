@@ -8,7 +8,6 @@ Waits for UTE Teach-ins, sends the response automatically and prints the ID of n
 '''
 
 import sys
-import time
 import traceback
 import enocean.utils
 from enocean.communicators import SerialCommunicator

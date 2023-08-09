@@ -3,16 +3,7 @@
 from enocean.consolelogger import init_logging
 import enocean.utils
 from enocean.communicators.serialcommunicator import SerialCommunicator
-from enocean.protocol.packet import RadioPacket
-from enocean.protocol.constants import PACKET, RORG
-from enocean.protocol.eep import EEP
-import sys
-import traceback
 import glob
-try:
-    import queue
-except ImportError:
-    import Queue as queue
 
 
 init_logging()
