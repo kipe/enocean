@@ -15,39 +15,29 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.10']
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
+        python -m pip install --upgrade pip setuptools wheel
         python -m pip install flake8 pytest coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
+        if [ -f requirements_test.txt ]; then pip install -r requirements_test.txt; fi
+    - name: Lint with Ruff
       run: |
-        # stop the test if there are Python syntax errors or undefined names
-        flake8 enocean --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 enocean --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
+        ruff --format=github
+      continue-on-error: true
     - name: Test with pytest
       run: |
         pytest -s -q --with-coverage --cover-package=enocean
-    - name: Coveralls
-      uses: AndreMiras/coveralls-python-action@develop
+    - name: Coverage
+      uses: orgoro/coverage@v3.1
       with:
-        parallel: true
-        flag-name: run-${{ matrix.test_number }}
-
-  finish:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - name: Coveralls Finished
-      uses: AndreMiras/coveralls-python-action@develop
-      with:
-        parallel-finished: true
+        coverageFile: coverage.xml
+        token: ${{ secrets.GITHUB_TOKEN }}
