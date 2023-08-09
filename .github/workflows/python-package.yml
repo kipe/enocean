@@ -36,11 +36,11 @@ jobs:
     - name: Test with pytest
       run: |
         python -m pytest -s -q --cov-report=xml:coverage.xml --cov=enocean
-        - name: Coveralls
-        uses: AndreMiras/coveralls-python-action@develop
-        with:
-          parallel: true
-          flag-name: run-${{ matrix.test_number }}
+    - name: Coveralls
+      uses: AndreMiras/coveralls-python-action@develop
+      with:
+        parallel: true
+        flag-name: run-${{ matrix.test_number }}
   
   finish:
     needs: test
