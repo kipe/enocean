@@ -31,11 +31,11 @@ jobs:
         if [ -f requirements_test.txt ]; then pip install -r requirements_test.txt; fi
     - name: Lint with Ruff
       run: |
-        ruff --format=github
+        ruff --format=github enocean
       continue-on-error: true
     - name: Test with pytest
       run: |
-        pytest -s -q --with-coverage --cover-package=enocean
+        pytest -s -q --cov-report=xml:coverage.xml --cov=enocean
     - name: Coverage
       uses: orgoro/coverage@v3.1
       with:
