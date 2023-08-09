@@ -20,3 +20,4 @@ pip-selfcheck.json
 
 .vscode/
 coverage.xml
+coverage.lcov

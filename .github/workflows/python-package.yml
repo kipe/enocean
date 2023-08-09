@@ -35,18 +35,19 @@ jobs:
       continue-on-error: true
     - name: Test with pytest
       run: |
-        python -m pytest -s -q --cov-report=xml:coverage.xml --cov=enocean
-    - name: Coveralls
-      uses: AndreMiras/coveralls-python-action@develop
+        python -m pytest -s -q --cov-report=lcov --cov=enocean
+    - name: Coveralls Parallel
+      uses: coverallsapp/github-action@v2
       with:
+        flag-name: run-${{ matrix.python-version }}
         parallel: true
-        flag-name: run-${{ matrix.test_number }}
   
   finish:
     needs: test
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
     - name: Coveralls Finished
-      uses: AndreMiras/coveralls-python-action@develop
+      uses: coverallsapp/github-action@v2
       with:
         parallel-finished: true
