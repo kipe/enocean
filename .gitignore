@@ -19,3 +19,4 @@ pip-selfcheck.json
 .coverage
 
 .vscode/
+coverage.xml
