@@ -7,10 +7,10 @@ except ImportError:
 setup(
     name='enocean',
     version='0.60.1',
-    description='EnOcean serial protocol implementation',
-    author='Kimmo Huoman',
-    author_email='kipenroskaposti@gmail.com',
-    url='https://github.com/kipe/enocean',
+    description='EnOcean serial protocol implementation (fork of https://github.com/kipe/enocean.git)',
+    author='Klaus Hessenberger',
+    author_email='hesse315@gmail.com',
+    url='https://github.com/hesse315/enocean',
     packages=[
         'enocean',
         'enocean.protocol',
@@ -20,10 +20,10 @@ setup(
         'examples/enocean_example.py',
     ],
     package_data={
-        '': ['EEP.xml']
+        '': ['EEP.xml', 'Eltako.xml']
     },
     install_requires=[
         'enum-compat>=0.0.2',
         'pyserial>=3.0',
-        'beautifulsoup4>=4.3.2',
+        'beautifulsoup4[lxml]>=4.3.2',
     ])
