@@ -27,7 +27,7 @@ class EEP(object):
                 # Impossible to test with the current structure?
                 # To be honest, as the XML is included with the library,
                 # there should be no possibility of ever reaching this...
-                self.logger.warn('Cannot load protocol file!')
+                self.logger.warning('Cannot load protocol file!')
                 self.init_ok = False
 
     @staticmethod
@@ -170,26 +170,26 @@ class EEP(object):
     def find_profile(self, bitarray, eep_rorg, rorg_func, rorg_type, direction=None, command=None, manufacturer=0x0):
         ''' Find profile and data description, matching RORG, FUNC and TYPE '''
         if not self.init_ok:
-            self.logger.warn('EEP.xml not loaded!')
+            self.logger.warning('EEP.xml not loaded!')
             return None
 
         if manufacturer not in self.telegrams.keys():
-            self.logger.warn('Cannot find manufacturer %s in EEP!', hex(manufacturer))
+            self.logger.warning('Cannot find manufacturer %s in EEP!', hex(manufacturer))
             return None
 
         if eep_rorg not in self.telegrams[manufacturer].keys():
-            self.logger.warn('Cannot find rorg %s in EEP!', hex(eep_rorg))
+            self.logger.warning('Cannot find rorg %s in EEP!', hex(eep_rorg))
             return None
 
         if rorg_func not in self.telegrams[manufacturer][eep_rorg].keys():
-            self.logger.warn('Cannot find rorg %s func %s in EEP!', hex(eep_rorg), hex(rorg_func))
+            self.logger.warning('Cannot find rorg %s func %s in EEP!', hex(eep_rorg), hex(rorg_func))
             return None
 
         if rorg_type not in self.telegrams[manufacturer][eep_rorg][rorg_func].keys():
             if manufacturer:
-                self.logger.warn('Cannot find rorg %s func %s type %s in EEP for manufacturer %s!', hex(eep_rorg), hex(rorg_func), hex(rorg_type), hex(manufacturer))
+                self.logger.warning('Cannot find rorg %s func %s type %s in EEP for manufacturer %s!', hex(eep_rorg), hex(rorg_func), hex(rorg_type), hex(manufacturer))
             else:
-                self.logger.warn('Cannot find rorg %s func %s type %s in EEP!', hex(eep_rorg), hex(rorg_func), hex(rorg_type))
+                self.logger.warning('Cannot find rorg %s func %s type %s in EEP!', hex(eep_rorg), hex(rorg_func), hex(rorg_type))
             return None
 
         profile = self.telegrams[manufacturer][eep_rorg][rorg_func][rorg_type]
