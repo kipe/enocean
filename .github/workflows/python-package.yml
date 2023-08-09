@@ -35,7 +35,7 @@ jobs:
       continue-on-error: true
     - name: Test with pytest
       run: |
-        pytest -s -q --cov-report=xml:coverage.xml --cov=enocean
+        python -m pytest -s -q --cov-report=xml:coverage.xml --cov=enocean
     - name: Coverage
       uses: orgoro/coverage@v3.1
       with:
