@@ -36,8 +36,17 @@ jobs:
     - name: Test with pytest
       run: |
         python -m pytest -s -q --cov-report=xml:coverage.xml --cov=enocean
-    - name: Coverage
-      uses: orgoro/coverage@v3.1
+        - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel: true
+          flag-name: run-${{ matrix.test_number }}
+  
+  finish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: AndreMiras/coveralls-python-action@develop
       with:
-        coverageFile: coverage.xml
-        token: ${{ secrets.GITHUB_TOKEN }}
+        parallel-finished: true
