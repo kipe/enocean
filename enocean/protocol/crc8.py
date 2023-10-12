@@ -34,8 +34,15 @@ CRC_TABLE = (
     0xfa, 0xfd, 0xf4, 0xf3)
 
 
-def calc(msg):
+def calc_ESP3(msg):
     checksum = 0
     for byte in msg:
         checksum = CRC_TABLE[checksum & 0xFF ^ byte & 0xFF]
     return checksum
+
+def calc_ESP2(msg):
+    checksum=0
+    for byte in msg:
+        checksum += byte
+        checksum &= 0xFF
+    return checksum 

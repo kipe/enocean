@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals, division, absolute_import
+from enocean.protocol.packet import Packet
 
 from enocean.protocol.packet import Packet, EventPacket
 from enocean.protocol.constants import PACKET, PARSE_RESULT, EVENT_CODE

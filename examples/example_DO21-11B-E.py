@@ -7,6 +7,7 @@ http://www.g-media.fr/prise-gigogne-enocean.html
 Waits for UTE Teach-ins, sends the response automatically and prints the ID of new device.
 '''
 
+from enocean.protocol.packet import RadioPacket
 import sys
 import time
 import traceback

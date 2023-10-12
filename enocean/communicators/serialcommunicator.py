@@ -4,15 +4,15 @@ import logging
 import serial
 import time
 
-from enocean.communicators.communicator import Communicator
+from enocean.communicators.communicator import Communicator, ESP_Version
 
 
 class SerialCommunicator(Communicator):
     ''' Serial port communicator class for EnOcean radio '''
     logger = logging.getLogger('enocean.communicators.SerialCommunicator')
 
-    def __init__(self, port='/dev/ttyAMA0', callback=None):
-        super(SerialCommunicator, self).__init__(callback)
+    def __init__(self, version: ESP_Version=ESP_Version.ESP3, port='/dev/ttyAMA0', callback=None):
+        super(SerialCommunicator, self).__init__(version = version, callback = callback)
         # Initialize serial port
         self.__ser = serial.Serial(port, 57600, timeout=0.1)
 
