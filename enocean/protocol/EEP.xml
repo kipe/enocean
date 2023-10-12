@@ -1022,6 +1022,247 @@
         </data>
       </profile>
     </profiles>
+    <profiles func="0x13" description="Environmental Applications">
+      <profile type="0x01" description="Weather Station">
+        <command description="command identifier" shortcut="CMD" offset="24" size="4">
+          <item description="Weather Station" value="1" />
+          <item description="Sun Intensity" value="2" />
+          <item description="Date Exchange" value="3" />
+          <item description="Time and Day Exchange" value="4" />
+          <item description="Direction Exchange" value="5" />
+          <item description="Geographic Position Exchange" value="6" />
+        </command>
+        <data command="1" bits="15">
+          <value description="Dawn sensor" shortcut="DWS" offset="0" size="8" unit="lx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>999</max>
+            </scale>
+          </value>
+          <value description="Outdoor Temp" shortcut="TMP" offset="8" size="8" unit="°C">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>-40</min>
+              <max>80</max>
+            </scale>
+          </value>
+	  <value description="Wind speed" shortcut="WND" offset="16" size="8" unit="m/s">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>70</max>
+            </scale>
+          </value>
+	  <enum description="Day / Night" shortcut="D/N" offset="29" size="1">
+            <item description="day" value="0" />
+            <item description="night" value="1" />
+          </enum>
+	  <enum description="Rain Indication" shortcut="RAN" offset="30" size="1">
+            <item description="no rain" value="0" />
+            <item description="rain" value="1" />
+          </enum>
+        </data>
+        <data command="2" bits="15">
+          <value description="Sun - West" shortcut="SNW" offset="0" size="8" unit="klx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>150</max>
+            </scale>
+          </value>
+          <value description="Sun - South" shortcut="SNS" offset="8" size="8" unit="klx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>150</max>
+            </scale>
+          </value>
+	  <value description="Sun - East" shortcut="SNE" offset="16" size="8" unit="klx">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>150</max>
+            </scale>
+          </value>
+	  <enum description="Hemisphere" shortcut="HEM" offset="29" size="1">
+            <item description="North" value="0" />
+            <item description="South" value="1" />
+          </enum>
+        </data>
+        <data command="3" bits="15">
+          <value description="Day" shortcut="DY" offset="3" size="5" unit="">
+            <range>
+              <min>1</min>
+              <max>31</max>
+            </range>
+            <scale>
+              <min>1</min>
+              <max>31</max>
+            </scale>
+          </value>
+          <value description="Month" shortcut="MTH" offset="12" size="4" unit="">
+            <range>
+              <min>1</min>
+              <max>12</max>
+            </range>
+            <scale>
+              <min>1</min>
+              <max>12</max>
+            </scale>
+          </value>
+	  <value description="Year" shortcut="YR" offset="17" size="7" unit="">
+            <range>
+              <min>0</min>
+              <max>99</max>
+            </range>
+            <scale>
+              <min>2000</min>
+              <max>2099</max>
+            </scale>
+          </value>
+	  <enum description="Source" shortcut="SRC" offset="31" size="1">
+            <item description="Real Time Clock" value="0" />
+            <item description="GPS or equivalent" value="1" />
+          </enum>
+        </data>
+        <data command="4" bits="15">
+	  <enum description="Weekday" shortcut="WDY" offset="0" size="3">
+            <item description="Monday" value="1" />
+            <item description="Tuesday" value="2" />
+            <item description="Wednesday" value="3" />
+            <item description="Thursday" value="4" />
+            <item description="Friday" value="5" />
+            <item description="Saturday" value="6" />
+            <item description="Sunday" value="7" />
+          </enum>
+          <value description="Hour" shortcut="HR" offset="3" size="5" unit="">
+            <range>
+              <min>0</min>
+              <max>23</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>23</max>
+            </scale>
+          </value>
+          <value description="Minute" shortcut="MIN" offset="10" size="6" unit="">
+            <range>
+              <min>0</min>
+              <max>59</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>59</max>
+            </scale>
+          </value>
+	  <value description="Second" shortcut="SEC" offset="18" size="6" unit="">
+            <range>
+              <min>0</min>
+              <max>59</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>59</max>
+            </scale>
+          </value>
+	  <enum description="Time Format" shortcut="TMF" offset="29" size="1">
+            <item description="24 Hours" value="0" />
+            <item description="12 Hours" value="1" />
+          </enum>
+	  <enum description="AM/PM" shortcut="A/PM" offset="30" size="1">
+            <item description="AM" value="0" />
+            <item description="PM" value="1" />
+          </enum>
+	  <enum description="Source" shortcut="SRC" offset="31" size="1">
+            <item description="Real Time Clock" value="0" />
+            <item description="GPS or equivalent" value="1" />
+          </enum>
+        </data>
+        <data command="5" bits="15">
+          <value description="Elevation" shortcut="ELV" offset="0" size="8" unit="°">
+            <range>
+              <min>0</min>
+              <max>180</max>
+            </range>
+            <scale>
+              <min>-90</min>
+              <max>90</max>
+            </scale>
+          </value>
+          <value description="Azimut" shortcut="AZM" offset="15" size="9" unit="°">
+            <range>
+              <min>0</min>
+              <max>359</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>359</max>
+            </scale>
+          </value>
+        </data>
+        <data command="6" bits="15">
+          <value description="Latitude(MSB)" Shortcut="LAT(MSB)" offset="0" size="4" unit="">
+            <range>
+              <min>0</min>
+              <max>15</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>15</max>
+            </scale>
+          </value>
+          <value description="Longitude(MSB)" shortcut="LOT(MSB)" offset="4" size="4" unit="">
+            <range>
+              <min>0</min>
+              <max>15</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>15</max>
+            </scale>
+          </value>
+	  <value description="Latitude(LSB)" shortcut="LAT(LSB)" offset="8" size="8" unit="">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>255</max>
+            </scale>
+          </value>
+	  <value description="Longitude(LSB)" shortcut="LOT(LSB)" offset="16" size="8" unit="">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>255</max>
+            </scale>
+          </value>
+        </data>
+      </profile>
+    </profiles>
     <profiles func="0x14" description="Multi-Func Sensor">
       <profile type="0x01" description="Single Input Contact (Window/Door), Supply voltage monitor">
         <data>
@@ -1468,6 +1709,81 @@
           </enum>
           <enum description="Command Id" shortcut="CMD" offset="28" size="4">
             <rangeitem description="Command ID {value}" start="0" end="5" />
+          </enum>
+        </data>
+      </profile>
+    </profiles>
+    <profiles func="0x14" description="Multi Function Sensors">
+      <profile type="0x41" description="Indoor -Temperature, Humidity XYZ Acceleration, Illumination Sensor">
+        <data>
+          <value description="Temperature 10" shortcut="TMP" offset="0" size="10" unit="°C">
+            <range>
+              <min>0</min>
+              <max>1000</max>
+            </range>
+            <scale>
+              <min>-40.0</min>
+              <max>60.0</max>
+            </scale>
+          </value>
+          <value description="Rel. Humidity linear)" shortcut="HUM" offset="10" size="8" unit="%">
+            <range>
+              <min>0</min>
+              <max>200</max>
+            </range>
+            <scale>
+              <min>0.0</min>
+              <max>100.0</max>
+            </scale>
+          </value>
+          <value description="Illumination linear)" shortcut="ILL" offset="18" size="17" unit="lx">
+            <range>
+              <min>0</min>
+              <max>100000</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>100000</max>
+            </scale>
+          </value>
+          <enum description="Acceleration Status" shortcut="ACC" offset="35" size="2">
+            <item description="Periodic Update" value="0" />
+            <item description="Threshold 1 exceeded" value="1" />
+            <item description="Threshold 2 exceeded" value="2" />
+          </enum>
+          <value description="Absolute Acceleration on X axis" shortcut="ACX" offset="37" size="10" unit="g">
+            <range>
+              <min>0</min>
+              <max>1000</max>
+            </range>
+            <scale>
+              <min>-2.5</min>
+              <max>2.5</max>
+            </scale>
+          </value>
+          <value description="Absolute Acceleration on Y axis" shortcut="ACY" offset="47" size="10" unit="g">
+            <range>
+              <min>0</min>
+              <max>1000</max>
+            </range>
+            <scale>
+              <min>-2.5</min>
+              <max>2.5</max>
+            </scale>
+          </value>
+          <value description="Absolute Acceleration on Z axis" shortcut="ACZ" offset="57" size="10" unit="g">
+            <range>
+              <min>0</min>
+              <max>1000</max>
+            </range>
+            <scale>
+              <min>-2.5</min>
+              <max>2.5</max>
+            </scale>
+          </value>
+          <enum description="Contact" shortcut="CO" offset="67" size="1">
+            <item description="Open" value="0" />
+            <item description="Closed" value="1" />
           </enum>
         </data>
       </profile>
