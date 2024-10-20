@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 try:
     from setuptools import setup
 except ImportError:
@@ -26,4 +26,5 @@ setup(
         'enum-compat>=0.0.2',
         'pyserial>=3.0',
         'beautifulsoup4>=4.3.2',
+        'pytest>=8.3.0'
     ])

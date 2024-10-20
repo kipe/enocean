@@ -9,7 +9,7 @@ from enocean.decorators import timing
 
 @timing(1000)
 def test_buffer():
-    ''' Test buffer parsing for Communicator '''
+    """ Test buffer parsing for Communicator """
     data = bytearray([
         0x55,
         0x00, 0x0A, 0x07, 0x01,
@@ -29,7 +29,7 @@ def test_buffer():
 
 @timing(1000)
 def test_send():
-    ''' Test sending packets to Communicator '''
+    """ Test sending packets to Communicator """
     com = Communicator()
     assert com.send('AJSNDJASNDJANSD') is False
     assert com.transmit.qsize() == 0

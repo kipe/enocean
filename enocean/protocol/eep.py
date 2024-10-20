@@ -49,14 +49,14 @@ class EEP(object):
 
     @staticmethod
     def _get_raw(source, bitarray):
-        ''' Get raw data as integer, based on offset and size '''
+        """ Get raw data as integer, based on offset and size """
         offset = int(source['offset'])
         size = int(source['size'])
         return int(''.join(['1' if digit else '0' for digit in bitarray[offset:offset + size]]), 2)
 
     @staticmethod
     def _set_raw(target, raw_value, bitarray):
-        ''' put value into bit array '''
+        """ put value into bit array """
         offset = int(target['offset'])
         size = int(target['size'])
         for digit in range(size):
@@ -70,7 +70,7 @@ class EEP(object):
                 return rangeitem
 
     def _get_value(self, source, bitarray):
-        ''' Get value, based on the data in XML '''
+        """ Get value, based on the data in XML """
         raw_value = self._get_raw(source, bitarray)
 
         rng = source.find('range')
@@ -91,7 +91,7 @@ class EEP(object):
         }
 
     def _get_enum(self, source, bitarray):
-        ''' Get enum value, based on the data in XML '''
+        """ Get enum value, based on the data in XML """
         raw_value = self._get_raw(source, bitarray)
 
         # Find value description.
@@ -107,7 +107,7 @@ class EEP(object):
         }
 
     def _get_boolean(self, source, bitarray):
-        ''' Get boolean value, based on the data in XML '''
+        """ Get boolean value, based on the data in XML """
         raw_value = self._get_raw(source, bitarray)
         return {
             source['shortcut']: {
@@ -119,7 +119,7 @@ class EEP(object):
         }
 
     def _set_value(self, target, value, bitarray):
-        ''' set given numeric value to target field in bitarray '''
+        """ set given numeric value to target field in bitarray """
         # derive raw value
         rng = target.find('range')
         rng_min = float(rng.find('min').text)
@@ -132,7 +132,7 @@ class EEP(object):
         return self._set_raw(target, int(raw_value), bitarray)
 
     def _set_enum(self, target, value, bitarray):
-        ''' set given enum value (by string or integer value) to target field in bitarray '''
+        """ set given enum value (by string or integer value) to target field in bitarray """
         # derive raw value
         if isinstance(value, int):
             # check whether this value exists
@@ -150,12 +150,12 @@ class EEP(object):
 
     @staticmethod
     def _set_boolean(target, data, bitarray):
-        ''' set given value to target bit in bitarray '''
+        """ set given value to target bit in bitarray """
         bitarray[int(target['offset'])] = data
         return bitarray
 
     def find_profile(self, bitarray, eep_rorg, rorg_func, rorg_type, direction=None, command=None):
-        ''' Find profile and data description, matching RORG, FUNC and TYPE '''
+        """ Find profile and data description, matching RORG, FUNC and TYPE """
         if not self.init_ok:
             self.logger.warn('EEP.xml not loaded!')
             return None
@@ -192,7 +192,7 @@ class EEP(object):
         return profile.find('data', {'direction': direction}, recursive=False)
 
     def get_values(self, profile, bitarray, status):
-        ''' Get keys and values from bitarray '''
+        """ Get keys and values from bitarray """
         if not self.init_ok or profile is None:
             return [], {}
 
@@ -209,7 +209,7 @@ class EEP(object):
         return output.keys(), output
 
     def set_values(self, profile, data, status, properties):
-        ''' Update data based on data contained in properties '''
+        """ Update data based on data contained in properties """
         if not self.init_ok or profile is None:
             return data, status
 

@@ -9,7 +9,7 @@ from enocean.decorators import timing
 
 @timing(1000)
 def test_temperature():
-    ''' Tests RADIO message for EEP -profile 0xA5 0x02 0x05 '''
+    """ Tests RADIO message for EEP -profile 0xA5 0x02 0x05 """
     status, buf, packet = Packet.parse_msg(bytearray([
         0x55,
         0x00, 0x0A, 0x07, 0x01,
@@ -35,7 +35,7 @@ def test_temperature():
 
 @timing(1000)
 def test_magnetic_switch():
-    ''' Tests RADIO message for EEP -profile 0xD5 0x00 0x01 '''
+    """ Tests RADIO message for EEP -profile 0xD5 0x00 0x01 """
     status, buf, packet = Packet.parse_msg(bytearray([
         0x55,
         0x00, 0x07, 0x07, 0x01,

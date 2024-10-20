@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
-'''
+"""
 Example to show automatic UTE Teach-in responses using
 http://www.g-media.fr/prise-gigogne-enocean.html
 
 Waits for UTE Teach-ins, sends the response automatically and prints the ID of new device.
-'''
+"""
 
 import sys
 import time

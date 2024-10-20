@@ -8,7 +8,7 @@ from enocean.decorators import timing
 
 @timing(1000)
 def test_packet_examples():
-    ''' Tests examples found at EnOceanSerialProtocol3.pdf / 74 '''
+    """ Tests examples found at EnOceanSerialProtocol3.pdf / 74 """
     telegram_examples = {
         # Radio VLD
         PACKET.RADIO_ERP1: {
@@ -118,10 +118,10 @@ def test_packet_examples():
 
 @timing(1000)
 def test_packet_fails():
-    '''
+    """
     Tests designed to fail.
     These include changes to checksum, data length or something like that.
-    '''
+    """
     fail_examples = (
         bytearray([
             0x55,

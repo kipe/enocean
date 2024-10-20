@@ -10,12 +10,12 @@ from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3
 
 
 class Packet(object):
-    '''
+    """
     Base class for Packet.
     Mainly used for for packet generation and
     Packet.parse_msg(buf) for parsing message.
     parse_msg() returns subclass, if one is defined for the data type.
-    '''
+    """
     eep = EEP()
     logger = logging.getLogger('enocean.protocol.packet')
 
@@ -101,13 +101,13 @@ class Packet(object):
 
     @staticmethod
     def parse_msg(buf):
-        '''
+        """
         Parses message from buffer.
         returns:
             - PARSE_RESULT
             - remaining buffer
             - Packet -object (if message was valid, else None)
-        '''
+        """
         # If the buffer doesn't contain 0x55 (start char)
         # the message isn't needed -> ignore
         if 0x55 not in buf:
@@ -169,7 +169,7 @@ class Packet(object):
                destination=None,
                sender=None,
                learn=False, **kwargs):
-        '''
+        """
         Creates an packet ready for sending.
         Uses rorg, rorg_func and rorg_type to determine the values set based on EEP.
         Additional arguments (**kwargs) are used for setting the values.
@@ -182,7 +182,7 @@ class Packet(object):
             - Require sender to be set? Would force the "correct" sender to be set.
             - Do we need to set telegram control bits?
               Might be useful for acting as a repeater?
-        '''
+        """
 
         if packet_type != PACKET.RADIO_ERP1:
             # At least for now, only support PACKET.RADIO_ERP1.
@@ -247,7 +247,7 @@ class Packet(object):
         return packet
 
     def parse(self):
-        ''' Parse data from Packet '''
+        """ Parse data from Packet """
         # Parse status from messages
         if self.rorg in [RORG.RPS, RORG.BS1, RORG.BS4]:
             self.status = self.data[-1]
@@ -260,7 +260,7 @@ class Packet(object):
         return self.parsed
 
     def select_eep(self, rorg_func, rorg_type, direction=None, command=None):
-        ''' Set EEP based on FUNC and TYPE '''
+        """ Set EEP based on FUNC and TYPE """
         # set EEP profile
         self.rorg_func = rorg_func
         self.rorg_type = rorg_type
@@ -268,7 +268,7 @@ class Packet(object):
         return self._profile is not None
 
     def parse_eep(self, rorg_func=None, rorg_type=None, direction=None, command=None):
-        ''' Parse EEP based on FUNC and TYPE '''
+        """ Parse EEP based on FUNC and TYPE """
         # set EEP profile, if demanded
         if rorg_func is not None and rorg_type is not None:
             self.select_eep(rorg_func, rorg_type, direction, command)
@@ -278,11 +278,11 @@ class Packet(object):
         return list(provides)
 
     def set_eep(self, data):
-        ''' Update packet data based on EEP. Input data is a dictionary with keys corresponding to the EEP. '''
+        """ Update packet data based on EEP. Input data is a dictionary with keys corresponding to the EEP. """
         self._bit_data, self._bit_status = self.eep.set_values(self._profile, self._bit_data, self._bit_status, data)
 
     def build(self):
-        ''' Build Packet for sending to EnOcean controller '''
+        """ Build Packet for sending to EnOcean controller """
         data_length = len(self.data)
         ords = [0x55, (data_length >> 8) & 0xFF, data_length & 0xFF, len(self.optional), int(self.packet_type)]
         ords.append(crc8.calc(ords[1:5]))
