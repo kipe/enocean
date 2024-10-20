@@ -33,6 +33,9 @@ class RETURN_CODE(IntEnum):
     NOT_SUPPORTED = 0x02
     WRONG_PARAM = 0x03
     OPERATION_DENIED = 0x04
+    LOCK_SET = 0x05
+    BUFFER_TO_SMALL = 0x06
+    NO_FREE_BUFFER = 0x07
 
 
 # EnOceanSerialProtocol3.pdf / 20
@@ -42,6 +45,10 @@ class EVENT_CODE(IntEnum):
     SA_LEARN_ACK = 0x03
     CO_READY = 0x04
     CO_EVENT_SECUREDEVICES = 0x05
+    CO_DUTYCYCLE_LIMIT = 0x06
+    CO_TRANSMIT_FAILED = 0x07
+    CO_TX_DONE = 0x08
+    CO_LRN_MODE_DISABLED = 0x09
 
 
 # EnOcean_Equipment_Profiles_EEP_V2.61_public.pdf / 8
