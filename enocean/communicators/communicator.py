@@ -13,10 +13,10 @@ from enocean.protocol.constants import PACKET, PARSE_RESULT, RETURN_CODE
 
 
 class Communicator(threading.Thread):
-    '''
+    """
     Communicator base-class for EnOcean.
     Not to be used directly, only serves as base class for SerialCommunicator etc.
-    '''
+    """
     logger = logging.getLogger('enocean.communicators.Communicator')
 
     def __init__(self, callback=None, teach_in=True):
@@ -37,7 +37,7 @@ class Communicator(threading.Thread):
         self.teach_in = teach_in
 
     def _get_from_send_queue(self):
-        ''' Get message from send queue, if one exists '''
+        """ Get message from send queue, if one exists """
         try:
             packet = self.transmit.get(block=False)
             self.logger.info('Sending packet')
@@ -58,7 +58,7 @@ class Communicator(threading.Thread):
         self._stop_flag.set()
 
     def parse(self):
-        ''' Parses messages and puts them to receive queue '''
+        """ Parses messages and puts them to receive queue """
         # Loop while we get new messages
         while True:
             status, self._buffer, packet = Packet.parse_msg(self._buffer)
@@ -83,7 +83,7 @@ class Communicator(threading.Thread):
 
     @property
     def base_id(self):
-        ''' Fetches Base ID from the transmitter, if required. Otherwise returns the currently set Base ID. '''
+        """ Fetches Base ID from the transmitter, if required. Otherwise returns the currently set Base ID. """
         # If base id is already set, return it.
         if self._base_id is not None:
             return self._base_id
@@ -112,5 +112,5 @@ class Communicator(threading.Thread):
 
     @base_id.setter
     def base_id(self, base_id):
-        ''' Sets the Base ID manually, only for testing purposes. '''
+        """ Sets the Base ID manually, only for testing purposes. """
         self._base_id = base_id

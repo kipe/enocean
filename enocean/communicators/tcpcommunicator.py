@@ -7,7 +7,7 @@ from enocean.communicators.communicator import Communicator
 
 
 class TCPCommunicator(Communicator):
-    ''' Socket communicator class for EnOcean radio '''
+    """ Socket communicator class for EnOcean radio """
     logger = logging.getLogger('enocean.communicators.TCPCommunicator')
 
     def __init__(self, host='', port=9637):
