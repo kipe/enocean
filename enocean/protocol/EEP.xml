@@ -1472,6 +1472,7 @@
         <command description="Command ID" shortcut="COM" offset="0" size="8">
           <item description="Switching" value="1" />
           <item description="Dimming" value="2" />
+          <item description="Blind Central Command" value="7" />
         </command>
         <data command="1">
           <enum shortcut="COM" description="Command ID" offset="0" size="8">
@@ -1536,6 +1537,61 @@
           <enum description="Switching command" shortcut="SW" offset="31" size="1">
             <item description="Off" value="0" />
             <item description="On" value="1" />
+          </enum>
+        </data>
+        <data command="7">
+          <enum shortcut="COM" description="Command ID" offset="0" size="8">
+            <rangeitem description="Command ID {value}" start="0" end="13" />
+          </enum>
+          <value shortcut="P1" description="Function defined parameter value 1" offset="8" size="8" unit="none">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>255</max>
+            </scale>
+          </value>
+          <value shortcut="P2" description="Function defined parameter value 2" offset="16" size="8" unit="none">
+            <range>
+              <min>0</min>
+              <max>255</max>
+            </range>
+            <scale>
+              <min>0</min>
+              <max>255</max>
+            </scale>
+          </value>
+          <enum description="Function" shortcut="FUNC" offset="24" size="4">
+            <item description="Do nothing, status request" value="0" />
+            <item description="Blind stops" value="1" />
+            <item description="Blind opens" value="2" />
+            <item description="Blind closes" value="3" />
+            <item description="Blind drives to position with angle value" value="4" />
+            <item description="Blind opens for time (position value) and angle (angle value)" value="5" />
+            <item description="Blind closes for time (position value) and angle (angle value)" value="6" />
+            <item description="Set Runtime parameters" value="7" />
+            <item description="Set angle configuration" value="8" />
+            <item description="Set Min, Max values" value="9" />
+            <item description="Set slat angle for SHUT and OPEN position" value="10" />
+            <item description="Set position logic" value="11" />
+          </enum>
+          <enum description="LRN bit" shortcut="LRNB" offset="28" size="1">
+            <item description="Teach in telegram" value="0" />
+            <item description="Data telegram" value="1" />
+          </enum>
+          <enum description="Send status flag" shortcut="SSF" offset="29" size="1">
+            <item description="Send new status of device" value="0" />
+            <item description="Send no status" value="1" />
+          </enum>
+          <enum description="Position and Angle flag" shortcut="PAF" offset="30" size="1">
+            <item description="No Angle and position value available" value="0" />
+            <item description="Angle and position value available" value="1" />
+          </enum>
+          <enum description="Service mode flag" shortcut="SMF" offset="31" size="1">
+            <item description="Normal operation" value="0" />
+            <item description="Service mode" value="1" />
           </enum>
         </data>
       </profile>

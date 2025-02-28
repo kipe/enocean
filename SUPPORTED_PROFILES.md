@@ -495,6 +495,73 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 
+##### RORG 0xA5 - FUNC 0x13 - TYPE 0x01 - Weather Station
+
+###### command: 1
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|DWS     |Dawn sensor                                       |value   |0.0-255.0 ↔ 0.0-999.0 lx                                              |
+|TMP     |Outdoor Temp                                      |value   |0.0-255.0 ↔ -40.0-80.0 °C                                             |
+|WND     |Wind speed                                        |value   |0.0-255.0 ↔ 0.0-70.0 m/s                                              |
+|D/N     |Day / Night                                       |enum    |0 - day                                                               |
+|        |                                                  |        |1 - night                                                             |
+|RAN     |Rain Indication                                   |enum    |0 - no rain                                                           |
+|        |                                                  |        |1 - rain                                                              |
+
+###### command: 2
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SNW     |Sun - West                                        |value   |0.0-255.0 ↔ 0.0-150.0 klx                                             |
+|SNS     |Sun - South                                       |value   |0.0-255.0 ↔ 0.0-150.0 klx                                             |
+|SNE     |Sun - East                                        |value   |0.0-255.0 ↔ 0.0-150.0 klx                                             |
+|HEM     |Hemisphere                                        |enum    |0 - North                                                             |
+|        |                                                  |        |1 - South                                                             |
+
+###### command: 3
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|DY      |Day                                               |value   |1.0-31.0 ↔ 1.0-31.0                                                   |
+|MTH     |Month                                             |value   |1.0-12.0 ↔ 1.0-12.0                                                   |
+|YR      |Year                                              |value   |0.0-99.0 ↔ 2000.0-2099.0                                              |
+|SRC     |Source                                            |enum    |0 - Real Time Clock                                                   |
+|        |                                                  |        |1 - GPS or equivalent                                                 |
+
+###### command: 4
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|WDY     |Weekday                                           |enum    |1 - Monday                                                            |
+|        |                                                  |        |2 - Tuesday                                                           |
+|        |                                                  |        |3 - Wednesday                                                         |
+|        |                                                  |        |4 - Thursday                                                          |
+|        |                                                  |        |5 - Friday                                                            |
+|        |                                                  |        |6 - Saturday                                                          |
+|        |                                                  |        |7 - Sunday                                                            |
+|HR      |Hour                                              |value   |0.0-23.0 ↔ 0.0-23.0                                                   |
+|MIN     |Minute                                            |value   |0.0-59.0 ↔ 0.0-59.0                                                   |
+|SEC     |Second                                            |value   |0.0-59.0 ↔ 0.0-59.0                                                   |
+|TMF     |Time Format                                       |enum    |0 - 24 Hours                                                          |
+|        |                                                  |        |1 - 12 Hours                                                          |
+|A/PM    |AM/PM                                             |enum    |0 - AM                                                                |
+|        |                                                  |        |1 - PM                                                                |
+|SRC     |Source                                            |enum    |0 - Real Time Clock                                                   |
+|        |                                                  |        |1 - GPS or equivalent                                                 |
+
+###### command: 5
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|ELV     |Elevation                                         |value   |0.0-180.0 ↔ -90.0-90.0 °                                              |
+|AZM     |Azimut                                            |value   |0.0-359.0 ↔ 0.0-359.0 °                                               |
+
+###### command: 6
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|LAT(MSB)|Latitude(MSB)                                     |value   |0.0-15.0 ↔ 0.0-15.0                                                   |
+|LOT(MSB)|Longitude(MSB)                                    |value   |0.0-15.0 ↔ 0.0-15.0                                                   |
+|LAT(LSB)|Latitude(LSB)                                     |value   |0.0-255.0 ↔ 0.0-255.0                                                 |
+|LOT(LSB)|Longitude(LSB)                                    |value   |0.0-255.0 ↔ 0.0-255.0                                                 |
+
+
+
 ##### RORG 0xA5 - FUNC 0x14 - TYPE 0x01 - Single Input Contact (Window/Door), Supply voltage monitor
 
 |shortcut|description                                       |type    |values                                                                |
@@ -613,6 +680,33 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |SW      |Switching command                                 |enum    |0 - Off                                                               |
 |        |                                                  |        |1 - On                                                                |
 
+###### command: 7
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|COM     |Command ID                                        |enum    |0-13 - Command ID {value}                                             |
+|P1      |Function defined parameter value 1                |value   |0.0-255.0 ↔ 0.0-255.0 none                                            |
+|P2      |Function defined parameter value 2                |value   |0.0-255.0 ↔ 0.0-255.0 none                                            |
+|FUNC    |Function                                          |enum    |0 - Do nothing, status request                                        |
+|        |                                                  |        |1 - Blind stops                                                       |
+|        |                                                  |        |2 - Blind opens                                                       |
+|        |                                                  |        |3 - Blind closes                                                      |
+|        |                                                  |        |4 - Blind drives to position with angle value                         |
+|        |                                                  |        |5 - Blind opens for time (position value) and angle (angle value)     |
+|        |                                                  |        |6 - Blind closes for time (position value) and angle (angle value)    |
+|        |                                                  |        |7 - Set Runtime parameters                                            |
+|        |                                                  |        |8 - Set angle configuration                                           |
+|        |                                                  |        |9 - Set Min, Max values                                               |
+|        |                                                  |        |10 - Set slat angle for SHUT and OPEN position                        |
+|        |                                                  |        |11 - Set position logic                                               |
+|LRNB    |LRN bit                                           |enum    |0 - Teach in telegram                                                 |
+|        |                                                  |        |1 - Data telegram                                                     |
+|SSF     |Send status flag                                  |enum    |0 - Send new status of device                                         |
+|        |                                                  |        |1 - Send no status                                                    |
+|PAF     |Position and Angle flag                           |enum    |0 - No Angle and position value available                             |
+|        |                                                  |        |1 - Angle and position value available                                |
+|SMF     |Service mode flag                                 |enum    |0 - Normal operation                                                  |
+|        |                                                  |        |1 - Service mode                                                      |
+
 
 
 ### VLD Telegram (0xD2)
@@ -718,6 +812,24 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 |        |                                                  |        |7 - Deblockage                                                        |
 |CHN     |Channel                                           |enum    |0 - Channel 1                                                         |
 |CMD     |Command Id                                        |enum    |0-5 - Command ID {value}                                              |
+
+
+
+##### RORG 0xD2 - FUNC 0x14 - TYPE 0x41 - Indoor -Temperature, Humidity XYZ Acceleration, Illumination Sensor
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|TMP     |Temperature 10                                    |value   |0.0-1000.0 ↔ -40.0-60.0 °C                                            |
+|HUM     |Rel. Humidity linear)                             |value   |0.0-200.0 ↔ 0.0-100.0 %                                               |
+|ILL     |Illumination linear)                              |value   |0.0-100000.0 ↔ 0.0-100000.0 lx                                        |
+|ACC     |Acceleration Status                               |enum    |0 - Periodic Update                                                   |
+|        |                                                  |        |1 - Threshold 1 exceeded                                              |
+|        |                                                  |        |2 - Threshold 2 exceeded                                              |
+|ACX     |Absolute Acceleration on X axis                   |value   |0.0-1000.0 ↔ -2.5-2.5 g                                               |
+|ACY     |Absolute Acceleration on Y axis                   |value   |0.0-1000.0 ↔ -2.5-2.5 g                                               |
+|ACZ     |Absolute Acceleration on Z axis                   |value   |0.0-1000.0 ↔ -2.5-2.5 g                                               |
+|CO      |Contact                                           |enum    |0 - Open                                                              |
+|        |                                                  |        |1 - Closed                                                            |
 
 
 
