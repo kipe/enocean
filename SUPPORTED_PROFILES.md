@@ -505,6 +505,18 @@ All profiles (should) correspond to the official [EEP](http://www.enocean-allian
 
 
 
+##### RORG 0xA5 - FUNC 0x14 - TYPE 0x09 - Window/Door-Sensor with States Open/Closed/Tilt, Supply voltage monitor
+
+|shortcut|description                                       |type    |values                                                                |
+|--------|--------------------------------------------------|--------|----                                                                  |
+|SVC     |Supply voltage / super cap. (linear)              |value   |0.0-250.0 ↔ 0.0-5.0 V                                                 |
+|CT      |Contact                                           |enum    |0b00 - closed                                                         |
+|        |                                                  |        |0b01 - tilt                                                           |
+|        |                                                  |        |0b10 - reserved                                                       |
+|        |                                                  |        |0b11 - open                                                           |
+
+
+
 ##### RORG 0xA5 - FUNC 0x20 - TYPE 0x01 - Battery Powered Actuator (BI-DIR)
 
 ###### direction: 1
