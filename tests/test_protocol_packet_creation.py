@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
-from __future__ import print_function, unicode_literals, division, absolute_import
-from nose.tools import raises
 
-from enocean.protocol.packet import Packet, RadioPacket
+from unittest.case import TestCase
+
+from decorators import timing
 from enocean.protocol.constants import PACKET, RORG
-from enocean.decorators import timing
+from enocean.protocol.packet import Packet, RadioPacket
 
 
 @timing(1000)
@@ -242,15 +242,17 @@ def test_switch():
 
 
 @timing(1000)
-@raises(ValueError)
-def test_illegal_eep_enum1():
-    RadioPacket.create(rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB='inexisting')
+class TestIllegalEEPEnum1(TestCase):
+    def test_illegal_eep_enum1(self):
+        with self.assertRaises(ValueError):
+            RadioPacket.create(rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB='inexisting')
 
 
-@raises(ValueError)
 @timing(1000)
-def test_illegal_eep_enum2():
-    RadioPacket.create(rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB=2)
+class TestIllegalEEPEnum2(TestCase):
+    def test_illegal_eep_enum2(self):
+        with self.assertRaises(ValueError):
+            RadioPacket.create(rorg=RORG.RPS, rorg_func=0x02, rorg_type=0x02, sender=[0x00, 0x29, 0x89, 0x79], EB=2)
 
 
 # Corresponds to the tests done in test_eep

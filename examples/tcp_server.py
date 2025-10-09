@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-from enocean.consolelogger import init_logging
-from enocean.communicators.tcpcommunicator import TCPCommunicator
-from enocean.protocol.constants import PACKET, RORG
+
+import queue
 import sys
 import traceback
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+from enocean.communicators.tcpcommunicator import TCPCommunicator
+from enocean.consolelogger import init_logging
+from enocean.protocol.constants import PACKET, RORG
 
 init_logging()
 communicator = TCPCommunicator()

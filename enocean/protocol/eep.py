@@ -1,46 +1,40 @@
 # -*- encoding: utf-8 -*-
-from __future__ import print_function, unicode_literals, division, absolute_import
-import os
+
 import logging
-from sys import version_info
 from collections import OrderedDict
-from bs4 import BeautifulSoup
+from importlib.resources import files
+from typing import Union
 
-import enocean.utils
-# Left as a helper
-from enocean.protocol.constants import RORG  # noqa: F401
+from bs4 import BeautifulSoup, Tag
+
+from .. import utils
 
 
-class EEP(object):
+class EEP:
     logger = logging.getLogger('enocean.protocol.eep')
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.init_ok = False
         self.telegrams = {}
 
-        eep_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'EEP.xml')
         try:
-            if version_info[0] > 2:
-                with open(eep_path, 'r', encoding='UTF-8') as xml_file:
-                    self.soup = BeautifulSoup(xml_file.read(), "html.parser")
-            else:
-                with open(eep_path, 'r') as xml_file:
-                    self.soup = BeautifulSoup(xml_file.read(), "html.parser")
+            xml_content = files('enocean.protocol').joinpath('EEP.xml').read_text(encoding='utf-8')
+            self.soup = BeautifulSoup(xml_content, features="lxml-xml")
+            self.__xml_to_dict()
             self.init_ok = True
-            self.__load_xml()
         except IOError:
             # Impossible to test with the current structure?
             # To be honest, as the XML is included with the library,
             # there should be no possibility of ever reaching this...
-            self.logger.warn('Cannot load protocol file!')
+            self.logger.warning('Cannot load protocol file!')
             self.init_ok = False
 
-    def __load_xml(self):
+    def __xml_to_dict(self) -> None:
         self.telegrams = {
-            enocean.utils.from_hex_string(telegram['rorg']): {
-                enocean.utils.from_hex_string(function['func']): {
-                    enocean.utils.from_hex_string(type['type'], ): type
-                    for type in function.find_all('profile')
+            utils.from_hex_string(telegram['rorg']): {
+                utils.from_hex_string(function['func']): {
+                    utils.from_hex_string(typ['type'], ): typ
+                    for typ in function.find_all('profile')
                 }
                 for function in telegram.find_all('profiles')
             }
@@ -48,15 +42,15 @@ class EEP(object):
         }
 
     @staticmethod
-    def _get_raw(source, bitarray):
-        ''' Get raw data as integer, based on offset and size '''
+    def _get_raw(source, bitarray) -> int:
+        """ Get raw data as integer, based on offset and size """
         offset = int(source['offset'])
         size = int(source['size'])
         return int(''.join(['1' if digit else '0' for digit in bitarray[offset:offset + size]]), 2)
 
     @staticmethod
-    def _set_raw(target, raw_value, bitarray):
-        ''' put value into bit array '''
+    def _set_raw(target: Tag, raw_value: int, bitarray: list) -> list:
+        """ put value into bit array """
         offset = int(target['offset'])
         size = int(target['size'])
         for digit in range(size):
@@ -64,13 +58,13 @@ class EEP(object):
         return bitarray
 
     @staticmethod
-    def _get_rangeitem(source, raw_value):
+    def _get_rangeitem(source: Tag, raw_value: int) -> Tag:
         for rangeitem in source.find_all('rangeitem'):
             if raw_value in range(int(rangeitem.get('start', -1)), int(rangeitem.get('end', -1)) + 1):
                 return rangeitem
 
-    def _get_value(self, source, bitarray):
-        ''' Get value, based on the data in XML '''
+    def _get_value(self, source: Tag, bitarray: list) -> dict:
+        """ Get value, based on the data in XML """
         raw_value = self._get_raw(source, bitarray)
 
         rng = source.find('range')
@@ -84,14 +78,14 @@ class EEP(object):
         return {
             source['shortcut']: {
                 'description': source.get('description'),
-                'unit': source['unit'],
+                'unit': source.get('unit'),
                 'value': (scl_max - scl_min) / (rng_max - rng_min) * (raw_value - rng_min) + scl_min,
                 'raw_value': raw_value,
             }
         }
 
-    def _get_enum(self, source, bitarray):
-        ''' Get enum value, based on the data in XML '''
+    def _get_enum(self, source: Tag, bitarray: list) -> dict:
+        """ Get enum value, based on the data in XML """
         raw_value = self._get_raw(source, bitarray)
 
         # Find value description.
@@ -106,8 +100,8 @@ class EEP(object):
             }
         }
 
-    def _get_boolean(self, source, bitarray):
-        ''' Get boolean value, based on the data in XML '''
+    def _get_boolean(self, source: Tag, bitarray: list) -> dict:
+        """ Get boolean value, based on the data in XML """
         raw_value = self._get_raw(source, bitarray)
         return {
             source['shortcut']: {
@@ -118,8 +112,8 @@ class EEP(object):
             }
         }
 
-    def _set_value(self, target, value, bitarray):
-        ''' set given numeric value to target field in bitarray '''
+    def _set_value(self, target: Tag, value: Union[int, float], bitarray: list) -> list:
+        """ set given numeric value to target field in bitarray """
         # derive raw value
         rng = target.find('range')
         rng_min = float(rng.find('min').text)
@@ -131,8 +125,8 @@ class EEP(object):
         # store value in bitfield
         return self._set_raw(target, int(raw_value), bitarray)
 
-    def _set_enum(self, target, value, bitarray):
-        ''' set given enum value (by string or integer value) to target field in bitarray '''
+    def _set_enum(self, target: Tag, value: Union[int, str], bitarray: list) -> list:
+        """ set given enum value (by string or integer value) to target field in bitarray """
         # derive raw value
         if isinstance(value, int):
             # check whether this value exists
@@ -140,39 +134,42 @@ class EEP(object):
                 # set integer values directly
                 raw_value = value
             else:
-                raise ValueError('Enum value "%s" not found in EEP.' % (value))
+                raise ValueError(f'Enum value "{value}" not found in EEP.')
         else:
             value_item = target.find('item', {'description': value})
             if value_item is None:
-                raise ValueError('Enum description for value "%s" not found in EEP.' % (value))
+                raise ValueError(f'Enum description for value "{value}" not found in EEP.')
             raw_value = int(value_item['value'])
         return self._set_raw(target, raw_value, bitarray)
 
     @staticmethod
-    def _set_boolean(target, data, bitarray):
-        ''' set given value to target bit in bitarray '''
+    def _set_boolean(target: Tag, data: bool, bitarray: list) -> list:
+        """ set given value to target bit in bitarray """
         bitarray[int(target['offset'])] = data
         return bitarray
 
-    def find_profile(self, bitarray, eep_rorg, rorg_func, rorg_type, direction=None, command=None):
-        ''' Find profile and data description, matching RORG, FUNC and TYPE '''
+    def find_profile(self, eep_rorg: int, rorg_func: int, rorg_type: int,
+                     direction=None, command=None) -> Union[None, Tag]:
+        """ Find profile and data description, matching RORG, FUNC and TYPE """
         if not self.init_ok:
-            self.logger.warn('EEP.xml not loaded!')
+            self.logger.warning('EEP.xml not loaded!')
             return None
 
         if eep_rorg not in self.telegrams.keys():
-            self.logger.warn('Cannot find rorg %s in EEP!', hex(eep_rorg))
+            self.logger.warning(f'Cannot find rorg {hex(eep_rorg)} in EEP!')
             return None
 
         if rorg_func not in self.telegrams[eep_rorg].keys():
-            self.logger.warn('Cannot find rorg %s func %s in EEP!', hex(eep_rorg), hex(rorg_func))
+            self.logger.warning(f'Cannot find rorg {hex(eep_rorg)} func {hex(rorg_func)} in EEP!')
             return None
 
         if rorg_type not in self.telegrams[eep_rorg][rorg_func].keys():
-            self.logger.warn('Cannot find rorg %s func %s type %s in EEP!', hex(eep_rorg), hex(rorg_func), hex(rorg_type))
+            self.logger.warning(
+                f'Cannot find rorg {hex(eep_rorg)} func {hex(rorg_func)} type {hex(rorg_type)} in EEP!'
+            )
             return None
 
-        profile = self.telegrams[eep_rorg][rorg_func][rorg_type]
+        profile: Tag = self.telegrams[eep_rorg][rorg_func][rorg_type]
 
         if command:
             # multiple commands can be defined, with the command id always in same location (per RORG-FUNC-TYPE).
@@ -191,8 +188,8 @@ class EEP(object):
             return profile.find('data', recursive=False)
         return profile.find('data', {'direction': direction}, recursive=False)
 
-    def get_values(self, profile, bitarray, status):
-        ''' Get keys and values from bitarray '''
+    def get_values(self, profile: Tag, bitarray: list, status: list) -> tuple:
+        """ Get keys and values from bitarray """
         if not self.init_ok or profile is None:
             return [], {}
 
@@ -200,16 +197,20 @@ class EEP(object):
         for source in profile.contents:
             if not source.name:
                 continue
-            if source.name == 'value':
+            elif source.name == 'value':
                 output.update(self._get_value(source, bitarray))
-            if source.name == 'enum':
-                output.update(self._get_enum(source, bitarray))
-            if source.name == 'status':
+            elif source.name == 'enum':
+                try:
+                    output.update(self._get_enum(source, bitarray))
+                except (ValueError, TypeError):
+                    pass
+            elif source.name == 'status':
                 output.update(self._get_boolean(source, status))
+
         return output.keys(), output
 
-    def set_values(self, profile, data, status, properties):
-        ''' Update data based on data contained in properties '''
+    def set_values(self, profile: Tag, data: list, status: list, properties: dict) -> tuple:
+        """ Update data based on data contained in properties """
         if not self.init_ok or profile is None:
             return data, status
 
@@ -218,7 +219,7 @@ class EEP(object):
             target = profile.find(shortcut=shortcut)
             if not target:
                 # TODO: Should we raise an error?
-                self.logger.warning('Cannot find data description for shortcut %s', shortcut)
+                self.logger.warning(f"Cannot find data description for shortcut '{shortcut}'")
                 continue
 
             # update bit_data

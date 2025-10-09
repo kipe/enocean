@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-from enocean.consolelogger import init_logging
-import enocean.utils
-from enocean.communicators.serialcommunicator import SerialCommunicator
-from enocean.protocol.packet import RadioPacket
-from enocean.protocol.constants import PACKET, RORG
+
+import queue
 import sys
 import traceback
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+import enocean.utils
+from enocean.communicators.serialcommunicator import SerialCommunicator
+from enocean.consolelogger import init_logging
+from enocean.protocol.constants import PACKET, RORG
+from enocean.protocol.packet import RadioPacket
 
 
 def assemble_radio_packet(transmitter_id):
@@ -25,6 +23,7 @@ def assemble_radio_packet(transmitter_id):
 init_logging()
 communicator = SerialCommunicator()
 communicator.start()
+print('The Chip ID of your module is %s.' % enocean.utils.to_hex_string(communicator.chip_id))
 print('The Base ID of your module is %s.' % enocean.utils.to_hex_string(communicator.base_id))
 
 if communicator.base_id is not None:

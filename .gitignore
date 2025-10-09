@@ -17,3 +17,4 @@ dist
 pip-selfcheck.json
 
 .vscode/
+.idea/

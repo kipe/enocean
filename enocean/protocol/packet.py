@@ -1,25 +1,26 @@
 # -*- encoding: utf-8 -*-
-from __future__ import print_function, unicode_literals, division, absolute_import
+
 import logging
 from collections import OrderedDict
+from typing import Any, Union
 
-import enocean.utils
-from enocean.protocol import crc8
-from enocean.protocol.eep import EEP
-from enocean.protocol.constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3, DB4, DB6
+from .crc8 import calc
+from .constants import PACKET, RORG, PARSE_RESULT, DB0, DB2, DB3, DB4, DB6
+from .eep import EEP
+from ..utils import combine_hex, from_bitarray, to_hex_string, to_bitarray
 
 
-class Packet(object):
-    '''
+class Packet:
+    """
     Base class for Packet.
     Mainly used for for packet generation and
     Packet.parse_msg(buf) for parsing message.
     parse_msg() returns subclass, if one is defined for the data type.
-    '''
+    """
     eep = EEP()
     logger = logging.getLogger('enocean.protocol.packet')
 
-    def __init__(self, packet_type, data=None, optional=None):
+    def __init__(self, packet_type: PACKET, data: Union[None, list] = None, optional: Union[None, list] = None) -> None:
         self.packet_type = packet_type
         self.rorg = RORG.UNDEFINED
         self.rorg_func = None
@@ -47,35 +48,32 @@ class Packet(object):
 
         self.parse()
 
-    def __str__(self):
-        return '0x%02X %s %s %s' % (
-            self.packet_type,
-            [hex(o) for o in self.data],
-            [hex(o) for o in self.optional],
-            self.parsed)
+    def __str__(self) -> str:
+        return (f'0x{self.packet_type:02X} {[hex(o) for o in self.data]}'
+                f' {[hex(o) for o in self.optional]} {self.parsed}')
 
-    def __unicode__(self):
+    def __unicode__(self) -> str:
         return self.__str__()
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.packet_type == other.packet_type and self.rorg == other.rorg \
             and self.data == other.data and self.optional == other.optional
 
     @property
-    def _bit_data(self):
+    def _bit_data(self) -> list[bool]:
         # First and last 5 bits are always defined, so the data we're modifying is between them...
         # TODO: This is valid for the packets we're currently manipulating.
         # Needs the redefinition of Packet.data -> Packet.message.
         # Packet.data would then only have the actual, documented data-bytes.
         # Packet.message would contain the whole message.
-        # See discussion in issue #14
-        return enocean.utils.to_bitarray(self.data[1:len(self.data) - 5], (len(self.data) - 6) * 8)
+        # See discussion in issue https://github.com/kipe/enocean/issues/14
+        return to_bitarray(self.data[1:len(self.data) - 5], (len(self.data) - 6) * 8)
 
     @_bit_data.setter
-    def _bit_data(self, value):
+    def _bit_data(self, value: list[bool]) -> None:
         # The same as getting the data, first and last 5 bits are ommitted, as they are defined...
         for byte in range(len(self.data) - 6):
-            self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
+            self.data[byte + 1] = from_bitarray(value[byte * 8:(byte + 1) * 8])
 
     # # COMMENTED OUT, AS NOTHING TOUCHES _bit_optional FOR NOW.
     # # Thus, this is also untested.
@@ -92,22 +90,24 @@ class Packet(object):
     #             self.data[byte+1] = enocean.utils.from_bitarray(value[byte*8:(byte+1)*8])
 
     @property
-    def _bit_status(self):
-        return enocean.utils.to_bitarray(self.status)
+    def _bit_status(self) -> list[bool]:
+        return to_bitarray(self.status)
 
     @_bit_status.setter
-    def _bit_status(self, value):
-        self.status = enocean.utils.from_bitarray(value)
+    def _bit_status(self, value: list[bool]) -> None:
+        self.status = from_bitarray(value)
 
     @staticmethod
-    def parse_msg(buf):
-        '''
+    def parse_msg(buf: Union[list, bytearray]) -> (PARSE_RESULT, list, Any):
+        # 'Any' in return type should be Union[None |  UTETeachInPacket | ResponsePacket | EventPacket | Packet]
+        # how to realize that?
+        """
         Parses message from buffer.
         returns:
             - PARSE_RESULT
             - remaining buffer
             - Packet -object (if message was valid, else None)
-        '''
+        """
         # If the buffer doesn't contain 0x55 (start char)
         # the message isn't needed -> ignore
         if 0x55 not in buf:
@@ -137,12 +137,12 @@ class Packet(object):
         opt_data = msg[6 + data_len:6 + data_len + opt_len]
 
         # Check CRCs for header and data
-        if msg[5] != crc8.calc(msg[1:5]):
+        if msg[5] != calc(msg[1:5]):
             # Fail if doesn't match message
             Packet.logger.error('Header CRC error!')
             # Return CRC_MISMATCH
             return PARSE_RESULT.CRC_MISMATCH, buf, None
-        if msg[6 + data_len + opt_len] != crc8.calc(msg[6:6 + data_len + opt_len]):
+        if msg[6 + data_len + opt_len] != calc(msg[6:6 + data_len + opt_len]):
             # Fail if doesn't match message
             Packet.logger.error('Data CRC error!')
             # Return CRC_MISMATCH
@@ -165,11 +165,16 @@ class Packet(object):
         return PARSE_RESULT.OK, buf, packet
 
     @staticmethod
-    def create(packet_type, rorg, rorg_func, rorg_type, direction=None, command=None,
-               destination=None,
-               sender=None,
-               learn=False, **kwargs):
-        '''
+    def create(
+        packet_type: PACKET, rorg: RORG, rorg_func: int, rorg_type: int,
+        direction=None,
+        command: Union[None, int] = None,
+        destination: Union[None, list] = None,
+        sender: Union[None, list] = None,
+        learn: bool = False,
+        **kwargs
+    ):
+        """
         Creates an packet ready for sending.
         Uses rorg, rorg_func and rorg_type to determine the values set based on EEP.
         Additional arguments (**kwargs) are used for setting the values.
@@ -182,7 +187,7 @@ class Packet(object):
             - Require sender to be set? Would force the "correct" sender to be set.
             - Do we need to set telegram control bits?
               Might be useful for acting as a repeater?
-        '''
+        """
 
         if packet_type != PACKET.RADIO_ERP1:
             # At least for now, only support PACKET.RADIO_ERP1.
@@ -203,10 +208,10 @@ class Packet(object):
             sender = [0xDE, 0xAD, 0xBE, 0xEF]
 
         if not isinstance(destination, list) or len(destination) != 4:
-            raise ValueError('Destination must a list containing 4 (numeric) values.')
+            raise ValueError('Destination must be a list containing 4 (numeric) values.')
 
         if not isinstance(sender, list) or len(sender) != 4:
-            raise ValueError('Sender must a list containing 4 (numeric) values.')
+            raise ValueError('Sender must be a list containing 4 (numeric) values.')
 
         packet = Packet(packet_type, data=[], optional=[])
         packet.rorg = rorg
@@ -243,11 +248,12 @@ class Packet(object):
         # For example, stuff like RadioPacket.learn should be set.
         packet = Packet.parse_msg(packet.build())[2]
         packet.rorg = rorg
+        # noinspection PyUnresolvedReferences
         packet.parse_eep(rorg_func, rorg_type, direction, command)
         return packet
 
-    def parse(self):
-        ''' Parse data from Packet '''
+    def parse(self) -> OrderedDict:
+        """ Parse data from Packet """
         # Parse status from messages
         if self.rorg in [RORG.RPS, RORG.BS1, RORG.BS4]:
             self.status = self.data[-1]
@@ -256,19 +262,20 @@ class Packet(object):
 
         if self.rorg in [RORG.RPS, RORG.BS1, RORG.BS4]:
             # These message types should have repeater count in the last for bits of status.
-            self.repeater_count = enocean.utils.from_bitarray(self._bit_status[4:])
+            self.repeater_count = from_bitarray(self._bit_status[4:])
         return self.parsed
 
-    def select_eep(self, rorg_func, rorg_type, direction=None, command=None):
-        ''' Set EEP based on FUNC and TYPE '''
+    def select_eep(self, rorg_func: int, rorg_type: int, direction=None, command: Union[None, int] = None) -> bool:
+        """ Set EEP based on FUNC and TYPE """
         # set EEP profile
         self.rorg_func = rorg_func
         self.rorg_type = rorg_type
-        self._profile = self.eep.find_profile(self._bit_data, self.rorg, rorg_func, rorg_type, direction, command)
+        self._profile = self.eep.find_profile(self.rorg, rorg_func, rorg_type, direction, command)
         return self._profile is not None
 
-    def parse_eep(self, rorg_func=None, rorg_type=None, direction=None, command=None):
-        ''' Parse EEP based on FUNC and TYPE '''
+    def parse_eep(self, rorg_func: Union[None, int] = None, rorg_type: Union[None, int] = None,
+                  direction=None, command: Union[None, int] = None) -> list:
+        """ Parse EEP based on FUNC and TYPE """
         # set EEP profile, if demanded
         if rorg_func is not None and rorg_type is not None:
             self.select_eep(rorg_func, rorg_type, direction, command)
@@ -277,18 +284,19 @@ class Packet(object):
         self.parsed.update(values)
         return list(provides)
 
-    def set_eep(self, data):
-        ''' Update packet data based on EEP. Input data is a dictionary with keys corresponding to the EEP. '''
+    def set_eep(self, data: dict) -> None:
+        """ Update packet data based on EEP. Input data is a dictionary with keys corresponding to the EEP. """
         self._bit_data, self._bit_status = self.eep.set_values(self._profile, self._bit_data, self._bit_status, data)
 
-    def build(self):
-        ''' Build Packet for sending to EnOcean controller '''
+    def build(self) -> list:
+        """ Build Packet for sending to EnOcean controller """
         data_length = len(self.data)
+        # noinspection PyListCreation
         ords = [0x55, (data_length >> 8) & 0xFF, data_length & 0xFF, len(self.optional), int(self.packet_type)]
-        ords.append(crc8.calc(ords[1:5]))
+        ords.append(calc(ords[1:5]))
         ords.extend(self.data)
         ords.extend(self.optional)
-        ords.append(crc8.calc(ords[6:]))
+        ords.append(calc(ords[6:]))
         return ords
 
 
@@ -299,33 +307,34 @@ class RadioPacket(Packet):
     learn = True
     contains_eep = False
 
-    def __str__(self):
+    def __str__(self) -> str:
         packet_str = super(RadioPacket, self).__str__()
-        return '%s->%s (%d dBm): %s' % (self.sender_hex, self.destination_hex, self.dBm, packet_str)
+        return f'{self.sender_hex}->{self.destination_hex} ({self.dBm} dBm): {packet_str}'
 
     @staticmethod
-    def create(rorg, rorg_func, rorg_type, direction=None, command=None,
-               destination=None, sender=None, learn=False, **kwargs):
+    def create(rorg: RORG, rorg_func: int, rorg_type: int, direction=None,
+               command: Union[None, int] = None, destination: Union[None, list] = None,
+               sender: Union[None, list] = None, learn: bool = False, **kwargs) -> Packet:
         return Packet.create(PACKET.RADIO_ERP1, rorg, rorg_func, rorg_type,
                              direction, command, destination, sender, learn, **kwargs)
 
     @property
-    def sender_int(self):
-        return enocean.utils.combine_hex(self.sender)
+    def sender_int(self) -> int:
+        return combine_hex(self.sender)
 
     @property
-    def sender_hex(self):
-        return enocean.utils.to_hex_string(self.sender)
+    def sender_hex(self) -> str:
+        return to_hex_string(self.sender)
 
     @property
-    def destination_int(self):
-        return enocean.utils.combine_hex(self.destination)
+    def destination_int(self) -> int:
+        return combine_hex(self.destination)
 
     @property
-    def destination_hex(self):
-        return enocean.utils.to_hex_string(self.destination)
+    def destination_hex(self) -> str:
+        return to_hex_string(self.destination)
 
-    def parse(self):
+    def parse(self) -> OrderedDict:
         self.destination = self.optional[1:5]
         self.dBm = -self.optional[5]
         self.sender = self.data[-5:-1]
@@ -343,11 +352,13 @@ class RadioPacket(Packet):
                 self.contains_eep = self._bit_data[DB0.BIT_7]
                 if self.contains_eep:
                     # Get rorg_func and rorg_type from an unidirectional learn packet
-                    self.rorg_func = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_7:DB3.BIT_1])
-                    self.rorg_type = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_1:DB2.BIT_2])
-                    self.rorg_manufacturer = enocean.utils.from_bitarray(self._bit_data[DB2.BIT_2:DB0.BIT_7])
-                    self.logger.debug('learn received, EEP detected, RORG: 0x%02X, FUNC: 0x%02X, TYPE: 0x%02X, Manufacturer: 0x%02X' % (self.rorg, self.rorg_func, self.rorg_type, self.rorg_manufacturer))  # noqa: E501
-
+                    self.rorg_func = from_bitarray(self._bit_data[DB3.BIT_7:DB3.BIT_1])
+                    self.rorg_type = from_bitarray(self._bit_data[DB3.BIT_1:DB2.BIT_2])
+                    self.rorg_manufacturer = from_bitarray(self._bit_data[DB2.BIT_2:DB0.BIT_7])
+                    self.logger.debug(
+                        f'learn received, EEP detected, RORG: 0x{self.rorg:X}, FUNC: 0x{self.rorg_func:X}, '
+                        f'TYPE: 0x{self.rorg_type:X}, Manufacturer: 0x{self.rorg_manufacturer:X}'
+                    )
         return super(RadioPacket, self).parse()
 
 
@@ -373,23 +384,24 @@ class UTETeachInPacket(RadioPacket):
     contains_eep = True
 
     @property
-    def bidirectional(self):
+    def bidirectional(self) -> bool:
         return not self.unidirectional
 
     @property
-    def teach_in(self):
+    def teach_in(self) -> bool:
         return self.request_type != self.DELETE
 
     @property
-    def delete(self):
+    def delete(self) -> bool:
         return self.request_type == self.DELETE
 
-    def parse(self):
+    def parse(self) -> OrderedDict:
         super(UTETeachInPacket, self).parse()
         self.unidirectional = not self._bit_data[DB6.BIT_7]
         self.response_expected = not self._bit_data[DB6.BIT_6]
-        self.request_type = enocean.utils.from_bitarray(self._bit_data[DB6.BIT_5:DB6.BIT_3])
-        self.rorg_manufacturer = enocean.utils.from_bitarray(self._bit_data[DB3.BIT_2:DB2.BIT_7] + self._bit_data[DB4.BIT_7:DB3.BIT_7])  # noqa: E501
+        self.request_type = from_bitarray(self._bit_data[DB6.BIT_5:DB6.BIT_3])
+        self.rorg_manufacturer = from_bitarray(
+            self._bit_data[DB3.BIT_2:DB2.BIT_7] + self._bit_data[DB4.BIT_7:DB3.BIT_7])  # noqa: E501
         self.channel = self.data[2]
         self.rorg_type = self.data[5]
         self.rorg_func = self.data[6]
@@ -398,16 +410,21 @@ class UTETeachInPacket(RadioPacket):
             self.learn = True
         return self.parsed
 
-    def create_response_packet(self, sender_id, response=TEACHIN_ACCEPTED):
+    def create_response_packet(self, sender_id: list, response: Union[None, list] = None) -> RadioPacket:
+        if response is None:
+            response = self.TEACHIN_ACCEPTED
+
         # Create data:
         # - Respond with same RORG (UTE Teach-in)
         # - Always use bidirectional communication, set response code, set command identifier.
         # - Databytes 5 to 0 are copied from the original message
         # - Set sender id and status
-        data = [self.rorg] + \
-               [enocean.utils.from_bitarray([True, False] + response + [False, False, False, True])] + \
-               self.data[2:8] + \
-               sender_id + [0]
+        data = (
+            [self.rorg]
+            + [from_bitarray([True, False] + response + [False, False, False, True])]
+            + self.data[2:8]
+            + sender_id + [0]
+        )
 
         # Always use 0x03 to indicate sending, attach sender ID, dBm, and security level
         optional = [0x03] + self.sender + [0xFF, 0x00]
@@ -419,7 +436,7 @@ class ResponsePacket(Packet):
     response = 0
     response_data = []
 
-    def parse(self):
+    def parse(self) -> OrderedDict:
         self.response = self.data[0]
         self.response_data = self.data[1:]
         return super(ResponsePacket, self).parse()
@@ -429,7 +446,7 @@ class EventPacket(Packet):
     event = 0
     event_data = []
 
-    def parse(self):
+    def parse(self) -> OrderedDict:
         self.event = self.data[0]
         self.event_data = self.data[1:]
         return super(EventPacket, self).parse()

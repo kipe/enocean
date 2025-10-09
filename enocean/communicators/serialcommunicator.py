@@ -1,23 +1,26 @@
 # -*- encoding: utf-8 -*-
-from __future__ import print_function, unicode_literals, division, absolute_import
+
 import logging
-import serial
 import time
 
-from enocean.communicators.communicator import Communicator
+import serial
+
+from .communicator import Communicator
+
+LOGGER = logging.getLogger('enocean.communicators.SerialCommunicator')
 
 
 class SerialCommunicator(Communicator):
-    ''' Serial port communicator class for EnOcean radio '''
-    logger = logging.getLogger('enocean.communicators.SerialCommunicator')
+    """ Serial port communicator class for EnOcean radio """
 
-    def __init__(self, port='/dev/ttyAMA0', callback=None):
-        super(SerialCommunicator, self).__init__(callback)
+    def __init__(self, port: str = '/dev/ttyAMA0', callback: callable = None, loglevel=logging.NOTSET) -> None:
+        super().__init__(callback, loglevel=loglevel)
+        LOGGER.setLevel(loglevel)
         # Initialize serial port
         self.__ser = serial.Serial(port, 57600, timeout=0.1)
 
-    def run(self):
-        self.logger.info('SerialCommunicator started')
+    def run(self) -> None:
+        LOGGER.info('SerialCommunicator started')
         while not self._stop_flag.is_set():
             # If there's messages in transmit queue
             # send them
@@ -34,10 +37,11 @@ class SerialCommunicator(Communicator):
             try:
                 self._buffer.extend(bytearray(self.__ser.read(16)))
             except serial.SerialException:
-                self.logger.error('Serial port exception! (device disconnected or multiple access on port?)')
+                LOGGER.error('Serial port exception! (device disconnected or multiple access on port?)')
                 self.stop()
+                continue
             self.parse()
             time.sleep(0)
 
         self.__ser.close()
-        self.logger.info('SerialCommunicator stopped')
+        LOGGER.info('SerialCommunicator stopped')

@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-from enocean.consolelogger import init_logging
-from enocean.communicators.serialcommunicator import SerialCommunicator
-from enocean.communicators.utils import send_to_tcp_socket
+
+import queue
 import sys
 import traceback
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+from enocean.communicators.serialcommunicator import SerialCommunicator
+from enocean.communicators.utils import send_to_tcp_socket
+from enocean.consolelogger import init_logging
 
 init_logging()
 communicator = SerialCommunicator()

@@ -10,18 +10,15 @@ The command used here is specified as 1.10.5 Code 03: CO_RD_VERSION
 in the ESP3 document.
 """
 
-from enocean.consolelogger import init_logging
-from enocean.communicators.serialcommunicator import SerialCommunicator
-from enocean.protocol.packet import Packet
-from enocean.protocol.constants import PACKET
-from enocean import utils
-import traceback
+import queue
 import sys
+import traceback
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+from enocean import utils
+from enocean.communicators.serialcommunicator import SerialCommunicator
+from enocean.consolelogger import init_logging
+from enocean.protocol.constants import PACKET
+from enocean.protocol.packet import Packet
 
 init_logging()
 """

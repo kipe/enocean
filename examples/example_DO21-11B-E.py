@@ -7,18 +7,15 @@ http://www.g-media.fr/prise-gigogne-enocean.html
 Waits for UTE Teach-ins, sends the response automatically and prints the ID of new device.
 '''
 
+import queue
 import sys
 import time
 import traceback
+
 import enocean.utils
 from enocean.communicators import SerialCommunicator
-from enocean.protocol.packet import RadioPacket, UTETeachInPacket
 from enocean.protocol.constants import RORG
-
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+from enocean.protocol.packet import RadioPacket, UTETeachInPacket
 
 
 def send_command(destination, output_value):

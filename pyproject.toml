@@ -1,0 +1,46 @@
+[build-system]
+requires = [ "setuptools>=74.0", "build>=1.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "enocean4ha"
+dynamic = [ "version", "readme"]
+authors = [
+    { name="Kimmo Huoman", email="kipenroskaposti@gmail.com" },
+]
+maintainers = [
+    { name="Torsten Pieper", email="topic2k@atlogger.de" },
+]
+description = "EnOcean serial protocol implementation"
+keywords = [ "EnOcean", "HomeAssistant", ]
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Home Automation",
+]
+dependencies = [
+    'pyserial>=3.5',
+    'beautifulsoup4>=4.12',
+    'lxml>=5.3',
+]
+
+[project.urls]
+Homepage = "https://github.com/topic2k/enocean4ha"
+Issues = "https://github.com/topic2k/enocean4ha/issues"
+
+[project.optional-dependencies]
+tests = [ "nose2>=0.15.1", ]
+
+[tool.setuptools.dynamic]
+version = { attr = "enocean.__version__" }
+readme = { file = [ "README.md", "SUPPORTED_PROFILES.md" ], content-type = "text/markdown" }
+
+[tool.setuptools.packages.find]
+where = [ "." ]
+include = [ "enocean*" ]
+
+[tool.setuptools.package-data]
+"*" = [ "*.xml", ]
